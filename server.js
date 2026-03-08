@@ -29,6 +29,33 @@ function serveFile(res, filePath, contentType) {
   }
 }
 
+const DB_CONTRIB = path.join(__dirname, "data", "contributors.json");
+
+function readContributors() {
+  if (!fs.existsSync(DB_CONTRIB)) return [];
+  try { return JSON.parse(fs.readFileSync(DB_CONTRIB, "utf8")); } catch { return []; }
+}
+
+function writeContributors(data) {
+  fs.writeFileSync(DB_CONTRIB, JSON.stringify(data, null, 2), "utf8");
+}
+
+function addPoints(username, wallet, points) {
+  if (!username) return;
+  const contributors = readContributors();
+  let user = contributors.find(c => c.username === username);
+  if (!user) {
+    user = { username, wallet: wallet || "", points: 0, whc: 0 };
+    contributors.push(user);
+  }
+  user.points += points;
+  user.whc += points;
+  if (wallet && !user.wallet) user.wallet = wallet;
+  contributors.sort((a, b) => b.points - a.points);
+  writeContributors(contributors);
+  console.log(`🏆 [积分增加] ${username} +${points} pts (Total: ${user.points})`);
+}
+
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
@@ -52,12 +79,21 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url === '/admin') {
     serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return;
   }
+  if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) {
+    serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return;
+  }
   // 天才发射台 / 营销方案
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) {
     serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return;
   }
 
   // ── API ───────────────────────────────────────────
+
+  // 排行榜 API
+  if (req.method === "GET" && url === "/api/leaderboard") {
+    res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
+    res.end(JSON.stringify(readContributors())); return;
+  }
 
   // 获取产品列表（公开：只返回 approved）
   if (req.method === 'GET' && url === '/api/products') {
@@ -86,6 +122,8 @@ const server = http.createServer(async (req, res) => {
         url: data.url || '',
         tag: data.tag || '其他',
         contact: data.contact || '',
+        contributor: data.contributor || '',
+        wallet: data.wallet || '',
         icon: data.icon || '🤖',
         votes: 0,
         featured: false,
@@ -111,10 +149,17 @@ const server = http.createServer(async (req, res) => {
       const products = readDB();
       const idx = products.findIndex(p => p.id == id);
       if (idx >= 0) {
+        // Check if status changed to approved to grant points
+        const wasApproved = products[idx].status === "approved";
         products[idx].status = status;
         products[idx].reviewedAt = new Date().toISOString();
         writeDB(products);
         console.log(`[审核] ID ${id} → ${status}`);
+        
+        // 发放积分: +50 WHC points for submission approval
+        if (status === "approved" && !wasApproved && products[idx].contributor) {
+          addPoints(products[idx].contributor, products[idx].wallet, 50);
+        }
       }
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true }));
@@ -163,6 +208,8 @@ const server = http.createServer(async (req, res) => {
           url: '',
           tag: 'AI Agent',
           contact: data.contact || '',
+        contributor: data.contributor || '',
+        wallet: data.wallet || '',
           icon: '⚡',
           votes: 0,
           featured: false,

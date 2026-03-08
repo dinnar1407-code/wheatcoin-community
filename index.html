@@ -107,6 +107,7 @@
   <a class="nav-logo" href="/"><span class="logo-icon">🌾</span><span>Wheat Community</span></a>
   <div class="nav-links">
     <button class="nav-link active" data-i="navDiscover">Discover</button>
+    <button class="nav-link" onclick="location.href='/leaderboard'" data-i="navLeaderboard">Leaderboard</button>
     <button class="nav-link" onclick="location.href='/launch'" data-i="navLaunch">Genius Launch</button>
     <button class="nav-link" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">$WHC</button>
   </div>
@@ -223,6 +224,15 @@
         <input id="f-contact" type="text" data-i-placeholder="fContactPH"/>
         <div class="form-note" data-i="fNote">⚡ Once approved, you can boost your product with a <strong>Genius Launch Pad</strong> marketing plan.</div>
       </div>
+      <div class="form-field" style="margin-top:20px; border-top: 1px solid var(--border); padding-top:20px;">
+        <label data-i="fContributor">Your Username (Earn WHC) *</label>
+        <input id="f-contributor" type="text" data-i-placeholder="fContributorPH" />
+      </div>
+      <div class="form-field">
+        <label data-i="fWallet">Solana Wallet Address (Optional)</label>
+        <input id="f-wallet" type="text" data-i-placeholder="fWalletPH" />
+        <div class="form-note" style="color:var(--primary)" data-i="fWalletNote">🏆 Approved products earn you <strong>+50 WHC points</strong> on the Leaderboard!</div>
+      </div>
       <div class="modal-btns">
         <button class="modal-btn secondary" onclick="closeSubmit()" data-i="btnCancel">Cancel</button>
         <button class="modal-btn primary" onclick="submitProduct()" data-i="btnSubmit">🚀 Submit for Review</button>
@@ -246,7 +256,7 @@
 // ─── i18n ─────────────────────────────────────────────
 const I18N = {
   en: {
-    navDiscover:'Discover', navLaunch:'Genius Launch', navSubmit:'+ Submit Product',
+    navDiscover:'Discover', navLeaderboard:'Leaderboard', navLaunch:'Genius Launch', navSubmit:'+ Submit Product',
     heroBadge:'🚀 AI Agent Product Discovery · Free to Submit',
     heroH1:'Discover the Best<br/>AI Agent Apps',
     heroP:"Wheat Community is an open platform for discovering and sharing AI Agent products.<br/>Submit your product for free and reach real users.",
@@ -265,6 +275,9 @@ const I18N = {
     fDesc:'Description *', fDescPH:'Describe your product, what problem it solves…',
     fUrl:'Website / Link', fTag:'Category *', fTagDefault:'Select a category…',
     fContact:'Contact', fContactPH:'Email / Telegram / Twitter',
+    fContributor:'Your Username (Earn WHC) *', fContributorPH:'e.g. Alex',
+    fWallet:'Solana Wallet Address (Optional)', fWalletPH:'Enter your SOL address...',
+    fWalletNote:'🏆 Approved products earn you <strong>+50 WHC points</strong> on the Leaderboard!',
     fNote:'⚡ Once approved, you can boost your product with a <strong>Genius Launch Pad</strong> marketing plan.',
     btnCancel:'Cancel', btnSubmit:'🚀 Submit for Review',
     successTitle:'Submitted Successfully!',
@@ -275,7 +288,7 @@ const I18N = {
     selectCat:'Please select a category', successCta:'👉 Get a Genius Launch Pad marketing plan',
   },
   zh: {
-    navDiscover:'发现产品', navLaunch:'天才发射台', navSubmit:'+ 提交产品',
+    navDiscover:'发现产品', navLeaderboard:'贡献榜单', navLaunch:'天才发射台', navSubmit:'+ 提交产品',
     heroBadge:'🚀 AI Agent 产品发现平台 · 免费提交',
     heroH1:'发现最好的<br/>AI Agent 应用',
     heroP:"麦穗社区是一个开放的 AI Agent 产品发现与分享平台。<br/>免费提交你的产品，触达真实用户。",
@@ -294,6 +307,9 @@ const I18N = {
     fDesc:'详细描述 *', fDescPH:'描述你的产品解决了什么问题，目标用户是谁…',
     fUrl:'官网 / 链接', fTag:'分类 *', fTagDefault:'选择分类…',
     fContact:'联系方式', fContactPH:'Email / Telegram / 微信',
+    fContributor:'您的用户名 (赚取 WHC) *', fContributorPH:'如：张三',
+    fWallet:'Solana 钱包地址（选填）', fWalletPH:'输入您的 SOL 地址...',
+    fWalletNote:'🏆 提交产品审核通过后，您将在排行榜获得 <strong>+50 WHC</strong> 贡献分！',
     fNote:'⚡ 上架后可通过<strong>天才发射台</strong>定制专属营销方案，加速增长。',
     btnCancel:'取消', btnSubmit:'🚀 提交审核',
     successTitle:'提交成功！',
@@ -431,10 +447,22 @@ function submitProduct(){
   const tagline=document.getElementById('f-tagline').value.trim();
   const desc=document.getElementById('f-desc').value.trim();
   const tag=document.getElementById('f-tag').value;
+  const contributor=document.getElementById('f-contributor').value.trim();
+  const wallet=document.getElementById('f-wallet').value.trim();
   const t=I18N[lang];
   if(!name||!tagline||!desc) {alert(t.alertFields);return;}
   if(!tag) {alert(t.selectCat);return;}
-  fetch('/api/products/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,tagline,desc,url:document.getElementById('f-url').value.trim(),tag,contact:document.getElementById('f-contact').value.trim(),ts:new Date().toISOString(),status:'pending'})}).catch(()=>{});
+  if(!contributor) {alert(curLang==="zh"?"请填写您的用户名以赚取 WHC":"Please provide your username to earn WHC");return;}
+  const payload = {
+    name, tagline, desc, 
+    url: document.getElementById('f-url').value.trim(),
+    tag, 
+    contact: document.getElementById('f-contact').value.trim(),
+    contributor, wallet,
+    ts: new Date().toISOString(), 
+    status: 'pending'
+  };
+  fetch('/api/products/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}).catch(()=>{});
   document.getElementById('submitForm').style.display='none';
   document.getElementById('submitSuccess').style.display='block';
   document.getElementById('statProducts').textContent=parseInt(document.getElementById('statProducts').textContent)+1;

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard · Wheat Community</title>
+  <style>
+    :root { --bg: #f9f9f9; --text: #1a1a1a; --primary: #e6a822; --border: #eee; --card-bg: #fff; --hover: #f1f1f1; --muted: #666; }
+    @media (prefers-color-scheme: dark) { :root { --bg: #121212; --text: #eaeaea; --border: #333; --card-bg: #1e1e1e; --hover: #2a2a2a; --muted: #999; } }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.5; }
+    .nav { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; border-bottom: 1px solid var(--border); background: var(--card-bg); position: sticky; top: 0; z-index: 100; }
+    .nav-logo { font-size: 20px; font-weight: 700; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-weight: 500; font-size: 14px; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links .active { color: var(--primary); }
+    .btn { background: var(--text); color: var(--bg); padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+    .btn:hover { opacity: 0.9; }
+    .btn.primary { background: var(--primary); color: #000; }
+    .lang-toggle { cursor: pointer; font-size: 14px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text); }
+    
+    .container { max-width: 800px; margin: 40px auto; padding: 0 24px; }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { font-size: 32px; margin: 0 0 12px; }
+    .hero p { color: var(--muted); font-size: 16px; margin: 0; }
+    
+    .reward-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; margin-bottom: 40px; }
+    .rcard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; text-align: center; }
+    .rcard h3 { margin: 0 0 8px; color: var(--primary); font-size: 24px; }
+    .rcard p { margin: 0; font-size: 13px; color: var(--muted); }
+    
+    .leaderboard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .lb-row { display: grid; grid-template-columns: 60px 1fr 100px 100px; padding: 16px; border-bottom: 1px solid var(--border); align-items: center; }
+    .lb-row:last-child { border-bottom: none; }
+    .lb-header { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; background: var(--bg); }
+    .rank { font-weight: 700; font-size: 18px; color: var(--muted); text-align: center; }
+    .rank.top-1 { color: #FFD700; font-size: 24px; }
+    .rank.top-2 { color: #C0C0C0; font-size: 22px; }
+    .rank.top-3 { color: #CD7F32; font-size: 20px; }
+    .user-info { display: flex; align-items: center; gap: 12px; }
+    .avatar { width: 32px; height: 32px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; color: #666; }
+    .username { font-weight: 600; font-size: 15px; }
+    .wallet { font-size: 12px; color: var(--muted); font-family: monospace; }
+    .pts { font-weight: 600; text-align: right; }
+    .whc { font-weight: 700; color: var(--primary); text-align: right; }
+    
+    .footer { text-align: center; padding: 40px 24px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--border); margin-top: 60px; }
+    .footer a { color: var(--text); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a class="nav-logo" href="/"><span class="logo-icon">🌾</span><span>Wheat Community</span></a>
+    <div class="nav-links">
+      <a href="/" data-i="navHome">Home</a>
+      <a href="/leaderboard" class="active" data-i="navLeaderboard">Leaderboard</a>
+      <a href="/launch" data-i="navLaunch">Genius Plan</a>
+      <a href="https://github.com/dinnar1407-code/wheatcoin-community" target="_blank">GitHub</a>
+      <button class="lang-toggle" onclick="toggleLang()">EN / 中文</button>
+      <a href="/" class="btn primary" data-i="navSubmit">Submit</a>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="hero">
+      <h1 data-i="heroTitle">🏆 Contribution Leaderboard</h1>
+      <p data-i="heroDesc">Build the community. Earn $WHC. It's that simple.</p>
+    </div>
+
+    <div class="reward-cards">
+      <div class="rcard">
+        <h3>+50</h3>
+        <p data-i="rule1">Submit Product</p>
+      </div>
+      <div class="rcard">
+        <h3>+30</h3>
+        <p data-i="rule2">Write Review</p>
+      </div>
+      <div class="rcard">
+        <h3>+20</h3>
+        <p data-i="rule3">Invite User</p>
+      </div>
+      <div class="rcard">
+        <h3>+100</h3>
+        <p data-i="rule4">Get Featured</p>
+      </div>
+    </div>
+
+    <div class="leaderboard">
+      <div class="lb-row lb-header">
+        <div class="rank" data-i="thRank">Rank</div>
+        <div><span data-i="thContributor">Contributor</span></div>
+        <div class="pts" data-i="thPoints">Points</div>
+        <div class="whc" data-i="thReward">WHC</div>
+      </div>
+      <div id="lb-body">
+        <div style="padding: 24px; text-align: center; color: var(--muted);" data-i="loading">Loading leaderboard...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    🌾 <a href="/">Wheat Community</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC Token</a> · <span data-i="footerDesc">Community-powered AI product discovery</span>
+  </div>
+
+  <script>
+    const i18n = {
+      en: {
+        navHome: "Home", navLeaderboard: "Leaderboard", navLaunch: "Genius Plan", navSubmit: "Submit",
+        heroTitle: "🏆 Contribution Leaderboard", heroDesc: "Build the community. Earn $WHC. It's that simple.",
+        rule1: "Submit Product", rule2: "Write Review", rule3: "Invite User", rule4: "Get Featured",
+        thRank: "Rank", thContributor: "Contributor", thPoints: "Pts", thReward: "WHC",
+        loading: "Loading leaderboard...", noData: "No contributions yet. Be the first!",
+        footerDesc: "Community-powered AI product discovery"
+      },
+      zh: {
+        navHome: "首页", navLeaderboard: "贡献榜单", navLaunch: "天才发射台", navSubmit: "提交产品",
+        heroTitle: "🏆 社区贡献排行榜", heroDesc: "共建社区，赚取 $WHC 空投奖励。就这么简单。",
+        rule1: "提交产品", rule2: "深度评测", rule3: "邀请好友", rule4: "选入精选",
+        thRank: "排名", thContributor: "贡献者", thPoints: "贡献分", thReward: "WHC",
+        loading: "加载中...", noData: "暂无贡献记录，快来抢占榜首吧！",
+        footerDesc: "社区驱动的 AI 产品发现平台"
+      }
+    };
+
+    let curLang = localStorage.getItem('whc_lang') || 'en';
+    function setLang(lang) {
+      curLang = lang;
+      localStorage.setItem('whc_lang', lang);
+      document.querySelectorAll('[data-i]').forEach(el => {
+        const key = el.getAttribute('data-i');
+        if (i18n[lang][key]) el.innerHTML = i18n[lang][key];
+      });
+      loadLeaderboard();
+    }
+    function toggleLang() { setLang(curLang === 'en' ? 'zh' : 'en'); }
+    
+    // 初始化语言
+    setLang(curLang);
+
+    async function loadLeaderboard() {
+      try {
+        const res = await fetch('/api/leaderboard');
+        const data = await res.json();
+        const tbody = document.getElementById('lb-body');
+        
+        if (data.length === 0) {
+          tbody.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--muted);">${i18n[curLang].noData}</div>`;
+          return;
+        }
+
+        tbody.innerHTML = data.map((user, idx) => {
+          const rank = idx + 1;
+          let rankClass = rank <= 3 ? `top-${rank}` : '';
+          let rankDisplay = rank;
+          if (rank === 1) rankDisplay = '🥇';
+          if (rank === 2) rankDisplay = '🥈';
+          if (rank === 3) rankDisplay = '🥉';
+
+          const initial = user.username ? user.username.charAt(0).toUpperCase() : '?';
+          
+          return `
+            <div class="lb-row">
+              <div class="rank ${rankClass}">${rankDisplay}</div>
+              <div class="user-info">
+                <div class="avatar">${initial}</div>
+                <div>
+                  <div class="username">${user.username || 'Anonymous'}</div>
+                  ${user.wallet ? `<div class="wallet">${user.wallet.slice(0,4)}...${user.wallet.slice(-4)}</div>` : ''}
+                </div>
+              </div>
+              <div class="pts">${user.points}</div>
+              <div class="whc">+${user.whc}</div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        document.getElementById('lb-body').innerHTML = `<div style="padding: 24px; text-align: center; color: red;">Failed to load data</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
