@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🌾 Featured Spot · WheatCoin Community</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+    .wrap{max-width:640px;width:100%;}
+    .top-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;}
+    .back-link{font-size:13px;color:#6366f1;text-decoration:none;}
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
+
+    /* Hero */
+    .hero-card{background:#13131a;border:1px solid #3a3000;border-radius:16px;padding:36px 32px;margin-bottom:24px;text-align:center;box-shadow:0 0 40px rgba(244,196,48,.08);}
+    .crown{font-size:48px;margin-bottom:12px;}
+    .hero-badge{display:inline-block;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:11px;font-weight:800;padding:4px 14px;border-radius:20px;margin-bottom:16px;letter-spacing:1px;}
+    .hero-card h1{font-size:26px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:10px;}
+    .hero-card p{font-size:14px;color:#6b7280;line-height:1.7;margin-bottom:24px;}
+
+    /* Price box */
+    .price-row{display:flex;gap:12px;justify-content:center;margin-bottom:24px;}
+    .price-box{background:#1e1e2e;border:1.5px solid #2a2a3a;border-radius:12px;padding:16px 24px;text-align:center;flex:1;max-width:180px;cursor:pointer;transition:all .2s;}
+    .price-box:hover,.price-box.selected{border-color:#f4c430;background:#1a1a10;box-shadow:0 0 0 3px rgba(244,196,48,.15);}
+    .price-box .days{font-size:12px;color:#6b7280;margin-bottom:6px;}
+    .price-box .amount{font-size:22px;font-weight:800;color:#f4c430;}
+    .price-box .unit{font-size:11px;color:#6b7280;margin-top:2px;}
+    .price-box .save{display:inline-block;background:#1a3300;border:1px solid #2a5000;color:#86efac;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:6px;}
+
+    /* Perks */
+    .perks{background:#1e1e2e;border:1px solid #2a2a3a;border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+    .perks-title{font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:.8px;text-transform:uppercase;margin-bottom:14px;}
+    .perk{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:13px;color:#d1d5db;line-height:1.5;}
+    .perk:last-child{margin-bottom:0;}
+    .perk-icon{font-size:16px;flex-shrink:0;margin-top:1px;}
+
+    /* Slots */
+    .slots-bar{background:#13131a;border:1px solid #2a2a3a;border-radius:10px;padding:12px 18px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;font-size:13px;}
+    .slots-label{color:#6b7280;}
+    .slots-num{color:#f4c430;font-weight:800;font-size:16px;}
+    .slots-urgency{font-size:11px;color:#ef4444;font-weight:700;}
+
+    /* Form */
+    .form-card{background:#13131a;border:1px solid #2a2a3a;border-radius:14px;padding:28px 28px;}
+    .field{margin-bottom:18px;}
+    label{display:block;font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:8px;letter-spacing:.8px;text-transform:uppercase;}
+    input,textarea,select{width:100%;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:8px;color:#e0e0e0;font-size:14px;padding:12px 14px;outline:none;font-family:inherit;transition:border-color .2s;}
+    input:focus,textarea:focus{border-color:#f4c430;}
+    textarea{height:80px;resize:none;}
+    input::placeholder,textarea::placeholder{color:#4b5563;}
+
+    .pay-section{margin-bottom:20px;}
+    .pay-title{font-size:12px;font-weight:700;color:#9ca3af;letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;}
+    .wallet-box{background:#1e1e2e;border:1px dashed #3a3000;border-radius:10px;padding:14px 16px;font-size:12px;color:#6b7280;line-height:1.8;}
+    .wallet-box strong{color:#e0e0e0;}
+    .wallet-addr{font-family:monospace;font-size:11px;color:#f4c430;word-break:break-all;background:#13131a;padding:8px;border-radius:6px;cursor:pointer;margin-top:6px;}
+    .copy-hint{font-size:11px;color:#4b5563;margin-top:4px;}
+
+    .amount-display{background:#1a1a10;border:1px solid #3a3000;border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+    .amount-display .label{font-size:12px;color:#6b7280;}
+    .amount-display .val{font-size:20px;font-weight:800;color:#f4c430;}
+
+    .btn{width:100%;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:16px;font-weight:800;padding:16px;border:none;border-radius:10px;cursor:pointer;transition:all .2s;letter-spacing:.5px;}
+    .btn:hover{opacity:.9;transform:translateY(-1px);}
+
+    .note{font-size:12px;color:#4b5563;text-align:center;margin-top:12px;line-height:1.6;}
+    .note a{color:#f4c430;}
+
+    /* Success */
+    .success-card{display:none;background:#13131a;border:1px solid #3a3000;border-radius:16px;padding:48px 32px;text-align:center;}
+    .success-icon{font-size:56px;margin-bottom:16px;}
+    .success-card h2{font-size:22px;font-weight:700;color:#fff;margin-bottom:10px;}
+    .success-card p{font-size:14px;color:#6b7280;line-height:1.7;}
+    .success-ticket{background:#1e1e2e;border:1px dashed #3a3000;border-radius:10px;padding:14px 18px;font-size:13px;color:#6b7280;text-align:left;margin-top:20px;}
+    .success-ticket strong{color:#e0e0e0;}
+
+    /* Live board */
+    .board{background:#13131a;border:1px solid #2a2a3a;border-radius:14px;padding:20px 24px;margin-top:24px;}
+    .board-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+    .live-dot{width:8px;height:8px;border-radius:50%;background:#10b981;animation:pulse 2s infinite;}
+    @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
+    .board-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #1e1e2e;}
+    .board-item:last-child{border-bottom:none;}
+    .board-icon{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,#f4c430,#f59e0b);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+    .board-name{font-size:13px;font-weight:700;color:#fff;}
+    .board-meta{font-size:11px;color:#6b7280;}
+    .board-days{margin-left:auto;background:#1a1a10;border:1px solid #3a3000;border-radius:6px;padding:2px 8px;font-size:11px;color:#f4c430;font-weight:700;white-space:nowrap;}
+
+    footer{text-align:center;padding:28px;font-size:12px;color:#374151;margin-top:8px;}
+    footer a{color:#6366f1;text-decoration:none;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-bar">
+    <a class="back-link" href="/">← <span data-i="back">Back to Community</span></a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero-card" id="heroCard">
+    <div class="crown">👑</div>
+    <div class="hero-badge" data-i="heroBadge">FEATURED SPOT · $WHC ONLY</div>
+    <h1 data-i="heroH1">Get Your Product<br/>in Front of Everyone</h1>
+    <p data-i="heroP">The Featured section sits at the top of the community homepage — the first thing every visitor sees. Pay with $WHC and your product gets pinned there for 7 or 30 days.</p>
+
+    <div class="price-row">
+      <div class="price-box selected" id="pkg-7" onclick="selectPkg(7)">
+        <div class="days" data-i="days7">7 Days</div>
+        <div class="amount">500</div>
+        <div class="unit">WHC</div>
+      </div>
+      <div class="price-box" id="pkg-30" onclick="selectPkg(30)">
+        <div class="days" data-i="days30">30 Days</div>
+        <div class="amount">1,500</div>
+        <div class="unit">WHC</div>
+        <div class="save" data-i="save30">Save 33%</div>
+      </div>
+    </div>
+
+    <div class="slots-bar">
+      <span class="slots-label" data-i="slotsLabel">Featured slots available this week:</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="slots-num">3</span>
+        <span class="slots-urgency" data-i="slotsUrgency">⚡ Almost full</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Perks -->
+  <div class="perks">
+    <div class="perks-title" data-i="perksTitle">What you get</div>
+    <div class="perk"><div class="perk-icon">👑</div><div data-i="perk1">Your product pinned at the very top of the homepage — above all other listings</div></div>
+    <div class="perk"><div class="perk-icon">🔥</div><div data-i="perk2">Golden "Featured" badge that signals quality and credibility to visitors</div></div>
+    <div class="perk"><div class="perk-icon">📣</div><div data-i="perk3">Announced in our Twitter/X community post when your spot goes live</div></div>
+    <div class="perk"><div class="perk-icon">🌾</div><div data-i="perk4">100% paid in $WHC — supports the community token economy</div></div>
+    <div class="perk"><div class="perk-icon">⚡</div><div data-i="perk5">Activated within 2 hours of confirmed payment</div></div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card" id="formCard">
+    <div class="field">
+      <label data-i="lProduct">Your Product Name *</label>
+      <input id="f-product" type="text" data-i-placeholder="productPH"/>
+    </div>
+    <div class="field">
+      <label data-i="lUrl">Product URL *</label>
+      <input id="f-url" type="url" placeholder="https://"/>
+    </div>
+    <div class="field">
+      <label data-i="lTagline">One-line Description *</label>
+      <input id="f-tagline" type="text" data-i-placeholder="taglinePH"/>
+    </div>
+    <div class="field">
+      <label data-i="lContact">Contact (to confirm activation) *</label>
+      <input id="f-contact" type="text" data-i-placeholder="contactPH"/>
+    </div>
+
+    <div class="pay-section">
+      <div class="pay-title" data-i="payTitle">Payment · $WHC on Solana</div>
+      <div class="amount-display">
+        <span class="label" data-i="sendLabel">Send exactly:</span>
+        <span class="val" id="amountDisplay">500 WHC</span>
+      </div>
+      <div class="wallet-box">
+        <strong data-i="network">Network:</strong> Solana (SOL)<br/>
+        <strong data-i="tokenLabel">Token:</strong> $WHC &nbsp;
+        <span style="font-size:10px;color:#6b7280;">CA: <span style="color:#f4c430;font-family:monospace;word-break:break-all;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</span></span><br/>
+        <strong data-i="addrLabel">Receiving Address:</strong>
+        <div class="wallet-addr" onclick="copyAddr()">6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK</div>
+        <div class="copy-hint" id="copyHint" data-i="copyHint">👆 Click to copy</div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="submitSpot()" data-i="btnSubmit">🌾 I've Paid — Activate My Featured Spot</button>
+    <div class="note" data-i="note">
+      Don't have $WHC? <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">Buy on pump.fun →</a><br/>
+      Questions? Contact us via the link in your submission.
+    </div>
+  </div>
+
+  <!-- Live Board -->
+  <div class="board">
+    <div class="board-title">
+      <div class="live-dot"></div>
+      <span data-i="boardTitle">Currently Featured</span>
+    </div>
+    <div class="board-item">
+      <div class="board-icon">⚡</div>
+      <div>
+        <div class="board-name">Genius Plan Marketing AI</div>
+        <div class="board-meta">by @geniusplan</div>
+      </div>
+      <div class="board-days" data-i="daysLeft">6 days left</div>
+    </div>
+    <div class="board-item" style="opacity:.5;">
+      <div class="board-icon" style="background:#1e1e2e;border:2px dashed #2a2a3a;color:#4b5563;">+</div>
+      <div>
+        <div class="board-name" style="color:#4b5563;" data-i="slotOpen">Open slot — yours?</div>
+        <div class="board-meta" data-i="slotMeta">500 WHC · 7 days</div>
+      </div>
+      <div class="board-days" style="border-color:#2a2a3a;color:#4b5563;" data-i="claimIt">Claim it →</div>
+    </div>
+    <div class="board-item" style="opacity:.5;">
+      <div class="board-icon" style="background:#1e1e2e;border:2px dashed #2a2a3a;color:#4b5563;">+</div>
+      <div>
+        <div class="board-name" style="color:#4b5563;" data-i="slotOpen2">Open slot — yours?</div>
+        <div class="board-meta" data-i="slotMeta2">500 WHC · 7 days</div>
+      </div>
+      <div class="board-days" style="border-color:#2a2a3a;color:#4b5563;" data-i="claimIt2">Claim it →</div>
+    </div>
+  </div>
+
+  <!-- Success -->
+  <div class="success-card" id="successCard">
+    <div class="success-icon">🌾</div>
+    <h2 data-i="successTitle">Featured Spot Submitted!</h2>
+    <p data-i="successDesc">We'll verify your payment and activate your featured spot within <strong style="color:#f4c430">2 hours</strong>. You'll be notified at your contact.</p>
+    <div class="success-ticket" id="successTicket"></div>
+  </div>
+
+  <footer>🌾 <a href="/">WheatCoin Community</a> · <a href="/launch">Genius Launch Pad</a> · <span data-i="footerDesc">Community-powered AI product discovery</span></footer>
+</div>
+
+<script>
+const I18N = {
+  en: {
+    back:'Back to Community', heroBadge:'FEATURED SPOT · $WHC ONLY',
+    heroH1:'Get Your Product<br/>in Front of Everyone',
+    heroP:"The Featured section sits at the top of the community homepage — the first thing every visitor sees. Pay with $WHC and your product gets pinned there for 7 or 30 days.",
+    days7:'7 Days', days30:'30 Days', save30:'Save 33%',
+    slotsLabel:'Featured slots available this week:', slotsUrgency:'⚡ Almost full',
+    perksTitle:'What you get',
+    perk1:'Your product pinned at the very top of the homepage — above all other listings',
+    perk2:'Golden "Featured" badge that signals quality and credibility to visitors',
+    perk3:'Announced in our Twitter/X community post when your spot goes live',
+    perk4:'100% paid in $WHC — supports the community token economy',
+    perk5:'Activated within 2 hours of confirmed payment',
+    lProduct:'Your Product Name *', productPH:'e.g. AutoReply Agent',
+    lUrl:'Product URL *', lTagline:'One-line Description *', taglinePH:'e.g. AI customer support that never sleeps',
+    lContact:'Contact (to confirm activation) *', contactPH:'Email / Telegram / Twitter',
+    payTitle:'Payment · $WHC on Solana', sendLabel:'Send exactly:',
+    network:'Network:', tokenLabel:'Token:', addrLabel:'Receiving Address:',
+    copyHint:'👆 Click to copy',
+    btnSubmit:"🌾 I've Paid — Activate My Featured Spot",
+    note:'Don\'t have $WHC? <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">Buy on pump.fun →</a><br/>Questions? Contact us via the link in your submission.',
+    boardTitle:'Currently Featured', daysLeft:'6 days left',
+    slotOpen:'Open slot — yours?', slotMeta:'500 WHC · 7 days', claimIt:'Claim it →',
+    slotOpen2:'Open slot — yours?', slotMeta2:'500 WHC · 7 days', claimIt2:'Claim it →',
+    successTitle:'Featured Spot Submitted!',
+    successDesc:'We\'ll verify your payment and activate your featured spot within <strong style="color:#f4c430">2 hours</strong>. You\'ll be notified at your contact.',
+    footerDesc:'Community-powered AI product discovery',
+    orderId:'Order ID:', product:'Product:', pkg:'Package:', contact:'Contact:',
+    alertFields:'Please fill in all required fields 😊',
+  },
+  zh: {
+    back:'← 返回社区', heroBadge:'精选位 · 仅限 $WHC 支付',
+    heroH1:'让你的产品<br/>占据首页 C 位',
+    heroP:"精选区固定在社区首页最顶部——每位访客进来第一眼就能看到。用 $WHC 支付，产品上榜 7 天或 30 天。",
+    days7:'7 天', days30:'30 天', save30:'节省 33%',
+    slotsLabel:'本周剩余精选位：', slotsUrgency:'⚡ 即将售罄',
+    perksTitle:'你将获得',
+    perk1:'产品固定在首页最顶部，排在所有其他产品之上',
+    perk2:'金色「精选」徽章，向访客传递品质与可信度',
+    perk3:'精选位上线时，我们会在 Twitter/X 社区帖子中公告',
+    perk4:'全额用 $WHC 支付，直接为社区代币经济赋能',
+    perk5:'确认收款后 2 小时内激活',
+    lProduct:'产品名称 *', productPH:'例：AutoReply Agent',
+    lUrl:'产品链接 *', lTagline:'一句话介绍 *', taglinePH:'例：永不下线的 AI 客服助手',
+    lContact:'联系方式（用于确认激活）*', contactPH:'Email / Telegram / 微信',
+    payTitle:'支付方式 · Solana 网络 $WHC', sendLabel:'精确转账金额：',
+    network:'收款网络：', tokenLabel:'代币：', addrLabel:'收款地址：',
+    copyHint:'👆 点击复制地址',
+    btnSubmit:'🌾 我已付款，立即激活精选位',
+    note:'没有 $WHC？<a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">在 pump.fun 购买 →</a><br/>有问题？通过提交表单里的联系方式联系我们。',
+    boardTitle:'当前精选产品', daysLeft:'剩余 6 天',
+    slotOpen:'空位 — 等你来占', slotMeta:'500 WHC · 7 天', claimIt:'立即占位 →',
+    slotOpen2:'空位 — 等你来占', slotMeta2:'500 WHC · 7 天', claimIt2:'立即占位 →',
+    successTitle:'精选位申请已提交！',
+    successDesc:'我们将核实付款，并在 <strong style="color:#f4c430">2 小时内</strong> 激活你的精选位，结果将发送到你的联系方式。',
+    footerDesc:'社区驱动的 AI 产品发现平台',
+    orderId:'订单号：', product:'产品：', pkg:'套餐：', contact:'联系方式：',
+    alertFields:'请填写所有必填项 😊',
+  }
+};
+
+let lang = localStorage.getItem('featured_lang') || 'en';
+let selectedDays = 7;
+
+function setLang(l) {
+  lang = l; localStorage.setItem('featured_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const key = el.getAttribute('data-i');
+    if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
+  });
+  document.querySelectorAll('[data-i-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i-placeholder');
+    if (I18N[l][key]) el.placeholder = I18N[l][key];
+  });
+}
+
+function selectPkg(days) {
+  selectedDays = days;
+  document.querySelectorAll('.price-box').forEach(b => b.classList.remove('selected'));
+  document.getElementById('pkg-'+days).classList.add('selected');
+  const amounts = {7:'500 WHC', 30:'1,500 WHC'};
+  document.getElementById('amountDisplay').textContent = amounts[days];
+}
+
+function copyAddr() {
+  navigator.clipboard.writeText('6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK').then(() => {
+    const el = document.getElementById('copyHint');
+    el.textContent = lang==='zh' ? '✅ 已复制！' : '✅ Copied!';
+    setTimeout(() => el.innerHTML = I18N[lang].copyHint, 2000);
+  });
+}
+
+function submitSpot() {
+  const product = document.getElementById('f-product').value.trim();
+  const url = document.getElementById('f-url').value.trim();
+  const tagline = document.getElementById('f-tagline').value.trim();
+  const contact = document.getElementById('f-contact').value.trim();
+  if (!product || !url || !tagline || !contact) { alert(I18N[lang].alertFields); return; }
+  const amounts = {7:'500 WHC', 30:'1,500 WHC'};
+  const id = 'FS-' + Date.now().toString(36).toUpperCase();
+  fetch('/api/featured/submit', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({id, product, url, tagline, contact, days: selectedDays, amount: amounts[selectedDays], ts: new Date().toISOString(), status:'pending'})
+  }).catch(()=>{});
+  document.getElementById('heroCard').style.display='none';
+  document.getElementById('formCard').style.display='none';
+  document.querySelector('.perks').style.display='none';
+  document.querySelector('.board').style.display='none';
+  document.querySelector('.slots-bar') && (document.querySelector('.slots-bar').style.display='none');
+  const t = I18N[lang];
+  document.getElementById('successTicket').innerHTML =
+    `<strong>${t.orderId}</strong> ${id}<br/><strong>${t.product}</strong> ${product}<br/><strong>${t.pkg}</strong> ${amounts[selectedDays]} · ${selectedDays} ${lang==='zh'?'天':'days'}<br/><strong>${t.contact}</strong> ${contact}`;
+  document.getElementById('successCard').style.display='block';
+}
+
+setLang(lang);
+</script>
+</body>
+</html>

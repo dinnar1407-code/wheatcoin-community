@@ -139,6 +139,18 @@
 </div>
 
 <main class="main">
+  <!-- Featured Spot Banner -->
+  <div id="featuredBanner" style="background:linear-gradient(135deg,#1a1a10,#0d0d00);border:1px solid #3a3000;border-radius:14px;padding:18px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;" onclick="location.href='/featured'">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <div style="font-size:28px;">👑</div>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#f4c430;margin-bottom:3px;" data-i="featBannerTitle">Get Featured — Be First</div>
+        <div style="font-size:12px;color:#6b7280;line-height:1.5;" data-i="featBannerDesc">Pin your product at the top of this page · 500 WHC / 7 days · $WHC only</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:12px;font-weight:800;padding:8px 18px;border-radius:8px;white-space:nowrap;" data-i="featBannerBtn">Claim Spot →</div>
+  </div>
+
   <div class="modules">
     <div class="module-card" onclick="location.href='/launch'">
       <div class="module-icon">⚡</div>
@@ -148,11 +160,11 @@
       </div>
       <div class="module-arrow">→</div>
     </div>
-    <div class="module-card gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">
-      <div class="module-icon">🌾</div>
+    <div class="module-card gold" onclick="location.href='/featured'">
+      <div class="module-icon">👑</div>
       <div>
-        <div class="module-title" data-i="modWhcTitle">WheatCoin $WHC</div>
-        <div class="module-desc" data-i="modWhcDesc">Community governance token. Hold $WHC to get<br/>40% off on Genius Launch Pad.</div>
+        <div class="module-title" data-i="modFeatTitle">Featured Spot</div>
+        <div class="module-desc" data-i="modFeatDesc">Pin your product at the top. 500 WHC / 7 days.<br/>$WHC payments only — limited slots.</div>
       </div>
       <div class="module-arrow">→</div>
     </div>
@@ -241,7 +253,8 @@ const I18N = {
     heroBtn1:'🚀 Submit My Product — Free', heroBtn2:'🌾 Buy $WHC', heroBtn3:'Get Marketing Plan →',
     statProducts:'Products Listed', statVisitors:'Weekly Visitors', statVotes:'Total Upvotes', statToken:'Community Token',
     modLaunchTitle:'Genius Launch Pad', modLaunchDesc:"AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.",
-    modWhcTitle:'WheatCoin $WHC', modWhcDesc:"Community governance token. Hold $WHC to get<br/>40% off on Genius Launch Pad.",
+    modFeatTitle:'Featured Spot', modFeatDesc:"Pin your product at the top. 500 WHC / 7 days.<br/>$WHC payments only — limited slots.",
+    featBannerTitle:'Get Featured — Be First', featBannerDesc:'Pin your product at the top of this page · 500 WHC / 7 days · $WHC only', featBannerBtn:'Claim Spot →',
     searchPH:'Search products…', sortVotes:'Most Voted', sortNew:'Newest', sortFeatured:'Featured',
     filterAll:'All', filterProd:'Productivity', filterWrite:'Writing', filterCode:'Coding',
     filterMkt:'Marketing', filterAna:'Analytics', filterCS:'Customer Service',
@@ -269,7 +282,8 @@ const I18N = {
     heroBtn1:'🚀 免费提交我的产品', heroBtn2:'🌾 购买 $WHC', heroBtn3:'获取营销方案 →',
     statProducts:'已上架产品', statVisitors:'每周访客', statVotes:'总投票数', statToken:'社区代币',
     modLaunchTitle:'天才发射台', modLaunchDesc:"AI 定制营销策略，60 分钟交付。<br/>下单后自动发布到社区广场。",
-    modWhcTitle:'麦穗币 $WHC', modWhcDesc:"社区治理代币。持有 $WHC 购买<br/>天才发射台享受 6 折优惠。",
+    modFeatTitle:'精选位竞价', modFeatDesc:"固定在首页最顶部。500 WHC / 7天。<br/>仅限 $WHC 支付，名额有限。",
+    featBannerTitle:'占据首页 C 位 — 限时抢占', featBannerDesc:'精选区固定在首页顶部 · 500 WHC / 7天 · 仅限 $WHC 支付', featBannerBtn:'立即占位 →',
     searchPH:'搜索产品…', sortVotes:'最多投票', sortNew:'最新上架', sortFeatured:'精选推荐',
     filterAll:'全部', filterProd:'效率工具', filterWrite:'写作', filterCode:'编程',
     filterMkt:'营销', filterAna:'数据分析', filterCS:'客户服务',
