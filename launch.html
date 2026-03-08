@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>天才计划 · 营销策略定制</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: #13131a;
+      border: 1px solid #2a2a3a;
+      border-radius: 16px;
+      padding: 48px 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 0 60px rgba(99, 102, 241, 0.12);
+    }
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+    h1 { font-size: 26px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 10px; }
+    .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 12px; line-height: 1.7; }
+    .promise-bar {
+      background: #1a1a2e;
+      border: 1px solid #2a2a3a;
+      border-left: 3px solid #6366f1;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #a5b4fc;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .promise-bar strong { color: #fff; }
+    .field { margin-bottom: 22px; }
+    label {
+      display: block; font-size: 12px; font-weight: 700;
+      color: #9ca3af; margin-bottom: 8px;
+      letter-spacing: 0.8px; text-transform: uppercase;
+    }
+    textarea, input, select {
+      width: 100%; background: #1e1e2e; border: 1px solid #2a2a3a;
+      border-radius: 10px; color: #e0e0e0; font-size: 15px;
+      padding: 14px 16px; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      font-family: inherit; resize: none;
+    }
+    textarea:focus, input:focus, select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+    }
+    textarea { height: 110px; }
+    textarea::placeholder, input::placeholder { color: #4b5563; }
+
+    /* Plans */
+    .plans { display: flex; gap: 10px; margin-top: 4px; }
+    .plan {
+      flex: 1; background: #1e1e2e; border: 1.5px solid #2a2a3a;
+      border-radius: 12px; padding: 16px 10px; cursor: pointer;
+      transition: all 0.2s; position: relative; text-align: center;
+    }
+    .plan:hover { border-color: #6366f1; }
+    .plan.selected { border-color: #6366f1; background: #1a1a35; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .plan-badge {
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: #fff; font-size: 10px; font-weight: 700;
+      padding: 2px 10px; border-radius: 20px; letter-spacing: 0.5px;
+    }
+    .plan-name { font-size: 13px; font-weight: 700; color: #e0e0e0; margin-bottom: 6px; }
+    .plan-price { font-size: 20px; font-weight: 800; color: #a5b4fc; margin-bottom: 2px; }
+    .plan-price span { font-size: 11px; color: #6b7280; font-weight: 400; }
+    .plan-whc { font-size: 11px; color: #f4c430; margin-bottom: 6px; }
+    .plan-desc { font-size: 11px; color: #6b7280; line-height: 1.5; }
+
+    /* Payment Method Toggle */
+    .pay-toggle {
+      display: flex; gap: 10px; margin-top: 4px;
+    }
+    .pay-option {
+      flex: 1; padding: 14px 12px; border-radius: 12px;
+      border: 1.5px solid #2a2a3a; background: #1e1e2e;
+      cursor: pointer; text-align: center; transition: all 0.2s;
+      position: relative;
+    }
+    .pay-option:hover { border-color: #6366f1; }
+    .pay-option.selected { border-color: #f4c430; background: #1a1a10; box-shadow: 0 0 0 3px rgba(244,196,48,0.15); }
+    .pay-option.selected.usdt { border-color: #6366f1; background: #1a1a35; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .pay-option .pay-icon { font-size: 22px; margin-bottom: 6px; }
+    .pay-option .pay-name { font-size: 13px; font-weight: 700; color: #e0e0e0; }
+    .pay-option .pay-note { font-size: 11px; color: #6b7280; margin-top: 3px; }
+    .discount-badge {
+      position: absolute; top: -10px; right: -6px;
+      background: linear-gradient(135deg, #f4c430, #f59e0b);
+      color: #000; font-size: 10px; font-weight: 800;
+      padding: 2px 8px; border-radius: 20px;
+    }
+
+    /* Price summary */
+    .price-summary {
+      background: #1a1a2e; border: 1px solid #2a2a3a;
+      border-radius: 10px; padding: 14px 18px;
+      margin-bottom: 20px; font-size: 14px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .price-summary .label { color: #6b7280; }
+    .price-summary .amount { font-size: 22px; font-weight: 800; color: #a5b4fc; }
+    .price-summary .amount.whc-price { color: #f4c430; }
+    .price-summary .original { font-size: 12px; color: #4b5563; text-decoration: line-through; margin-left: 8px; }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white; font-size: 16px; font-weight: 700;
+      padding: 16px; border: none; border-radius: 10px;
+      cursor: pointer; margin-top: 8px;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
+    }
+    .btn.whc-btn {
+      background: linear-gradient(135deg, #f4c430, #f59e0b);
+      color: #000;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0px); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .steps {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 32px;
+      gap: 8px;
+    }
+    .step {
+      flex: 1; text-align: center; padding: 12px 8px;
+      background: #1e1e2e; border-radius: 10px;
+      border: 1px solid #2a2a3a;
+    }
+    .step .num { font-size: 18px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
+    .step .desc { font-size: 11px; color: #6b7280; line-height: 1.4; }
+    .footer { text-align: center; margin-top: 28px; font-size: 12px; color: #374151; }
+    .footer span { color: #6366f1; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.75); z-index: 100;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #13131a; border: 1px solid #2a2a3a;
+      border-radius: 16px; padding: 36px 32px;
+      max-width: 440px; width: 90%; text-align: center;
+    }
+    .modal h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+    .modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
+    .modal-amount { font-size: 42px; font-weight: 800; margin-bottom: 4px; }
+    .modal-amount.usdt { color: #a5b4fc; }
+    .modal-amount.whc { color: #f4c430; }
+    .modal-unit { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
+    .wallet-box {
+      background: #1e1e2e; border: 1px dashed #2a2a3a;
+      border-radius: 10px; padding: 14px 16px;
+      font-size: 12px; color: #6b7280; margin-bottom: 20px;
+      text-align: left; line-height: 1.8;
+    }
+    .wallet-box strong { color: #e0e0e0; }
+    .wallet-addr {
+      font-family: monospace; font-size: 11px; color: #a5b4fc;
+      word-break: break-all; margin-top: 6px;
+      background: #13131a; padding: 8px; border-radius: 6px;
+      cursor: pointer;
+    }
+    .wallet-addr.whc-addr { color: #f4c430; }
+    .copy-hint { font-size: 11px; color: #4b5563; margin-top: 4px; }
+    .savings-tag {
+      display: inline-block;
+      background: linear-gradient(135deg, #f4c430, #f59e0b);
+      color: #000; font-size: 12px; font-weight: 800;
+      padding: 4px 14px; border-radius: 20px; margin-bottom: 16px;
+    }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btn {
+      flex: 1; padding: 13px; border-radius: 10px;
+      font-size: 14px; font-weight: 700; cursor: pointer; border: none;
+      transition: opacity 0.2s;
+    }
+    .modal-btn.primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; }
+    .modal-btn.primary.whc { background: linear-gradient(135deg, #f4c430, #f59e0b); color: #000; }
+    .modal-btn.secondary { background: #1e1e2e; color: #9ca3af; border: 1px solid #2a2a3a; }
+    .modal-btn:hover { opacity: 0.85; }
+
+    /* Success */
+    .success { display: none; text-align: center; padding: 20px 0 10px; }
+    .success-icon { font-size: 52px; margin-bottom: 16px; }
+    .success h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 10px; }
+    .success p { font-size: 14px; color: #6b7280; line-height: 1.7; margin-bottom: 20px; }
+    .countdown-box { background: #1a1a2e; border: 1px solid #2a2a3a; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
+    .countdown-box .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
+    .countdown { font-size: 28px; font-weight: 700; color: #6366f1; letter-spacing: 2px; }
+    .ticket { background: #1e1e2e; border: 1px dashed #2a2a3a; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #6b7280; text-align: left; }
+    .ticket strong { color: #e0e0e0; }
+  </style>
+</head>
+<body>
+<div class="card" id="formCard">
+  <div class="badge">⚡ 天才计划 · 营销策略定制</div>
+  <h1>让 AI 为你的产品<br/>制定专属营销方案</h1>
+  <p class="subtitle">提交需求后，我们的团队将在 <strong style="color:#a5b4fc">1小时内</strong> 为你生成完整的营销策略、预期效果与交付数据。</p>
+
+  <div class="promise-bar">
+    ⏱️ <strong>承诺：</strong>提交后 <strong>60 分钟</strong>内，方案直接发到你的联系方式。
+    &nbsp;🌾 <strong>用麦穗币 $WHC 支付可享 <span style="color:#f4c430">6折优惠</span>！</strong>
+  </div>
+
+  <div class="steps">
+    <div class="step"><div class="num">01</div><div class="desc">选择套餐</div></div>
+    <div class="step"><div class="num">02</div><div class="desc">提交需求</div></div>
+    <div class="step"><div class="num">03</div><div class="desc">选择支付</div></div>
+    <div class="step"><div class="num">04</div><div class="desc">方案交付</div></div>
+  </div>
+
+  <!-- 套餐选择 -->
+  <div class="field">
+    <label>选择套餐</label>
+    <div class="plans">
+      <div class="plan" id="plan-basic" onclick="selectPlan('basic')">
+        <div class="plan-name">🌱 基础版</div>
+        <div class="plan-price">$9.9 <span>USDT</span></div>
+        <div class="plan-whc">或 594 WHC（6折）</div>
+        <div class="plan-desc">营销策略方案 + 推广渠道建议</div>
+      </div>
+      <div class="plan selected" id="plan-pro" onclick="selectPlan('pro')">
+        <div class="plan-badge">推荐</div>
+        <div class="plan-name">🚀 专业版</div>
+        <div class="plan-price">$29.9 <span>USDT</span></div>
+        <div class="plan-whc">或 1,794 WHC（6折）</div>
+        <div class="plan-desc">完整策略 + 内容计划 + 增长路径 + 7天跟进</div>
+      </div>
+      <div class="plan" id="plan-vip" onclick="selectPlan('vip')">
+        <div class="plan-name">💎 旗舰版</div>
+        <div class="plan-price">$99.9 <span>USDT</span></div>
+        <div class="plan-whc">或 5,994 WHC（6折）</div>
+        <div class="plan-desc">全套 + 专属顾问 + 30天执行陪跑</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 支付方式 -->
+  <div class="field">
+    <label>支付方式</label>
+    <div class="pay-toggle">
+      <div class="pay-option usdt selected" id="pay-usdt" onclick="selectPayment('usdt')">
+        <div class="pay-icon">💵</div>
+        <div class="pay-name">USDT</div>
+        <div class="pay-note">Polygon 网络</div>
+      </div>
+      <div class="pay-option" id="pay-whc" onclick="selectPayment('whc')">
+        <div class="discount-badge">6折</div>
+        <div class="pay-icon">🌾</div>
+        <div class="pay-name">麦穗币 $WHC</div>
+        <div class="pay-note">Solana 网络 · 省40%</div>
+        <div style="font-size:10px;color:#f4c430;margin-top:4px;">点此了解如何购买 →</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WHC 购买提示（选 WHC 时显示）-->
+  <div id="whcTip" style="display:none;background:#1a1a10;border:1px solid #3a3000;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#f4c430;line-height:1.7;">
+    💡 没有 $WHC？支付弹窗内有一键购买教程，30秒搞定。<br/>
+    <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" style="color:#f4c430;font-weight:700;">👉 立即在 pump.fun 购买 $WHC</a>
+  </div>
+
+  <!-- 价格汇总 -->
+  <div class="price-summary" id="priceSummary">
+    <div class="label">应付金额</div>
+    <div>
+      <span class="amount" id="summaryAmount">$29.9</span>
+      <span id="summaryUnit" style="font-size:13px;color:#6b7280;margin-left:4px;">USDT</span>
+      <span class="original" id="summaryOriginal" style="display:none;"></span>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>产品描述</label>
+    <textarea id="product" placeholder="例如：一款帮助独立开发者自动生成营销文案的 AI 工具，支持多平台一键发布…"></textarea>
+  </div>
+  <div class="field">
+    <label>目标客户群</label>
+    <textarea id="audience" placeholder="例如：独立开发者、SaaS 创始人、内容创作者、超级个体…" style="height:90px;"></textarea>
+  </div>
+  <div class="field">
+    <label>联系方式（接收方案）</label>
+    <input id="contact" type="text" placeholder="Email / Telegram / 微信" />
+  </div>
+
+  <button class="btn" id="submitBtn" onclick="submitForm()">💳 立即支付，启动立项</button>
+  <div class="footer">Powered by <span>天才计划</span> · 跨越时空，只为您赢 ⚡</div>
+</div>
+
+<!-- USDT 支付弹窗 -->
+<div class="modal-overlay" id="payModalUSDT">
+  <div class="modal">
+    <h2>💵 支付 USDT</h2>
+    <p>请在 <strong>Polygon 网络</strong>上将 USDT 转入以下地址，<br/>转账完成后点击「已完成支付」。</p>
+    <div class="modal-amount usdt" id="modalAmountUSDT">29.9</div>
+    <div class="modal-unit">USDT · Polygon 网络</div>
+    <div class="wallet-box">
+      <strong>收款网络：</strong>Polygon (MATIC) · 支持 USDT/USDC<br/>
+      <strong>收款地址：</strong>
+      <div class="wallet-addr" onclick="copyAddr('usdt')" id="walletAddrUSDT">
+        0x479F19330F1a343B9d987216ccA80C627BA788e6
+      </div>
+      <div class="copy-hint" id="copyHintUSDT">👆 点击复制地址</div>
+      <div style="margin-top:10px;font-size:11px;color:#4b5563;">
+        ⚠️ 请确保在 <strong style="color:#a5b4fc">Polygon 网络</strong>上转账，其他网络无法到账
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeModal('usdt')">取消</button>
+      <button class="modal-btn primary" onclick="confirmPayment('usdt')">✅ 已完成支付</button>
+    </div>
+  </div>
+</div>
+
+<!-- WHC 支付弹窗 -->
+<div class="modal-overlay" id="payModalWHC">
+  <div class="modal">
+    <h2>🌾 支付麦穗币 $WHC</h2>
+    <div class="savings-tag">🎉 恭喜！享受 6折优惠</div>
+    <p>请在 <strong>Solana 网络</strong>上将 WHC 转入以下地址，<br/>转账完成后点击「已完成支付」。</p>
+    <div class="modal-amount whc" id="modalAmountWHC">1,794</div>
+    <div class="modal-unit" id="modalWHCUnit">WHC · Solana 网络 <span style="color:#4b5563;font-size:11px;text-decoration:line-through;" id="modalOriginalPrice"></span></div>
+    <!-- 如何购买 WHC 步骤 -->
+    <div style="background:#1a1a10;border:1px solid #3a3000;border-radius:10px;padding:14px 16px;margin-bottom:16px;text-align:left;">
+      <div style="font-size:12px;font-weight:700;color:#f4c430;margin-bottom:10px;letter-spacing:0.5px;">📖 没有 $WHC？3步搞定：</div>
+      <div style="font-size:12px;color:#9ca3af;line-height:2;">
+        <div>① 安装 <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom 钱包</a>（Chrome 插件 / 手机 App）</div>
+        <div>② 充值 SOL（Coinbase / Binance → 提到 Phantom）</div>
+        <div>③ 点击下方链接，在 pump.fun 用 SOL 换 $WHC 👇</div>
+      </div>
+      <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank"
+         style="display:block;margin-top:10px;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:13px;font-weight:800;padding:10px;border-radius:8px;text-align:center;text-decoration:none;">
+        🌾 立即购买 $WHC on pump.fun →
+      </a>
+    </div>
+
+    <div class="wallet-box">
+      <strong>买好 WHC 后，转账到这里：</strong><br/>
+      <strong style="margin-top:8px;display:block;">收款网络：</strong>Solana (SOL)<br/>
+      <strong>收款地址：</strong>
+      <div class="wallet-addr whc-addr" onclick="copyAddr('whc')" id="walletAddrWHC">
+        6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK
+      </div>
+      <div class="copy-hint" id="copyHintWHC">👆 点击复制收款地址</div>
+      <div style="margin-top:8px;font-size:11px;color:#6b7280;">
+        代币合约(CA)：<span style="color:#f4c430;font-family:monospace;font-size:10px;word-break:break-all;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</span>
+      </div>
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeModal('whc')">取消</button>
+      <button class="modal-btn primary whc" onclick="confirmPayment('whc')">✅ 已完成支付</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success -->
+<div class="card" id="successCard" style="display:none;">
+  <div class="success" style="display:block;">
+    <div class="success-icon">✅</div>
+    <h2>需求已收到，立项启动！</h2>
+    <p>我们的团队正在为你分析产品，制定专属营销策略。<br/>方案将在 <strong style="color:#a5b4fc">60 分钟内</strong> 发送到你的联系方式。</p>
+    <div class="countdown-box">
+      <div class="label">预计交付倒计时</div>
+      <div class="countdown" id="countdown">60:00</div>
+    </div>
+    <div class="ticket" id="ticket"></div>
+  </div>
+  <div class="footer" style="margin-top:24px;">Powered by <span>天才计划</span> · 跨越时空，只为您赢 ⚡</div>
+</div>
+
+<script>
+  // 套餐数据：price=原价USDT, whcRate=1 USDT=100 WHC, discount=0.6
+  const PLANS = {
+    basic: { name: '🌱 基础版', price: 9.9,  whcFull: 990,  whcDiscount: 594  },
+    pro:   { name: '🚀 专业版', price: 29.9, whcFull: 2990, whcDiscount: 1794 },
+    vip:   { name: '💎 旗舰版', price: 99.9, whcFull: 9990, whcDiscount: 5994 },
+  };
+  let selectedPlan = 'pro';
+  let selectedPayment = 'usdt';
+
+  function selectPlan(p) {
+    selectedPlan = p;
+    document.querySelectorAll('.plan').forEach(el => el.classList.remove('selected'));
+    document.getElementById('plan-' + p).classList.add('selected');
+    updateSummary();
+  }
+
+  function selectPayment(type) {
+    selectedPayment = type;
+    document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected'));
+    document.getElementById('pay-' + type).classList.add('selected');
+    const btn = document.getElementById('submitBtn');
+    const whcTip = document.getElementById('whcTip');
+    if (type === 'whc') {
+      btn.className = 'btn whc-btn';
+      btn.textContent = '🌾 用麦穗币支付（6折优惠）';
+      whcTip.style.display = 'block';
+    } else {
+      btn.className = 'btn';
+      btn.textContent = '💳 立即支付 USDT，启动立项';
+      whcTip.style.display = 'none';
+    }
+    updateSummary();
+  }
+
+  function updateSummary() {
+    const plan = PLANS[selectedPlan];
+    const amountEl = document.getElementById('summaryAmount');
+    const unitEl = document.getElementById('summaryUnit');
+    const origEl = document.getElementById('summaryOriginal');
+    if (selectedPayment === 'whc') {
+      amountEl.textContent = plan.whcDiscount.toLocaleString() + ' WHC';
+      amountEl.className = 'amount whc-price';
+      unitEl.textContent = '≈ $' + (plan.price * 0.6).toFixed(1);
+      origEl.style.display = 'inline';
+      origEl.textContent = '原价 ' + plan.whcFull + ' WHC';
+    } else {
+      amountEl.textContent = '$' + plan.price;
+      amountEl.className = 'amount';
+      unitEl.textContent = 'USDT';
+      origEl.style.display = 'none';
+    }
+  }
+
+  function submitForm() {
+    const product = document.getElementById('product').value.trim();
+    const audience = document.getElementById('audience').value.trim();
+    const contact = document.getElementById('contact').value.trim();
+    if (!product || !audience || !contact) { alert('请填写完整信息 😊'); return; }
+
+    const plan = PLANS[selectedPlan];
+    if (selectedPayment === 'whc') {
+      document.getElementById('modalAmountWHC').textContent = plan.whcDiscount.toLocaleString();
+      document.getElementById('modalOriginalPrice').textContent = '原价 ' + plan.whcFull + ' WHC';
+      document.getElementById('payModalWHC').classList.add('show');
+    } else {
+      document.getElementById('modalAmountUSDT').textContent = plan.price;
+      document.getElementById('payModalUSDT').classList.add('show');
+    }
+  }
+
+  function copyAddr(type) {
+    const addrs = {
+      usdt: '0x479F19330F1a343B9d987216ccA80C627BA788e6',
+      whc: '6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK',
+      ca: '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump'
+    };
+    navigator.clipboard.writeText(addrs[type]).then(() => {
+      const hints = { usdt: 'copyHintUSDT', whc: 'copyHintWHC', ca: 'copyHintWHC' };
+      const el = document.getElementById(hints[type]);
+      if (el) { el.textContent = '✅ 已复制！'; setTimeout(() => el.textContent = '👆 点击复制收款地址', 2000); }
+    });
+  }
+
+  function closeModal(type) {
+    document.getElementById(type === 'whc' ? 'payModalWHC' : 'payModalUSDT').classList.remove('show');
+  }
+
+  function confirmPayment(type) {
+    const product = document.getElementById('product').value.trim();
+    const audience = document.getElementById('audience').value.trim();
+    const contact = document.getElementById('contact').value.trim();
+    const plan = PLANS[selectedPlan];
+    closeModal(type);
+
+    fetch('/api/launch/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        product, audience, contact,
+        plan: plan.name,
+        price: type === 'whc' ? plan.whcDiscount + ' WHC (6折)' : plan.price + ' USDT',
+        paymentMethod: type === 'whc' ? '麦穗币 WHC' : 'USDT',
+        ts: new Date().toISOString()
+      })
+    }).catch(() => {});
+
+    showSuccess(product, audience, contact, plan, type);
+  }
+
+  function showSuccess(product, audience, contact, plan, payType) {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+    const id = 'GZ-' + Date.now().toString(36).toUpperCase();
+    const payInfo = payType === 'whc'
+      ? `<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC（6折）</strong>`
+      : `<strong>$${plan.price} USDT</strong>`;
+    document.getElementById('ticket').innerHTML =
+      `<strong>📋 立项编号：</strong>${id}<br/>
+       <strong>📦 产品：</strong>${product.substring(0, 50)}…<br/>
+       <strong>👥 目标用户：</strong>${audience.substring(0, 40)}…<br/>
+       <strong>💳 支付方式：</strong>${payInfo}<br/>
+       <strong>📬 交付至：</strong>${contact}`;
+
+    let total = 60 * 60;
+    const el = document.getElementById('countdown');
+    const timer = setInterval(() => {
+      total--;
+      if (total <= 0) { clearInterval(timer); el.textContent = '方案已发出 🎉'; return; }
+      const m = String(Math.floor(total / 60)).padStart(2, '0');
+      const s = String(total % 60).padStart(2, '0');
+      el.textContent = `${m}:${s}`;
+    }, 1000);
+  }
+
+  // 初始化
+  updateSummary();
+</script>
+</body>
+</html>

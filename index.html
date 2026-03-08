@@ -138,7 +138,7 @@
   <div class="nav-links">
     <button class="nav-link active" onclick="showSection('discover')">发现</button>
     <button class="nav-link" onclick="showSection('launch')">天才发射台</button>
-    <button class="nav-link" onclick="location.href='../mvp_intake.html'">营销方案</button>
+    <button class="nav-link" onclick="location.href='/launch'">营销方案</button>
     <button class="nav-link" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">$WHC</button>
   </div>
   <div class="nav-cta">
@@ -155,7 +155,7 @@
   <div class="hero-actions">
     <button class="btn-primary" onclick="openSubmit()">🚀 免费发布我的产品</button>
     <button class="btn-gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">🌾 购买 $WHC</button>
-    <button class="btn-outline" onclick="location.href='../mvp_intake.html'">获取营销方案 →</button>
+    <button class="btn-outline" onclick="location.href='/launch'">获取营销方案 →</button>
   </div>
 </section>
 
@@ -172,7 +172,7 @@
 
   <!-- 模块入口 -->
   <div class="modules">
-    <div class="module-card" onclick="location.href='../mvp_intake.html'">
+    <div class="module-card" onclick="location.href='/launch'">
       <div class="module-icon">⚡</div>
       <div>
         <div class="module-title">天才发射台</div>
@@ -270,14 +270,14 @@
     <div class="submit-success" id="submitSuccess">
       <div class="icon">🌾</div>
       <h3>提交成功！</h3>
-      <p>我们将在 <strong>24 小时内</strong> 完成审核。<br/>审核通过后将通知你，并自动发布到麦穗社区。<br/><br/>想让更多人看到你的产品？<br/><a href="../mvp_intake.html" style="color:#a5b4fc;font-weight:700;">👉 获取天才发射台营销方案（下单自动发布）</a></p>
+      <p>我们将在 <strong>24 小时内</strong> 完成审核。<br/>审核通过后将通知你，并自动发布到麦穗社区。<br/><br/>想让更多人看到你的产品？<br/><a href="/launch" style="color:#a5b4fc;font-weight:700;">👉 获取天才发射台营销方案（下单自动发布）</a></p>
     </div>
   </div>
 </div>
 
 <footer>
   🌾 <span>麦穗社区</span> · AI Agent 产品发现平台 · 跨越时空，只为您赢 ⚡
-  &nbsp;|&nbsp; <a href="../mvp_intake.html" style="color:var(--purple);">天才发射台</a>
+  &nbsp;|&nbsp; <a href="/launch" style="color:var(--purple);">天才发射台</a>
   &nbsp;|&nbsp; <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" style="color:var(--gold);">$WHC</a>
 </footer>
 
@@ -287,7 +287,7 @@ const DEMO_PRODUCTS = [
   {
     id:1, name:'天才计划 Marketing AI', icon:'⚡', featured:true,
     tagline:'60分钟生成专属营销策略，AI 驱动的超级个体增长引擎',
-    tags:['营销','效率工具'], votes:88, url:'../mvp_intake.html',
+    tags:['营销','效率工具'], votes:88, url:'/launch',
     date:'2026-03-08', by:'天才计划团队'
   },
   {
@@ -435,7 +435,7 @@ function submitProduct() {
 function showSection(s) {
   document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
   event.target.classList.add('active');
-  if (s==='launch') location.href='../mvp_intake.html';
+  if (s==='launch') location.href='/launch';
 }
 
 // 初始渲染

@@ -52,6 +52,10 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && url === '/admin') {
     serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return;
   }
+  // 天才发射台 / 营销方案
+  if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) {
+    serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return;
+  }
 
   // ── API ───────────────────────────────────────────
 
@@ -130,6 +134,49 @@ const server = http.createServer(async (req, res) => {
       writeDB(products);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, votes: products[idx]?.votes }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // ── 天才发射台提交（下单 → 自动发布到社区）───────────
+  if (req.method === 'POST' && url === '/api/launch/submit') {
+    try {
+      const data = await parseBody(req);
+      // 保存订单
+      const orderFile = path.join(__dirname, 'data', 'orders.json');
+      let orders = fs.existsSync(orderFile) ? JSON.parse(fs.readFileSync(orderFile, 'utf8')) : [];
+      const order = { ...data, id: Date.now(), receivedAt: new Date().toISOString() };
+      orders.unshift(order);
+      fs.writeFileSync(orderFile, JSON.stringify(orders, null, 2), 'utf8');
+      console.log(`⚡ [天才发射台] 新订单: ${data.plan} | ${data.contact}`);
+
+      // 自动发布产品到社区（状态 pending，待审核）
+      if (data.product) {
+        const products = readDB();
+        const autoEntry = {
+          id: Date.now() + 1,
+          name: data.product.substring(0, 40),
+          tagline: `来自天才发射台 · ${data.plan}用户`,
+          desc: `产品：${data.product}\n目标用户：${data.audience || ''}`,
+          url: '',
+          tag: 'AI Agent',
+          contact: data.contact || '',
+          icon: '⚡',
+          votes: 0,
+          featured: false,
+          status: 'pending',
+          source: 'genius_plan',
+          receivedAt: new Date().toISOString()
+        };
+        products.unshift(autoEntry);
+        writeDB(products);
+        console.log(`🌾 [自动投稿] ${autoEntry.name} 已提交社区审核`);
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
