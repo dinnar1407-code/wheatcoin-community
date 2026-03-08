@@ -6,10 +6,7 @@
   <title>WheatCoin Community · Discover AI Agent Products</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;
-      --purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;
-    }
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
     nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;}
     .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none;}
@@ -23,6 +20,9 @@
     .btn-submit{background:linear-gradient(135deg,var(--purple),#8b5cf6);color:#fff;}
     .btn-submit:hover{opacity:.9;}
     .whc-badge{background:#1a1a10;border:1px solid #3a3000;color:var(--gold);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;}
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
     .hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
     .hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1a1a2e;border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:#a5b4fc;margin-bottom:24px;}
     .hero h1{font-size:42px;font-weight:800;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff 60%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
@@ -98,49 +98,44 @@
     footer{text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:#374151;}
     footer a{color:var(--purple);text-decoration:none;}
     footer a.gold{color:var(--gold);}
-    @media(max-width:600px){
-      .hero h1{font-size:28px;}
-      .modules{grid-template-columns:1fr;}
-      .stats{gap:24px;}
-      nav{padding:0 16px;}
-      .nav-links{display:none;}
-    }
+    @media(max-width:600px){.hero h1{font-size:28px;}.modules{grid-template-columns:1fr;}.stats{gap:24px;}nav{padding:0 16px;}.nav-links{display:none;}}
   </style>
 </head>
 <body>
 
 <nav>
-  <a class="nav-logo" href="/">
-    <span class="logo-icon">🌾</span>
-    <span>WheatCoin Community</span>
-  </a>
+  <a class="nav-logo" href="/"><span class="logo-icon">🌾</span><span>WheatCoin Community</span></a>
   <div class="nav-links">
-    <button class="nav-link active">Discover</button>
-    <button class="nav-link" onclick="location.href='/launch'">Genius Launch</button>
+    <button class="nav-link active" data-i="navDiscover">Discover</button>
+    <button class="nav-link" onclick="location.href='/launch'" data-i="navLaunch">Genius Launch</button>
     <button class="nav-link" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">$WHC</button>
   </div>
   <div class="nav-cta">
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    </div>
     <div class="whc-badge">🌾 $WHC</div>
-    <button class="btn-nav btn-submit" onclick="openSubmit()">+ Submit Product</button>
+    <button class="btn-nav btn-submit" onclick="openSubmit()" data-i="navSubmit">+ Submit Product</button>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-badge">🚀 AI Agent Product Discovery · Free to Submit</div>
-  <h1>Discover the Best<br/>AI Agent Apps</h1>
-  <p>WheatCoin Community is an open platform for discovering and sharing AI Agent products.<br/>Submit your product for free and reach real users.</p>
+  <div class="hero-badge" data-i="heroBadge">🚀 AI Agent Product Discovery · Free to Submit</div>
+  <h1 data-i="heroH1">Discover the Best<br/>AI Agent Apps</h1>
+  <p data-i="heroP">WheatCoin Community is an open platform for discovering and sharing AI Agent products.<br/>Submit your product for free and reach real users.</p>
   <div class="hero-actions">
-    <button class="btn-primary" onclick="openSubmit()">🚀 Submit My Product — Free</button>
-    <button class="btn-gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">🌾 Buy $WHC</button>
-    <button class="btn-outline" onclick="location.href='/launch'">Get Marketing Plan →</button>
+    <button class="btn-primary" onclick="openSubmit()" data-i="heroBtn1">🚀 Submit My Product — Free</button>
+    <button class="btn-gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')" data-i="heroBtn2">🌾 Buy $WHC</button>
+    <button class="btn-outline" onclick="location.href='/launch'" data-i="heroBtn3">Get Marketing Plan →</button>
   </div>
 </section>
 
 <div class="stats">
-  <div class="stat"><div class="stat-num" id="statProducts">12</div><div class="stat-label">Products Listed</div></div>
-  <div class="stat"><div class="stat-num">847</div><div class="stat-label">Weekly Visitors</div></div>
-  <div class="stat"><div class="stat-num" id="statVotes">234</div><div class="stat-label">Total Upvotes</div></div>
-  <div class="stat"><div class="stat-num">$WHC</div><div class="stat-label">Community Token</div></div>
+  <div class="stat"><div class="stat-num" id="statProducts">12</div><div class="stat-label" data-i="statProducts">Products Listed</div></div>
+  <div class="stat"><div class="stat-num">847</div><div class="stat-label" data-i="statVisitors">Weekly Visitors</div></div>
+  <div class="stat"><div class="stat-num" id="statVotes">234</div><div class="stat-label" data-i="statVotes">Total Upvotes</div></div>
+  <div class="stat"><div class="stat-num">$WHC</div><div class="stat-label" data-i="statToken">Community Token</div></div>
 </div>
 
 <main class="main">
@@ -148,40 +143,32 @@
     <div class="module-card" onclick="location.href='/launch'">
       <div class="module-icon">⚡</div>
       <div>
-        <div class="module-title">Genius Launch Pad</div>
-        <div class="module-desc">AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.</div>
+        <div class="module-title" data-i="modLaunchTitle">Genius Launch Pad</div>
+        <div class="module-desc" data-i="modLaunchDesc">AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.</div>
       </div>
       <div class="module-arrow">→</div>
     </div>
     <div class="module-card gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">
       <div class="module-icon">🌾</div>
       <div>
-        <div class="module-title">WheatCoin $WHC</div>
-        <div class="module-desc">Community governance token. Hold $WHC to get<br/>40% off on Genius Launch Pad.</div>
+        <div class="module-title" data-i="modWhcTitle">WheatCoin $WHC</div>
+        <div class="module-desc" data-i="modWhcDesc">Community governance token. Hold $WHC to get<br/>40% off on Genius Launch Pad.</div>
       </div>
       <div class="module-arrow">→</div>
     </div>
   </div>
 
   <div class="toolbar">
-    <div class="filters">
-      <button class="filter-btn active" onclick="filterTag('All',this)">All</button>
-      <button class="filter-btn" onclick="filterTag('Productivity',this)">Productivity</button>
-      <button class="filter-btn" onclick="filterTag('Writing',this)">Writing</button>
-      <button class="filter-btn" onclick="filterTag('Coding',this)">Coding</button>
-      <button class="filter-btn" onclick="filterTag('Marketing',this)">Marketing</button>
-      <button class="filter-btn" onclick="filterTag('Analytics',this)">Analytics</button>
-      <button class="filter-btn" onclick="filterTag('Customer Service',this)">Customer Service</button>
-    </div>
+    <div class="filters" id="filterBar"></div>
     <div style="display:flex;gap:8px;align-items:center;">
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Search products…" oninput="searchProducts(this.value)"/>
+        <input type="text" id="searchInput" data-i-placeholder="searchPH" placeholder="Search products…" oninput="searchProducts(this.value)"/>
       </div>
-      <select class="sort-select" onchange="sortProducts(this.value)">
-        <option value="votes">Most Voted</option>
-        <option value="new">Newest</option>
-        <option value="featured">Featured</option>
+      <select class="sort-select" id="sortSelect" onchange="sortProducts(this.value)">
+        <option value="votes" data-i="sortVotes">Most Voted</option>
+        <option value="new" data-i="sortNew">Newest</option>
+        <option value="featured" data-i="sortFeatured">Featured</option>
       </select>
     </div>
   </div>
@@ -193,90 +180,195 @@
 <div class="modal-overlay" id="submitModal">
   <div class="modal">
     <div id="submitForm">
-      <h2>🚀 Submit Your AI Agent Product</h2>
-      <p class="sub">Completely free. Our team reviews and publishes within 24 hours.<br/>Orders placed via Genius Launch Pad are <strong style="color:#a5b4fc">auto-published</strong> here.</p>
+      <h2 data-i="modalTitle">🚀 Submit Your AI Agent Product</h2>
+      <p class="sub" data-i="modalSub">Completely free. Our team reviews and publishes within 24 hours.<br/>Orders placed via Genius Launch Pad are <strong style="color:#a5b4fc">auto-published</strong> here.</p>
       <div class="form-field">
-        <label>Product Name *</label>
-        <input id="f-name" type="text" placeholder="e.g. AutoReply Agent"/>
+        <label data-i="fName">Product Name *</label>
+        <input id="f-name" type="text" data-i-placeholder="fNamePH"/>
       </div>
       <div class="form-field">
-        <label>Tagline *</label>
-        <input id="f-tagline" type="text" placeholder="e.g. AI that handles all your customer support, 98% accuracy"/>
+        <label data-i="fTagline">Tagline *</label>
+        <input id="f-tagline" type="text" data-i-placeholder="fTaglinePH"/>
       </div>
       <div class="form-field">
-        <label>Description *</label>
-        <textarea id="f-desc" placeholder="Describe your product, what problem it solves, and who it's for…"></textarea>
+        <label data-i="fDesc">Description *</label>
+        <textarea id="f-desc" data-i-placeholder="fDescPH"></textarea>
       </div>
       <div class="form-field">
-        <label>Website / Link</label>
-        <input id="f-url" type="url" placeholder="https://your-product.com"/>
+        <label data-i="fUrl">Website / Link</label>
+        <input id="f-url" type="url" placeholder="https://"/>
       </div>
       <div class="form-field">
-        <label>Category *</label>
+        <label data-i="fTag">Category *</label>
         <select id="f-tag">
-          <option value="">Select a category…</option>
-          <option>Productivity</option>
-          <option>Writing</option>
-          <option>Coding</option>
-          <option>Marketing</option>
-          <option>Analytics</option>
-          <option>Customer Service</option>
-          <option>Other</option>
+          <option value="" data-i="fTagDefault">Select a category…</option>
+          <option>Productivity</option><option>Writing</option><option>Coding</option>
+          <option>Marketing</option><option>Analytics</option><option>Customer Service</option><option>Other</option>
         </select>
       </div>
       <div class="form-field">
-        <label>Contact (we'll notify you when approved)</label>
-        <input id="f-contact" type="text" placeholder="Email / Telegram / Twitter"/>
-        <div class="form-note">⚡ Once approved, you can boost your product with a <strong>Genius Launch Pad</strong> marketing plan.</div>
+        <label data-i="fContact">Contact</label>
+        <input id="f-contact" type="text" data-i-placeholder="fContactPH"/>
+        <div class="form-note" data-i="fNote">⚡ Once approved, you can boost your product with a <strong>Genius Launch Pad</strong> marketing plan.</div>
       </div>
       <div class="modal-btns">
-        <button class="modal-btn secondary" onclick="closeSubmit()">Cancel</button>
-        <button class="modal-btn primary" onclick="submitProduct()">🚀 Submit for Review</button>
+        <button class="modal-btn secondary" onclick="closeSubmit()" data-i="btnCancel">Cancel</button>
+        <button class="modal-btn primary" onclick="submitProduct()" data-i="btnSubmit">🚀 Submit for Review</button>
       </div>
     </div>
     <div class="submit-success" id="submitSuccess">
       <div class="icon">🌾</div>
-      <h3>Submitted Successfully!</h3>
-      <p>We'll review your submission within <strong>24 hours</strong>.<br/>You'll be notified once it's live on WheatCoin Community.<br/><br/>Want more exposure?<br/><a href="/launch" style="color:#a5b4fc;font-weight:700;">👉 Get a Genius Launch Pad marketing plan</a></p>
+      <h3 data-i="successTitle">Submitted Successfully!</h3>
+      <p data-i="successDesc">We'll review your submission within <strong>24 hours</strong>.<br/>You'll be notified once it's live.<br/><br/><a href="/launch" style="color:#a5b4fc;font-weight:700;" data-i="successCta">👉 Get a Genius Launch Pad marketing plan</a></p>
     </div>
   </div>
 </div>
 
 <footer>
-  🌾 <a href="/">WheatCoin Community</a> · AI Agent Product Discovery · Built for the Genius Plan ⚡
-  &nbsp;|&nbsp; <a href="/launch">Genius Launch Pad</a>
+  🌾 <a href="/">WheatCoin Community</a> · <span data-i="footerDesc">AI Agent Product Discovery</span> · Genius Plan ⚡
+  &nbsp;|&nbsp; <a href="/launch" data-i="footerLaunch">Genius Launch Pad</a>
   &nbsp;|&nbsp; <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" class="gold">$WHC on pump.fun</a>
 </footer>
 
 <script>
+// ─── i18n ─────────────────────────────────────────────
+const I18N = {
+  en: {
+    navDiscover:'Discover', navLaunch:'Genius Launch', navSubmit:'+ Submit Product',
+    heroBadge:'🚀 AI Agent Product Discovery · Free to Submit',
+    heroH1:'Discover the Best<br/>AI Agent Apps',
+    heroP:"WheatCoin Community is an open platform for discovering and sharing AI Agent products.<br/>Submit your product for free and reach real users.",
+    heroBtn1:'🚀 Submit My Product — Free', heroBtn2:'🌾 Buy $WHC', heroBtn3:'Get Marketing Plan →',
+    statProducts:'Products Listed', statVisitors:'Weekly Visitors', statVotes:'Total Upvotes', statToken:'Community Token',
+    modLaunchTitle:'Genius Launch Pad', modLaunchDesc:"AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.",
+    modWhcTitle:'WheatCoin $WHC', modWhcDesc:"Community governance token. Hold $WHC to get<br/>40% off on Genius Launch Pad.",
+    searchPH:'Search products…', sortVotes:'Most Voted', sortNew:'Newest', sortFeatured:'Featured',
+    filterAll:'All', filterProd:'Productivity', filterWrite:'Writing', filterCode:'Coding',
+    filterMkt:'Marketing', filterAna:'Analytics', filterCS:'Customer Service',
+    modalTitle:'🚀 Submit Your AI Agent Product',
+    modalSub:"Completely free. Our team reviews and publishes within 24 hours.<br/>Orders placed via Genius Launch Pad are <strong style='color:#a5b4fc'>auto-published</strong> here.",
+    fName:'Product Name *', fNamePH:'e.g. AutoReply Agent',
+    fTagline:'Tagline *', fTaglinePH:'e.g. AI that handles customer support with 98% accuracy',
+    fDesc:'Description *', fDescPH:'Describe your product, what problem it solves…',
+    fUrl:'Website / Link', fTag:'Category *', fTagDefault:'Select a category…',
+    fContact:'Contact', fContactPH:'Email / Telegram / Twitter',
+    fNote:'⚡ Once approved, you can boost your product with a <strong>Genius Launch Pad</strong> marketing plan.',
+    btnCancel:'Cancel', btnSubmit:'🚀 Submit for Review',
+    successTitle:'Submitted Successfully!',
+    successDesc:"We'll review your submission within <strong>24 hours</strong>.<br/>You'll be notified once it's live.<br/><br/><a href='/launch' style='color:#a5b4fc;font-weight:700;'>👉 Get a Genius Launch Pad marketing plan</a>",
+    footerDesc:'AI Agent Product Discovery', footerLaunch:'Genius Launch Pad',
+    featuredBadge:'⭐ Featured', newBadge:'🆕 New',
+    upvote:'▲', alertFields:'Please fill in all required fields 😊',
+    selectCat:'Please select a category', successCta:'👉 Get a Genius Launch Pad marketing plan',
+  },
+  zh: {
+    navDiscover:'发现产品', navLaunch:'天才发射台', navSubmit:'+ 提交产品',
+    heroBadge:'🚀 AI Agent 产品发现平台 · 免费提交',
+    heroH1:'发现最好的<br/>AI Agent 应用',
+    heroP:"麦穗社区是一个开放的 AI Agent 产品发现与分享平台。<br/>免费提交你的产品，触达真实用户。",
+    heroBtn1:'🚀 免费提交我的产品', heroBtn2:'🌾 购买 $WHC', heroBtn3:'获取营销方案 →',
+    statProducts:'已上架产品', statVisitors:'每周访客', statVotes:'总投票数', statToken:'社区代币',
+    modLaunchTitle:'天才发射台', modLaunchDesc:"AI 定制营销策略，60 分钟交付。<br/>下单后自动发布到社区广场。",
+    modWhcTitle:'麦穗币 $WHC', modWhcDesc:"社区治理代币。持有 $WHC 购买<br/>天才发射台享受 6 折优惠。",
+    searchPH:'搜索产品…', sortVotes:'最多投票', sortNew:'最新上架', sortFeatured:'精选推荐',
+    filterAll:'全部', filterProd:'效率工具', filterWrite:'写作', filterCode:'编程',
+    filterMkt:'营销', filterAna:'数据分析', filterCS:'客户服务',
+    modalTitle:'🚀 提交你的 AI Agent 产品',
+    modalSub:"完全免费。审核通过后 24 小时内上架。<br/>通过天才发射台下单的产品将<strong style='color:#a5b4fc'>自动发布</strong>到这里。",
+    fName:'产品名称 *', fNamePH:'例：AutoReply Agent',
+    fTagline:'一句话介绍 *', fTaglinePH:'例：AI 自动处理所有客服会话，准确率 98%',
+    fDesc:'详细描述 *', fDescPH:'描述你的产品解决了什么问题，目标用户是谁…',
+    fUrl:'官网 / 链接', fTag:'分类 *', fTagDefault:'选择分类…',
+    fContact:'联系方式', fContactPH:'Email / Telegram / 微信',
+    fNote:'⚡ 上架后可通过<strong>天才发射台</strong>定制专属营销方案，加速增长。',
+    btnCancel:'取消', btnSubmit:'🚀 提交审核',
+    successTitle:'提交成功！',
+    successDesc:"我们将在 <strong>24 小时内</strong> 完成审核并通知你。<br/><br/><a href='/launch' style='color:#a5b4fc;font-weight:700;'>👉 立即获取天才发射台营销方案</a>",
+    footerDesc:'AI Agent 产品发现平台', footerLaunch:'天才发射台',
+    featuredBadge:'⭐ 精选', newBadge:'🆕 新上架',
+    upvote:'▲', alertFields:'请填写所有必填项 😊',
+    selectCat:'请选择分类', successCta:'👉 立即获取天才发射台营销方案',
+  }
+};
+
+const TAGS_EN = ['All','Productivity','Writing','Coding','Marketing','Analytics','Customer Service'];
+const TAGS_ZH = ['全部','效率工具','写作','编程','营销','数据分析','客户服务'];
+const TAG_MAP_EN_TO_ORIGINAL = {'全部':'All','效率工具':'Productivity','写作':'Writing','编程':'Coding','营销':'Marketing','数据分析':'Analytics','客户服务':'Customer Service'};
+
+let lang = localStorage.getItem('community_lang') || 'en';
+let currentFilter = 'All'; // always stored in English key
+
+function setLang(l) {
+  lang = l; localStorage.setItem('community_lang', l);
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const key = el.getAttribute('data-i');
+    if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
+  });
+  document.querySelectorAll('[data-i-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i-placeholder');
+    if (I18N[l][key]) el.placeholder = I18N[l][key];
+  });
+  renderFilterBar();
+  applyFilters();
+}
+
+function renderFilterBar() {
+  const t = I18N[lang];
+  const tags = [t.filterAll, t.filterProd, t.filterWrite, t.filterCode, t.filterMkt, t.filterAna, t.filterCS];
+  const engKeys = ['All','Productivity','Writing','Coding','Marketing','Analytics','Customer Service'];
+  document.getElementById('filterBar').innerHTML = tags.map((label,i) =>
+    `<button class="filter-btn ${currentFilter===engKeys[i]?'active':''}" onclick="filterTag('${engKeys[i]}',this)">${label}</button>`
+  ).join('');
+}
+
+// ─── Products ─────────────────────────────────────────
 const DEMO_PRODUCTS = [
-  {id:1,name:'Genius Plan Marketing AI',icon:'⚡',featured:true,tagline:'Custom marketing strategy in 60 min — AI-powered growth engine for solopreneurs',tags:['Marketing','Productivity'],votes:88,url:'/launch',date:'2026-03-08',by:'@geniusplan'},
-  {id:2,name:'AutoReply Agent',icon:'🤖',featured:false,tagline:'AI that handles all customer conversations across multiple platforms automatically',tags:['Customer Service','Productivity'],votes:47,url:'',date:'2026-03-07',by:'@indie_dev'},
-  {id:3,name:'CodeReview Bot',icon:'🔍',featured:false,tagline:'AI code review that catches bugs 10x faster than manual review',tags:['Coding'],votes:35,url:'',date:'2026-03-06',by:'@codelab'},
-  {id:4,name:'CopyWriter Pro',icon:'✍️',featured:false,tagline:'One-click high-converting copy for social media, email & ads',tags:['Writing','Marketing'],votes:29,url:'',date:'2026-03-05',by:'@marketer'},
-  {id:5,name:'DataSense Agent',icon:'📊',featured:false,tagline:'Upload your spreadsheet — AI auto-analyzes and builds visual reports',tags:['Analytics'],votes:22,url:'',date:'2026-03-04',by:'@datalab'},
-  {id:6,name:'MeetingBot',icon:'📅',featured:false,tagline:'Auto-transcribe meetings & generate action items. Never take notes again.',tags:['Productivity'],votes:18,url:'',date:'2026-03-03',by:'@meetly'},
+  {id:1,name:'Genius Plan Marketing AI',nameZh:'天才计划营销 AI',icon:'⚡',featured:true,
+   tagline:'Custom marketing strategy in 60 min — AI-powered growth engine for solopreneurs',
+   taglineZh:'60 分钟交付定制营销策略 — 超级个体的 AI 增长引擎',
+   tags:['Marketing','Productivity'],votes:88,url:'/launch',date:'2026-03-08',by:'@geniusplan'},
+  {id:2,name:'AutoReply Agent',nameZh:'自动回复 Agent',icon:'🤖',featured:false,
+   tagline:'AI that handles all customer conversations across multiple platforms automatically',
+   taglineZh:'AI 自动处理全平台客服会话，7x24 在线',
+   tags:['Customer Service','Productivity'],votes:47,url:'',date:'2026-03-07',by:'@indie_dev'},
+  {id:3,name:'CodeReview Bot',nameZh:'代码审查机器人',icon:'🔍',featured:false,
+   tagline:'AI code review that catches bugs 10x faster than manual review',
+   taglineZh:'AI 代码审查，发现 Bug 速度是人工的 10 倍',
+   tags:['Coding'],votes:35,url:'',date:'2026-03-06',by:'@codelab'},
+  {id:4,name:'CopyWriter Pro',nameZh:'文案大师 Pro',icon:'✍️',featured:false,
+   tagline:'One-click high-converting copy for social media, email & ads',
+   taglineZh:'一键生成高转化率社媒文案、邮件、广告语',
+   tags:['Writing','Marketing'],votes:29,url:'',date:'2026-03-05',by:'@marketer'},
+  {id:5,name:'DataSense Agent',nameZh:'数据洞察 Agent',icon:'📊',featured:false,
+   tagline:'Upload your spreadsheet — AI auto-analyzes and builds visual reports',
+   taglineZh:'上传表格，AI 自动分析并生成可视化报告',
+   tags:['Analytics'],votes:22,url:'',date:'2026-03-04',by:'@datalab'},
+  {id:6,name:'MeetingBot',nameZh:'会议助手',icon:'📅',featured:false,
+   tagline:'Auto-transcribe meetings & generate action items. Never take notes again.',
+   taglineZh:'自动转录会议内容，生成待办清单，告别手写笔记',
+   tags:['Productivity'],votes:18,url:'',date:'2026-03-03',by:'@meetly'},
 ];
 
 let products = [...DEMO_PRODUCTS];
-let currentFilter = 'All';
 let voted = new Set();
 
-function renderGrid(list){
-  const grid=document.getElementById('productGrid');
-  if(!list.length){grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">No products found. Be the first to submit!</div>';return;}
-  grid.innerHTML=list.map(p=>`
+function renderGrid(list) {
+  const grid = document.getElementById('productGrid');
+  const t = I18N[lang];
+  if (!list.length) { grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">${lang==='zh'?'暂无产品，成为第一个提交者！':'No products found. Be the first to submit!'}</div>`; return; }
+  grid.innerHTML = list.map(p => `
     <div class="product-card ${p.featured?'featured':''}" onclick="${p.url?`window.open('${p.url}')`:''}" style="${p.url?'':'cursor:default'}">
-      ${p.featured?'<div class="featured-badge">⭐ Featured</div>':''}
-      ${isNew(p.date)&&!p.featured?'<div class="new-badge">🆕 New</div>':''}
+      ${p.featured?`<div class="featured-badge">${t.featuredBadge}</div>`:''}
+      ${isNew(p.date)&&!p.featured?`<div class="new-badge">${t.newBadge}</div>`:''}
       <div class="card-header">
         <div class="card-icon">${p.icon}</div>
         <div>
-          <div class="card-name">${p.name}</div>
-          <div class="card-tagline">${p.tagline}</div>
+          <div class="card-name">${lang==='zh'&&p.nameZh?p.nameZh:p.name}</div>
+          <div class="card-tagline">${lang==='zh'&&p.taglineZh?p.taglineZh:p.tagline}</div>
         </div>
       </div>
-      <div class="card-tags">${p.tags.map(t=>`<span class="tag ${t==='Marketing'||t==='Productivity'?'highlight':''}">${t}</span>`).join('')}</div>
+      <div class="card-tags">${p.tags.map(tag=>`<span class="tag ${tag==='Marketing'||tag==='Productivity'?'highlight':''}">${localizeTag(tag)}</span>`).join('')}</div>
       <div class="card-footer">
         <button class="upvote-btn ${voted.has(p.id)?'voted':''}" onclick="event.stopPropagation();upvote(${p.id},this)">▲ <span id="vote-${p.id}">${p.votes}</span></button>
         <div class="card-meta">by ${p.by} · ${p.date}</div>
@@ -285,28 +377,37 @@ function renderGrid(list){
   `).join('');
 }
 
+function localizeTag(tag) {
+  const map = {'Productivity':'效率工具','Writing':'写作','Coding':'编程','Marketing':'营销','Analytics':'数据分析','Customer Service':'客户服务'};
+  return lang==='zh' ? (map[tag]||tag) : tag;
+}
+
 function isNew(d){return(Date.now()-new Date(d))<3*24*3600*1000;}
 function upvote(id,btn){
-  if(voted.has(id))return;voted.add(id);
-  const p=products.find(x=>x.id===id);if(p)p.votes++;
+  if(voted.has(id))return; voted.add(id);
+  const p=products.find(x=>x.id===id); if(p) p.votes++;
   document.getElementById('vote-'+id).textContent=p.votes;
   btn.classList.add('voted');
   fetch('/api/products/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).catch(()=>{});
   document.getElementById('statVotes').textContent=products.reduce((s,p)=>s+p.votes,0);
 }
-function filterTag(tag,el){currentFilter=tag;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');applyFilters();}
+function filterTag(engKey, el){
+  currentFilter=engKey;
+  renderFilterBar(); // re-render to set active
+  applyFilters();
+}
 function searchProducts(q){applyFilters(q);}
 function sortProducts(by){
-  if(by==='votes')products.sort((a,b)=>b.votes-a.votes);
-  else if(by==='new')products.sort((a,b)=>new Date(b.date)-new Date(a.date));
-  else if(by==='featured')products.sort((a,b)=>b.featured-a.featured);
+  if(by==='votes') products.sort((a,b)=>b.votes-a.votes);
+  else if(by==='new') products.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  else if(by==='featured') products.sort((a,b)=>b.featured-a.featured);
   applyFilters();
 }
 function applyFilters(q=''){
-  const sq=q||document.querySelector('.search-wrap input').value;
+  const sq=q||document.getElementById('searchInput').value;
   let list=[...products];
-  if(currentFilter!=='All')list=list.filter(p=>p.tags.includes(currentFilter));
-  if(sq.trim())list=list.filter(p=>p.name.toLowerCase().includes(sq.toLowerCase())||p.tagline.toLowerCase().includes(sq.toLowerCase()));
+  if(currentFilter!=='All') list=list.filter(p=>p.tags.includes(currentFilter));
+  if(sq.trim()) list=list.filter(p=>(p.name+p.tagline+(p.nameZh||'')+(p.taglineZh||'')).toLowerCase().includes(sq.toLowerCase()));
   renderGrid(list);
 }
 function openSubmit(){document.getElementById('submitModal').classList.add('show');document.getElementById('submitForm').style.display='block';document.getElementById('submitSuccess').style.display='none';}
@@ -316,14 +417,18 @@ function submitProduct(){
   const tagline=document.getElementById('f-tagline').value.trim();
   const desc=document.getElementById('f-desc').value.trim();
   const tag=document.getElementById('f-tag').value;
-  if(!name||!tagline||!desc||!tag){alert('Please fill in all required fields 😊');return;}
+  const t=I18N[lang];
+  if(!name||!tagline||!desc) {alert(t.alertFields);return;}
+  if(!tag) {alert(t.selectCat);return;}
   fetch('/api/products/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,tagline,desc,url:document.getElementById('f-url').value.trim(),tag,contact:document.getElementById('f-contact').value.trim(),ts:new Date().toISOString(),status:'pending'})}).catch(()=>{});
   document.getElementById('submitForm').style.display='none';
   document.getElementById('submitSuccess').style.display='block';
   document.getElementById('statProducts').textContent=parseInt(document.getElementById('statProducts').textContent)+1;
 }
+
+// Init
 products.sort((a,b)=>b.votes-a.votes);
-renderGrid(products);
+setLang(lang);
 </script>
 </body>
 </html>
