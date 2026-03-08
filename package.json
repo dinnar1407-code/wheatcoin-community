@@ -1,0 +1,13 @@
+{
+  "name": "wheatcoin-community",
+  "version": "1.0.0",
+  "description": "麦穗社区 · AI Agent 产品发现平台",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

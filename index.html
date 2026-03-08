@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>麦穗社区 · AI Agent 产品发现平台</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;
+      --purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+    /* NAV */
+    nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none;}
+    .nav-logo .logo-icon{font-size:22px;}
+    .nav-links{display:flex;gap:4px;}
+    .nav-link{padding:6px 14px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;border:none;background:none;}
+    .nav-link:hover,.nav-link.active{background:#1e1e2e;color:#fff;}
+    .nav-link.active{color:var(--gold);}
+    .nav-cta{display:flex;gap:8px;align-items:center;}
+    .btn-nav{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+    .btn-submit{background:linear-gradient(135deg,var(--purple),#8b5cf6);color:#fff;}
+    .btn-submit:hover{opacity:.9;}
+    .whc-badge{background:#1a1a10;border:1px solid #3a3000;color:var(--gold);padding:5px 12px;border-radius:8px;font-size:12px;font-weight:700;}
+
+    /* HERO */
+    .hero{text-align:center;padding:72px 24px 48px;max-width:700px;margin:0 auto;}
+    .hero-badge{display:inline-flex;align-items:center;gap:6px;background:#1a1a2e;border:1px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;color:#a5b4fc;margin-bottom:24px;}
+    .hero h1{font-size:42px;font-weight:800;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff 60%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .hero p{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:32px;}
+    .hero-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-primary{padding:13px 28px;background:linear-gradient(135deg,var(--purple),#8b5cf6);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+    .btn-primary:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-gold{padding:13px 28px;background:linear-gradient(135deg,var(--gold),#f59e0b);color:#000;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+    .btn-gold:hover{opacity:.9;transform:translateY(-1px);}
+    .btn-outline{padding:12px 24px;background:transparent;color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;}
+    .btn-outline:hover{border-color:var(--purple);color:#fff;}
+
+    /* STATS */
+    .stats{display:flex;justify-content:center;gap:48px;padding:24px;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-bottom:48px;}
+    .stat{text-align:center;}
+    .stat-num{font-size:28px;font-weight:800;color:#fff;}
+    .stat-label{font-size:12px;color:var(--muted);margin-top:2px;}
+
+    /* FILTERS */
+    .main{max-width:1100px;margin:0 auto;padding:0 24px 80px;}
+    .toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;gap:12px;flex-wrap:wrap;}
+    .filters{display:flex;gap:8px;flex-wrap:wrap;}
+    .filter-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:#1e1e2e;color:var(--muted);transition:all .2s;}
+    .filter-btn:hover,.filter-btn.active{background:var(--purple);border-color:var(--purple);color:#fff;}
+    .sort-select{background:#1e1e2e;border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;outline:none;}
+
+    /* PRODUCT GRID */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+    .product-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;}
+    .product-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(99,102,241,.04),transparent);pointer-events:none;}
+    .product-card:hover{border-color:var(--purple);box-shadow:0 0 30px rgba(99,102,241,.1);transform:translateY(-2px);}
+    .product-card.featured{border-color:var(--gold);box-shadow:0 0 20px rgba(244,196,48,.08);}
+    .card-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
+    .card-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--purple),#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+    .card-title-wrap{}
+    .card-name{font-size:16px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .card-tagline{font-size:13px;color:var(--muted);line-height:1.4;}
+    .card-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+    .tag{padding:3px 10px;background:#1e1e2e;border:1px solid var(--border);border-radius:12px;font-size:11px;color:var(--muted);}
+    .tag.highlight{border-color:var(--purple);color:#a5b4fc;}
+    .card-footer{display:flex;align-items:center;justify-content:space-between;}
+    .upvote-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:#1e1e2e;border:1px solid var(--border);border-radius:8px;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .2s;}
+    .upvote-btn:hover,.upvote-btn.voted{background:#1a1a35;border-color:var(--purple);color:var(--purple);}
+    .card-meta{font-size:11px;color:var(--muted);}
+    .featured-badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,var(--gold),#f59e0b);color:#000;font-size:10px;font-weight:800;padding:2px 10px;border-radius:12px;}
+    .new-badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:10px;font-weight:800;padding:2px 10px;border-radius:12px;}
+
+    /* MODULES STRIP */
+    .modules{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px;}
+    .module-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;align-items:center;gap:18px;cursor:pointer;transition:all .2s;}
+    .module-card:hover{border-color:var(--purple);}
+    .module-card.gold:hover{border-color:var(--gold);}
+    .module-icon{font-size:32px;}
+    .module-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+    .module-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+    .module-arrow{margin-left:auto;color:var(--muted);font-size:18px;}
+
+    /* SUBMIT MODAL */
+    .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:200;align-items:center;justify-content:center;padding:20px;}
+    .modal-overlay.show{display:flex;}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:36px 32px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;}
+    .modal h2{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px;}
+    .modal .sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+    .form-field{margin-bottom:18px;}
+    .form-field label{display:block;font-size:11px;font-weight:700;color:#9ca3af;margin-bottom:8px;letter-spacing:.8px;text-transform:uppercase;}
+    .form-field input,.form-field textarea,.form-field select{width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:14px;padding:11px 14px;outline:none;font-family:inherit;transition:border-color .2s;}
+    .form-field input:focus,.form-field textarea:focus,.form-field select:focus{border-color:var(--purple);}
+    .form-field textarea{height:90px;resize:none;}
+    .form-field input::placeholder,.form-field textarea::placeholder{color:#4b5563;}
+    .form-note{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+    .modal-btns{display:flex;gap:10px;margin-top:8px;}
+    .modal-btn{flex:1;padding:13px;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+    .modal-btn.primary{background:linear-gradient(135deg,var(--purple),#8b5cf6);color:#fff;}
+    .modal-btn.secondary{background:#1e1e2e;color:#9ca3af;border:1px solid var(--border);}
+    .modal-btn:hover{opacity:.85;}
+
+    /* SUCCESS */
+    .submit-success{display:none;text-align:center;padding:20px 0;}
+    .submit-success .icon{font-size:52px;margin-bottom:16px;}
+    .submit-success h3{font-size:20px;font-weight:700;color:#fff;margin-bottom:8px;}
+    .submit-success p{font-size:13px;color:var(--muted);line-height:1.7;}
+
+    /* SEARCH */
+    .search-wrap{position:relative;flex:1;max-width:300px;}
+    .search-wrap input{width:100%;background:#1e1e2e;border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 14px 8px 36px;font-size:13px;outline:none;}
+    .search-wrap input:focus{border-color:var(--purple);}
+    .search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;}
+
+    footer{text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:#374151;}
+    footer span{color:var(--purple);}
+
+    @media(max-width:600px){
+      .hero h1{font-size:28px;}
+      .modules{grid-template-columns:1fr;}
+      .stats{gap:24px;}
+      nav{padding:0 16px;}
+      .nav-links{display:none;}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <span class="logo-icon">🌾</span>
+    <span>麦穗社区</span>
+  </a>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showSection('discover')">发现</button>
+    <button class="nav-link" onclick="showSection('launch')">天才发射台</button>
+    <button class="nav-link" onclick="location.href='../mvp_intake.html'">营销方案</button>
+    <button class="nav-link" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">$WHC</button>
+  </div>
+  <div class="nav-cta">
+    <div class="whc-badge">🌾 $WHC</div>
+    <button class="btn-nav btn-submit" onclick="openSubmit()">+ 发布产品</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">🚀 AI Agent 产品发现社区 · 免费发布</div>
+  <h1>发现最好的<br/>AI Agent 应用</h1>
+  <p>麦穗社区是专注 AI Agent 应用的开源发现平台。<br/>免费发布你的产品，获得真实用户和流量。</p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="openSubmit()">🚀 免费发布我的产品</button>
+    <button class="btn-gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">🌾 购买 $WHC</button>
+    <button class="btn-outline" onclick="location.href='../mvp_intake.html'">获取营销方案 →</button>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="statProducts">12</div><div class="stat-label">已收录产品</div></div>
+  <div class="stat"><div class="stat-num">847</div><div class="stat-label">社区访客/周</div></div>
+  <div class="stat"><div class="stat-num" id="statVotes">234</div><div class="stat-label">总投票数</div></div>
+  <div class="stat"><div class="stat-num">$WHC</div><div class="stat-label">社区代币</div></div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- 模块入口 -->
+  <div class="modules">
+    <div class="module-card" onclick="location.href='../mvp_intake.html'">
+      <div class="module-icon">⚡</div>
+      <div>
+        <div class="module-title">天才发射台</div>
+        <div class="module-desc">AI 定制营销方案，60分钟交付。<br/>下单后自动发布到社区。</div>
+      </div>
+      <div class="module-arrow">→</div>
+    </div>
+    <div class="module-card gold" onclick="window.open('https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump')">
+      <div class="module-icon">🌾</div>
+      <div>
+        <div class="module-title">麦穗币 $WHC</div>
+        <div class="module-desc">社区治理代币，持有 WHC 可享<br/>天才发射台 6折优惠。</div>
+      </div>
+      <div class="module-arrow">→</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="filters">
+      <button class="filter-btn active" onclick="filterTag('全部',this)">全部</button>
+      <button class="filter-btn" onclick="filterTag('效率工具',this)">效率工具</button>
+      <button class="filter-btn" onclick="filterTag('写作',this)">写作</button>
+      <button class="filter-btn" onclick="filterTag('编程',this)">编程</button>
+      <button class="filter-btn" onclick="filterTag('营销',this)">营销</button>
+      <button class="filter-btn" onclick="filterTag('数据分析',this)">数据分析</button>
+      <button class="filter-btn" onclick="filterTag('客服',this)">客服</button>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" placeholder="搜索产品…" oninput="searchProducts(this.value)"/>
+      </div>
+      <select class="sort-select" onchange="sortProducts(this.value)">
+        <option value="votes">最多投票</option>
+        <option value="new">最新发布</option>
+        <option value="featured">精选</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="grid" id="productGrid"></div>
+
+</main>
+
+<!-- 提交弹窗 -->
+<div class="modal-overlay" id="submitModal">
+  <div class="modal">
+    <div id="submitForm">
+      <h2>🚀 发布你的 AI Agent 产品</h2>
+      <p class="sub">完全免费。我们团队将在 24 小时内审核并上线。<br/>通过天才发射台下单的用户，产品将<strong style="color:#a5b4fc">自动发布</strong>到这里。</p>
+
+      <div class="form-field">
+        <label>产品名称 *</label>
+        <input id="f-name" type="text" placeholder="例如：AutoReply Agent"/>
+      </div>
+      <div class="form-field">
+        <label>一句话介绍 *</label>
+        <input id="f-tagline" type="text" placeholder="例如：让 AI 自动回复所有客服消息，准确率 98%"/>
+      </div>
+      <div class="form-field">
+        <label>产品描述 *</label>
+        <textarea id="f-desc" placeholder="详细介绍你的产品功能、解决什么问题、目标用户是谁…"></textarea>
+      </div>
+      <div class="form-field">
+        <label>产品官网 / 链接</label>
+        <input id="f-url" type="url" placeholder="https://your-product.com"/>
+      </div>
+      <div class="form-field">
+        <label>产品类别 *</label>
+        <select id="f-tag">
+          <option value="">请选择…</option>
+          <option>效率工具</option>
+          <option>写作</option>
+          <option>编程</option>
+          <option>营销</option>
+          <option>数据分析</option>
+          <option>客服</option>
+          <option>其他</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>联系方式（审核通过后通知你）</label>
+        <input id="f-contact" type="text" placeholder="Email / Telegram / 微信"/>
+        <div class="form-note">⚡ 通过审核后，你还可以选择购买<strong>天才发射台</strong>营销方案，享受同步推广。</div>
+      </div>
+
+      <div class="modal-btns">
+        <button class="modal-btn secondary" onclick="closeSubmit()">取消</button>
+        <button class="modal-btn primary" onclick="submitProduct()">🚀 提交审核</button>
+      </div>
+    </div>
+
+    <div class="submit-success" id="submitSuccess">
+      <div class="icon">🌾</div>
+      <h3>提交成功！</h3>
+      <p>我们将在 <strong>24 小时内</strong> 完成审核。<br/>审核通过后将通知你，并自动发布到麦穗社区。<br/><br/>想让更多人看到你的产品？<br/><a href="../mvp_intake.html" style="color:#a5b4fc;font-weight:700;">👉 获取天才发射台营销方案（下单自动发布）</a></p>
+    </div>
+  </div>
+</div>
+
+<footer>
+  🌾 <span>麦穗社区</span> · AI Agent 产品发现平台 · 跨越时空，只为您赢 ⚡
+  &nbsp;|&nbsp; <a href="../mvp_intake.html" style="color:var(--purple);">天才发射台</a>
+  &nbsp;|&nbsp; <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" style="color:var(--gold);">$WHC</a>
+</footer>
+
+<script>
+// ─── 示例产品数据（早期手动维护）───
+const DEMO_PRODUCTS = [
+  {
+    id:1, name:'天才计划 Marketing AI', icon:'⚡', featured:true,
+    tagline:'60分钟生成专属营销策略，AI 驱动的超级个体增长引擎',
+    tags:['营销','效率工具'], votes:88, url:'../mvp_intake.html',
+    date:'2026-03-08', by:'天才计划团队'
+  },
+  {
+    id:2, name:'AutoReply Agent', icon:'🤖', featured:false,
+    tagline:'让 AI 自动处理所有客服对话，支持多平台接入',
+    tags:['客服','效率工具'], votes:47, url:'',
+    date:'2026-03-07', by:'@indie_dev'
+  },
+  {
+    id:3, name:'CodeReview Bot', icon:'🔍', featured:false,
+    tagline:'AI 代码审查，发现 Bug 比人工快 10 倍',
+    tags:['编程'], votes:35, url:'',
+    date:'2026-03-06', by:'@codelab'
+  },
+  {
+    id:4, name:'CopyWriter Pro', icon:'✍️', featured:false,
+    tagline:'一键生成高转化率文案，覆盖小红书/朋友圈/邮件',
+    tags:['写作','营销'], votes:29, url:'',
+    date:'2026-03-05', by:'@marketer'
+  },
+  {
+    id:5, name:'DataSense Agent', icon:'📊', featured:false,
+    tagline:'上传 Excel，AI 自动分析并生成可视化报告',
+    tags:['数据分析'], votes:22, url:'',
+    date:'2026-03-04', by:'@datalab'
+  },
+  {
+    id:6, name:'MeetingBot', icon:'📅', featured:false,
+    tagline:'会议录音自动转文字 + 生成行动项，再也不用记笔记',
+    tags:['效率工具'], votes:18, url:'',
+    date:'2026-03-03', by:'@meetly'
+  },
+];
+
+let products = [...DEMO_PRODUCTS];
+let currentFilter = '全部';
+let voted = new Set();
+
+function renderGrid(list) {
+  const grid = document.getElementById('productGrid');
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--muted);">暂无产品，成为第一个发布者！</div>';
+    return;
+  }
+  grid.innerHTML = list.map(p => `
+    <div class="product-card ${p.featured?'featured':''}" onclick="${p.url?`window.open('${p.url}')`:''}" style="${p.url?'':'cursor:default'}">
+      ${p.featured ? '<div class="featured-badge">⭐ 精选</div>' : ''}
+      ${isNew(p.date) && !p.featured ? '<div class="new-badge">🆕 新品</div>' : ''}
+      <div class="card-header">
+        <div class="card-icon">${p.icon}</div>
+        <div class="card-title-wrap">
+          <div class="card-name">${p.name}</div>
+          <div class="card-tagline">${p.tagline}</div>
+        </div>
+      </div>
+      <div class="card-tags">
+        ${p.tags.map(t=>`<span class="tag ${t==='营销'||t==='效率工具'?'highlight':''}">${t}</span>`).join('')}
+      </div>
+      <div class="card-footer">
+        <button class="upvote-btn ${voted.has(p.id)?'voted':''}"
+          onclick="event.stopPropagation();upvote(${p.id},this)">
+          ▲ <span id="vote-${p.id}">${p.votes}</span>
+        </button>
+        <div class="card-meta">by ${p.by} · ${p.date}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function isNew(dateStr) {
+  return (Date.now() - new Date(dateStr)) < 3*24*3600*1000;
+}
+
+function upvote(id, btn) {
+  if (voted.has(id)) return;
+  voted.add(id);
+  const p = products.find(x=>x.id===id);
+  if (p) { p.votes++; document.getElementById('vote-'+id).textContent = p.votes; }
+  btn.classList.add('voted');
+  const total = products.reduce((s,p)=>s+p.votes,0);
+  document.getElementById('statVotes').textContent = total;
+}
+
+function filterTag(tag, el) {
+  currentFilter = tag;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  applyFilters();
+}
+
+function searchProducts(q) {
+  applyFilters(q);
+}
+
+function sortProducts(by) {
+  if (by==='votes') products.sort((a,b)=>b.votes-a.votes);
+  else if (by==='new') products.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  else if (by==='featured') products.sort((a,b)=>b.featured-a.featured);
+  applyFilters();
+}
+
+function applyFilters(q='') {
+  const searchQ = q || document.querySelector('.search-wrap input').value;
+  let list = [...products];
+  if (currentFilter !== '全部') list = list.filter(p=>p.tags.includes(currentFilter));
+  if (searchQ.trim()) list = list.filter(p=>
+    p.name.includes(searchQ)||p.tagline.includes(searchQ)
+  );
+  renderGrid(list);
+}
+
+function openSubmit() {
+  document.getElementById('submitModal').classList.add('show');
+  document.getElementById('submitForm').style.display='block';
+  document.getElementById('submitSuccess').style.display='none';
+}
+
+function closeSubmit() {
+  document.getElementById('submitModal').classList.remove('show');
+}
+
+function submitProduct() {
+  const name = document.getElementById('f-name').value.trim();
+  const tagline = document.getElementById('f-tagline').value.trim();
+  const desc = document.getElementById('f-desc').value.trim();
+  const tag = document.getElementById('f-tag').value;
+  const contact = document.getElementById('f-contact').value.trim();
+  if (!name||!tagline||!desc||!tag) { alert('请填写必填字段 😊'); return; }
+
+  fetch('http://localhost:3737/api/community/submit', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      name, tagline, desc,
+      url: document.getElementById('f-url').value.trim(),
+      tag, contact, ts: new Date().toISOString(), status:'pending'
+    })
+  }).catch(()=>{});
+
+  document.getElementById('submitForm').style.display='none';
+  document.getElementById('submitSuccess').style.display='block';
+  document.getElementById('statProducts').textContent =
+    parseInt(document.getElementById('statProducts').textContent)+1;
+}
+
+function showSection(s) {
+  document.querySelectorAll('.nav-link').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (s==='launch') location.href='../mvp_intake.html';
+}
+
+// 初始渲染
+products.sort((a,b)=>b.votes-a.votes);
+renderGrid(products);
+</script>
+</body>
+</html>
