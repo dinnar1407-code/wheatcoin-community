@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>麦穗社区 · 管理后台</title>
+  <title>WheatCoin Community · Admin</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:32px;}
@@ -12,7 +12,7 @@
     .tabs{display:flex;gap:8px;margin-bottom:24px;}
     .tab{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #2a2a3a;background:#1e1e2e;color:#6b7280;transition:all .2s;}
     .tab.active{background:#6366f1;border-color:#6366f1;color:#fff;}
-    .count-badge{display:inline-block;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:6px;}
+    .count-badge{display:inline-block;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;}
     table{width:100%;border-collapse:collapse;font-size:13px;}
     th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #2a2a3a;}
     td{padding:14px;border-bottom:1px solid #1e1e2e;vertical-align:top;}
@@ -20,6 +20,7 @@
     .name{font-weight:700;color:#fff;margin-bottom:3px;}
     .tagline{font-size:12px;color:#9ca3af;}
     .tag{display:inline-block;padding:2px 8px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:10px;font-size:11px;color:#9ca3af;margin-right:4px;}
+    .source-badge{display:inline-block;padding:2px 8px;background:#1a1a35;border:1px solid #6366f1;border-radius:10px;font-size:10px;color:#a5b4fc;margin-left:4px;}
     .status-pending{color:#f59e0b;font-weight:700;}
     .status-approved{color:#10b981;font-weight:700;}
     .status-rejected{color:#ef4444;font-weight:700;}
@@ -29,79 +30,77 @@
     .approve-btn:hover{opacity:.85;}
     .reject-btn:hover{background:#ef4444;color:#fff;}
     .empty{text-align:center;padding:60px;color:#6b7280;}
-    .back-link{display:inline-block;margin-bottom:20px;font-size:13px;color:#6366f1;cursor:pointer;}
+    .back-link{display:inline-block;margin-bottom:20px;font-size:13px;color:#6366f1;cursor:pointer;text-decoration:none;}
+    .refresh-note{font-size:11px;color:#4b5563;margin-left:12px;}
   </style>
 </head>
 <body>
-  <div class="back-link" onclick="location.href='/community'">← 返回社区首页</div>
-  <h1>🌾 麦穗社区 · 管理后台</h1>
-  <p class="sub">审核用户提交的产品，通过后自动发布到社区。</p>
+  <a class="back-link" href="/">← Back to Community</a>
+  <h1>🌾 WheatCoin Community · Admin Panel</h1>
+  <p class="sub">Review submitted products and publish them to the community. <span class="refresh-note">Auto-refreshes every 15s</span></p>
 
   <div class="tabs">
-    <div class="tab active" onclick="loadTab('pending',this)">待审核 <span class="count-badge" id="pendingCount">0</span></div>
-    <div class="tab" onclick="loadTab('approved',this)">已发布 <span id="approvedCount"></span></div>
-    <div class="tab" onclick="loadTab('rejected',this)">已拒绝</div>
+    <div class="tab active" onclick="loadTab('pending',this)">Pending <span class="count-badge" id="pendingCount" style="display:none">0</span></div>
+    <div class="tab" onclick="loadTab('approved',this)">Published <span id="approvedCount" style="font-size:11px;color:#6b7280;margin-left:4px;"></span></div>
+    <div class="tab" onclick="loadTab('rejected',this)">Rejected</div>
   </div>
 
   <div id="tableWrap"></div>
 
 <script>
-let currentTab = 'pending';
-let allProducts = [];
+let currentTab='pending';
+let allProducts=[];
 
-async function loadAll() {
-  try {
-    // 管理接口：获取所有产品（含 pending）
-    const res = await fetch('/api/community/products?all=1');
-    allProducts = await res.json();
-  } catch(e) {
-    // 若接口不区分，用本地模拟
-    allProducts = [];
-  }
-  updateCounts();
-  renderTable(currentTab);
+async function loadAll(){
+  try{
+    const res=await fetch('/api/products/all');
+    allProducts=await res.json();
+  }catch(e){allProducts=[];}
+  updateCounts();renderTable(currentTab);
 }
 
-function updateCounts() {
-  const pending = allProducts.filter(p=>p.status==='pending').length;
-  document.getElementById('pendingCount').textContent = pending;
-  document.getElementById('pendingCount').style.display = pending ? 'inline-block' : 'none';
-  document.getElementById('approvedCount').textContent =
-    allProducts.filter(p=>p.status==='approved').length || '';
+function updateCounts(){
+  const pending=allProducts.filter(p=>p.status==='pending').length;
+  const el=document.getElementById('pendingCount');
+  el.textContent=pending;el.style.display=pending?'inline-block':'none';
+  const approved=allProducts.filter(p=>p.status==='approved').length;
+  document.getElementById('approvedCount').textContent=approved?`(${approved})`:'';
 }
 
-function loadTab(status, el) {
-  currentTab = status;
+function loadTab(status,el){
+  currentTab=status;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');
-  renderTable(status);
+  el.classList.add('active');renderTable(status);
 }
 
-function renderTable(status) {
-  const list = allProducts.filter(p=>p.status===status);
-  const wrap = document.getElementById('tableWrap');
-  if (!list.length) {
-    wrap.innerHTML = '<div class="empty">暂无记录</div>'; return;
-  }
-  wrap.innerHTML = `<table>
+function renderTable(status){
+  const list=allProducts.filter(p=>p.status===status);
+  const wrap=document.getElementById('tableWrap');
+  if(!list.length){wrap.innerHTML=`<div class="empty">No ${status} submissions.</div>`;return;}
+  wrap.innerHTML=`<table>
     <thead><tr>
-      <th>产品</th><th>类别</th><th>链接</th><th>联系</th><th>提交时间</th><th>操作</th>
+      <th>Product</th><th>Category</th><th>Website</th><th>Contact</th><th>Submitted</th><th>Action</th>
     </tr></thead>
     <tbody>
       ${list.map(p=>`
         <tr>
-          <td><div class="name">${p.name}</div><div class="tagline">${p.tagline}</div></td>
-          <td><span class="tag">${p.tag||'-'}</span></td>
-          <td style="font-size:12px;color:#6366f1;max-width:140px;word-break:break-all;">
-            ${p.url ? `<a href="${p.url}" target="_blank" style="color:#6366f1;">${p.url.substring(0,40)}…</a>` : '-'}
-          </td>
-          <td style="font-size:12px;color:#9ca3af;">${p.contact||'-'}</td>
-          <td style="font-size:12px;color:#6b7280;white-space:nowrap;">${p.receivedAt?.substring(0,10)||'-'}</td>
           <td>
-            ${status==='pending' ? `
-              <button class="action-btn approve-btn" onclick="review(${p.id},'approved')">✅ 通过</button>
-              <button class="action-btn reject-btn" onclick="review(${p.id},'rejected')">✗ 拒绝</button>
-            ` : `<span class="status-${status}">${status==='approved'?'✅ 已发布':'✗ 已拒绝'}</span>`}
+            <div class="name">${p.icon||'🤖'} ${p.name}
+              ${p.source==='genius_plan'?'<span class="source-badge">⚡ Genius Plan</span>':''}
+            </div>
+            <div class="tagline">${p.tagline||''}</div>
+          </td>
+          <td><span class="tag">${p.tag||'—'}</span></td>
+          <td style="font-size:12px;max-width:140px;word-break:break-all;">
+            ${p.url?`<a href="${p.url}" target="_blank" style="color:#6366f1;">${p.url.substring(0,40)}…</a>`:'—'}
+          </td>
+          <td style="font-size:12px;color:#9ca3af;">${p.contact||'—'}</td>
+          <td style="font-size:12px;color:#6b7280;white-space:nowrap;">${(p.receivedAt||'').substring(0,10)||'—'}</td>
+          <td>
+            ${status==='pending'?`
+              <button class="action-btn approve-btn" onclick="review(${p.id},'approved')">✅ Approve</button>
+              <button class="action-btn reject-btn" onclick="review(${p.id},'rejected')">✗ Reject</button>
+            `:`<span class="status-${status}">${status==='approved'?'✅ Published':'✗ Rejected'}</span>`}
           </td>
         </tr>
       `).join('')}
@@ -109,22 +108,17 @@ function renderTable(status) {
   </table>`;
 }
 
-async function review(id, status) {
-  try {
-    await fetch('/api/community/review', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ id, status })
-    });
-    // 本地更新
-    const idx = allProducts.findIndex(p=>p.id==id);
-    if (idx>=0) allProducts[idx].status = status;
-    updateCounts();
-    renderTable(currentTab);
-  } catch(e) { alert('操作失败，请检查服务器'); }
+async function review(id,status){
+  try{
+    await fetch('/api/products/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
+    const idx=allProducts.findIndex(p=>p.id==id);
+    if(idx>=0)allProducts[idx].status=status;
+    updateCounts();renderTable(currentTab);
+  }catch(e){alert('Action failed. Please check server.');}
 }
 
 loadAll();
-setInterval(loadAll, 15000); // 每15秒自动刷新
+setInterval(loadAll,15000);
 </script>
 </body>
 </html>
