@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 
 const PORT = process.env.PORT || 3737;
 const DB_FILE = path.join(__dirname, 'data', 'products.json');
@@ -8,6 +9,36 @@ const DB_FILE = path.join(__dirname, 'data', 'products.json');
 // 确保数据目录存在
 if (!fs.existsSync(path.join(__dirname, 'data'))) {
   fs.mkdirSync(path.join(__dirname, 'data'));
+}
+
+
+// ==========================================
+// 🚨 发送订单通知到 Telegram 的无数据库接单逻辑
+// ==========================================
+function sendToTelegram(order) {
+  // 填写你的 Telegram 机器人 Token
+  const token = process.env.TELEGRAM_BOT_TOKEN || '8584844135:AAHdTAgCz5mTrcpImpH7hMlcbcuG2ExB1GQ';
+  const chatId = '8309413776'; // 你的 Telegram Chat ID (Terry)
+  
+  const text = encodeURIComponent(
+    '🚨 <b>新订单 (天才发射台)</b>\n\n' +
+    '<b>单号:</b> ' + order.id + '\n' +
+    '<b>产品:</b> ' + (order.product || '无') + '\n' +
+    '<b>用户:</b> ' + (order.audience || '无') + '\n' +
+    '<b>联系方式:</b> ' + (order.contact || '无') + '\n' +
+    '<b>套餐:</b> ' + (order.plan || '无') + '\n' +
+    '<b>支付:</b> ' + (order.price || '无') + ' (' + (order.paymentMethod || '无') + ')\n' +
+    '<b>时间:</b> ' + order.receivedAt
+  );
+
+  const req = https.request({
+    hostname: 'api.telegram.org',
+    port: 443,
+    path: '/bot' + token + '/sendMessage?chat_id=' + chatId + '&parse_mode=HTML&text=' + text,
+    method: 'GET'
+  });
+  req.on('error', (e) => console.error('Telegram 通知失败:', e.message));
+  req.end();
 }
 
 function readDB() {
@@ -196,6 +227,7 @@ const server = http.createServer(async (req, res) => {
       orders.unshift(order);
       fs.writeFileSync(orderFile, JSON.stringify(orders, null, 2), 'utf8');
       console.log(`⚡ [天才发射台] 新订单: ${data.plan} | ${data.contact}`);
+      sendToTelegram(order);
 
       // 自动发布产品到社区（状态 pending，待审核）
       if (data.product) {
