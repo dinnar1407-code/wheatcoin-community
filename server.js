@@ -6,8 +6,53 @@ const https = require('https');
 const Database = require('better-sqlite3');
 
 const PORT = process.env.PORT || 3737;
-const dbPath = path.join(__dirname, 'data', 'community.db');
+
+// Ensure data directory exists
+const dataDir = path.join(__dirname, 'data');
+if (!fs.existsSync(dataDir)) {
+  fs.mkdirSync(dataDir, { recursive: true });
+}
+
+const dbPath = path.join(dataDir, 'community.db');
 const db = new Database(dbPath);
+
+// Ensure tables exist
+db.exec(`
+  CREATE TABLE IF NOT EXISTS products (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    tagline TEXT,
+    desc TEXT,
+    url TEXT,
+    tag TEXT,
+    contact TEXT,
+    contributor TEXT,
+    wallet TEXT,
+    icon TEXT,
+    votes INTEGER DEFAULT 0,
+    featured INTEGER DEFAULT 0,
+    status TEXT DEFAULT 'pending',
+    source TEXT DEFAULT 'community',
+    receivedAt TEXT,
+    reviewedAt TEXT
+  );
+  CREATE TABLE IF NOT EXISTS contributors (
+    username TEXT PRIMARY KEY,
+    wallet TEXT,
+    points INTEGER DEFAULT 0,
+    whc INTEGER DEFAULT 0
+  );
+  CREATE TABLE IF NOT EXISTS orders (
+    id INTEGER PRIMARY KEY,
+    product TEXT,
+    audience TEXT,
+    contact TEXT,
+    plan TEXT,
+    price TEXT,
+    paymentMethod TEXT,
+    receivedAt TEXT
+  );
+`);
 
 function sendToTelegram(order) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
