@@ -36,6 +36,7 @@ db.exec(`
     receivedAt TEXT,
     reviewedAt TEXT
   );
+  CREATE TABLE IF NOT EXISTS votes_log (ip TEXT, product_id INTEGER, timestamp TEXT, PRIMARY KEY (ip, product_id));
   CREATE TABLE IF NOT EXISTS contributors (
     username TEXT PRIMARY KEY,
     wallet TEXT,
@@ -220,8 +221,22 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && url === '/api/products/vote') {
     try {
       const { id } = await parseBody(req);
-      db.prepare("UPDATE products SET votes = votes + 1 WHERE id = ?").run(id);
-      const product = db.prepare("SELECT votes FROM products WHERE id = ?").get(id);
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+
+      const hasVoted = db.prepare("SELECT 1 FROM votes_log WHERE ip = ? AND product_id = ?").get(ip, id);
+      if (hasVoted) {
+        res.writeHead(429, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'You have already voted for this product.' }));
+        return;
+      }
+
+      const voteTransaction = db.transaction(() => {
+        db.prepare("INSERT INTO votes_log (ip, product_id, timestamp) VALUES (?, ?, ?)").run(ip, id, new Date().toISOString());
+        db.prepare("UPDATE products SET votes = votes + 1 WHERE id = ?").run(id);
+        return db.prepare("SELECT votes FROM products WHERE id = ?").get(id);
+      });
+
+      const product = voteTransaction();
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, votes: product ? product.votes : 0 }));
     } catch(e) {

@@ -416,12 +416,17 @@ function localizeTag(tag) {
 }
 
 function isNew(d){return(Date.now()-new Date(d))<3*24*3600*1000;}
-function upvote(id,btn){
-  if(voted.has(id))return; voted.add(id);
+async function upvote(id,btn){
+  if(voted.has(id))return;
+  const res = await fetch('/api/products/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).catch(()=>{});
+  if(res && res.status === 429) {
+    alert(lang === 'zh' ? '你已经投过票啦！' : 'You have already voted!');
+    return;
+  }
+  voted.add(id);
   const p=products.find(x=>x.id===id); if(p) p.votes++;
   document.getElementById('vote-'+id).textContent=p.votes;
   btn.classList.add('voted');
-  fetch('/api/products/vote',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id})}).catch(()=>{});
   document.getElementById('statVotes').textContent=products.reduce((s,p)=>s+p.votes,0);
 }
 function filterTag(engKey, el){
