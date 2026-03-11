@@ -242,6 +242,9 @@
       <div class="icon">🌾</div>
       <h3 data-i="successTitle">Submitted Successfully!</h3>
       <p data-i="successDesc">We'll review your submission within <strong>24 hours</strong>.<br/>You'll be notified once it's live.<br/><br/><a href="/launch" style="color:#a5b4fc;font-weight:700;" data-i="successCta">👉 Get a Genius Launch Pad marketing plan</a></p>
+      <div style="margin-top: 24px;">
+        <button class="modal-btn" onclick="document.getElementById('submitModal').classList.remove('active')" data-i="btnClose">Close / 关闭</button>
+      </div>
     </div>
   </div>
 </div>
@@ -285,7 +288,7 @@ const I18N = {
     footerDesc:'AI Agent Product Discovery', footerLaunch:'Genius Launch Pad',
     featuredBadge:'⭐ Featured', newBadge:'🆕 New',
     upvote:'▲', alertFields:'Please fill in all required fields 😊',
-    selectCat:'Please select a category', successCta:'👉 Get a Genius Launch Pad marketing plan',
+    selectCat:'Please select a category', successCta:'👉 Get a Genius Launch Pad marketing plan', btnClose:'Close',
   },
   zh: {
     navDiscover:'发现产品', navLeaderboard:'贡献榜单', navLaunch:'天才发射台', navSubmit:'+ 提交产品',
@@ -317,7 +320,7 @@ const I18N = {
     footerDesc:'AI Agent 产品发现平台', footerLaunch:'天才发射台',
     featuredBadge:'⭐ 精选', newBadge:'🆕 新上架',
     upvote:'▲', alertFields:'请填写所有必填项 😊',
-    selectCat:'请选择分类', successCta:'👉 立即获取天才发射台营销方案',
+    selectCat:'请选择分类', successCta:'👉 立即获取天才发射台营销方案', btnClose:'关闭',
   }
 };
 

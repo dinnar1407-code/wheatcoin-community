@@ -1,24 +1,18 @@
+require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const Database = require('better-sqlite3');
 
 const PORT = process.env.PORT || 3737;
-const DB_FILE = path.join(__dirname, 'data', 'products.json');
+const dbPath = path.join(__dirname, 'data', 'community.db');
+const db = new Database(dbPath);
 
-// 确保数据目录存在
-if (!fs.existsSync(path.join(__dirname, 'data'))) {
-  fs.mkdirSync(path.join(__dirname, 'data'));
-}
-
-
-// ==========================================
-// 🚨 发送订单通知到 Telegram 的无数据库接单逻辑
-// ==========================================
 function sendToTelegram(order) {
-  // 填写你的 Telegram 机器人 Token
-  const token = process.env.TELEGRAM_BOT_TOKEN || '8584844135:AAHdTAgCz5mTrcpImpH7hMlcbcuG2ExB1GQ';
-  const chatId = '8309413776'; // 你的 Telegram Chat ID (Terry)
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId) return;
   
   const text = encodeURIComponent(
     '🚨 <b>新订单 (天才发射台)</b>\n\n' +
@@ -41,15 +35,6 @@ function sendToTelegram(order) {
   req.end();
 }
 
-function readDB() {
-  if (!fs.existsSync(DB_FILE)) return [];
-  try { return JSON.parse(fs.readFileSync(DB_FILE, 'utf8')); } catch { return []; }
-}
-
-function writeDB(data) {
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
 function serveFile(res, filePath, contentType) {
   try {
     const content = fs.readFileSync(filePath, 'utf8');
@@ -60,31 +45,18 @@ function serveFile(res, filePath, contentType) {
   }
 }
 
-const DB_CONTRIB = path.join(__dirname, "data", "contributors.json");
-
-function readContributors() {
-  if (!fs.existsSync(DB_CONTRIB)) return [];
-  try { return JSON.parse(fs.readFileSync(DB_CONTRIB, "utf8")); } catch { return []; }
-}
-
-function writeContributors(data) {
-  fs.writeFileSync(DB_CONTRIB, JSON.stringify(data, null, 2), "utf8");
-}
-
 function addPoints(username, wallet, points) {
   if (!username) return;
-  const contributors = readContributors();
-  let user = contributors.find(c => c.username === username);
+  const stmtGet = db.prepare("SELECT * FROM contributors WHERE username = ?");
+  let user = stmtGet.get(username);
+  
   if (!user) {
-    user = { username, wallet: wallet || "", points: 0, whc: 0 };
-    contributors.push(user);
+    db.prepare("INSERT INTO contributors (username, wallet, points, whc) VALUES (?, ?, ?, ?)").run(username, wallet || "", points, points);
+  } else {
+    const newWallet = (wallet && !user.wallet) ? wallet : user.wallet;
+    db.prepare("UPDATE contributors SET points = points + ?, whc = whc + ?, wallet = ? WHERE username = ?").run(points, points, newWallet, username);
   }
-  user.points += points;
-  user.whc += points;
-  if (wallet && !user.wallet) user.wallet = wallet;
-  contributors.sort((a, b) => b.points - a.points);
-  writeContributors(contributors);
-  console.log(`🏆 [积分增加] ${username} +${points} pts (Total: ${user.points})`);
+  console.log(`🏆 [积分增加] ${username} +${points} pts`);
 }
 
 function parseBody(req) {
@@ -104,47 +76,47 @@ const server = http.createServer(async (req, res) => {
   const url = req.url.split('?')[0];
 
   // ── 页面路由 ───────────────────────────────────────
-  if (req.method === 'GET' && url === '/') {
-    serveFile(res, path.join(__dirname, 'index.html'), 'text/html'); return;
-  }
-  if (req.method === 'GET' && url === '/admin') {
-    serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return;
-  }
-  if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) {
-    serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return;
-  }
-  // 天才发射台 / 营销方案
-  if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) {
-    serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return;
-  }
+  if (req.method === 'GET' && url === '/') { serveFile(res, path.join(__dirname, 'index.html'), 'text/html'); return; }
+  if (req.method === 'GET' && url === '/admin') { serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return; }
+  if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
+  if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
 
   // ── API ───────────────────────────────────────────
 
-  // 排行榜 API
+  function checkAdminAuth(req) {
+    const adminPass = process.env.ADMIN_PASSWORD;
+    if (!adminPass) return true; // 如果没有配密码，默认放行（方便本地开发）
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return false;
+    const token = authHeader.replace('Bearer ', '');
+    return token === adminPass;
+  }
+
   if (req.method === "GET" && url === "/api/leaderboard") {
+    const rows = db.prepare("SELECT * FROM contributors ORDER BY points DESC").all();
     res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
-    res.end(JSON.stringify(readContributors())); return;
+    res.end(JSON.stringify(rows)); return;
   }
 
-  // 获取产品列表（公开：只返回 approved）
   if (req.method === 'GET' && url === '/api/products') {
-    const all = readDB();
-    const approved = all.filter(p => p.status === 'approved');
+    const rows = db.prepare("SELECT * FROM products WHERE status = 'approved' ORDER BY id DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify(approved)); return;
+    res.end(JSON.stringify(rows)); return;
   }
 
-  // 获取全部（管理后台用）
   if (req.method === 'GET' && url === '/api/products/all') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    const rows = db.prepare("SELECT * FROM products ORDER BY id DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
-    res.end(JSON.stringify(readDB())); return;
+    res.end(JSON.stringify(rows)); return;
   }
 
-  // 提交产品
   if (req.method === 'POST' && url === '/api/products/submit') {
     try {
       const data = await parseBody(req);
-      const products = readDB();
       const entry = {
         id: Date.now(),
         name: data.name || '',
@@ -157,13 +129,15 @@ const server = http.createServer(async (req, res) => {
         wallet: data.wallet || '',
         icon: data.icon || '🤖',
         votes: 0,
-        featured: false,
+        featured: 0,
         status: 'pending',
-        source: data.source || 'community', // 'community' | 'genius_plan'
+        source: data.source || 'community',
         receivedAt: new Date().toISOString()
       };
-      products.unshift(entry);
-      writeDB(products);
+      
+      db.prepare(`INSERT INTO products (id, name, tagline, desc, url, tag, contact, contributor, wallet, icon, votes, featured, status, source, receivedAt)
+        VALUES (@id, @name, @tagline, @desc, @url, @tag, @contact, @contributor, @wallet, @icon, @votes, @featured, @status, @source, @receivedAt)`).run(entry);
+        
       console.log(`🌾 [新投稿] ${entry.name} | ${entry.contact} | 来源: ${entry.source}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true, id: entry.id }));
@@ -173,23 +147,21 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 审核（approve / reject）
   if (req.method === 'POST' && url === '/api/products/review') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     try {
       const { id, status } = await parseBody(req);
-      const products = readDB();
-      const idx = products.findIndex(p => p.id == id);
-      if (idx >= 0) {
-        // Check if status changed to approved to grant points
-        const wasApproved = products[idx].status === "approved";
-        products[idx].status = status;
-        products[idx].reviewedAt = new Date().toISOString();
-        writeDB(products);
+      const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
+      if (product) {
+        const wasApproved = product.status === "approved";
+        db.prepare("UPDATE products SET status = ?, reviewedAt = ? WHERE id = ?").run(status, new Date().toISOString(), id);
         console.log(`[审核] ID ${id} → ${status}`);
         
-        // 发放积分: +50 WHC points for submission approval
-        if (status === "approved" && !wasApproved && products[idx].contributor) {
-          addPoints(products[idx].contributor, products[idx].wallet, 50);
+        if (status === "approved" && !wasApproved && product.contributor) {
+          addPoints(product.contributor, product.wallet, 50);
         }
       }
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -200,38 +172,40 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 投票
   if (req.method === 'POST' && url === '/api/products/vote') {
     try {
       const { id } = await parseBody(req);
-      const products = readDB();
-      const idx = products.findIndex(p => p.id == id);
-      if (idx >= 0) products[idx].votes = (products[idx].votes || 0) + 1;
-      writeDB(products);
+      db.prepare("UPDATE products SET votes = votes + 1 WHERE id = ?").run(id);
+      const product = db.prepare("SELECT votes FROM products WHERE id = ?").get(id);
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true, votes: products[idx]?.votes }));
+      res.end(JSON.stringify({ ok: true, votes: product ? product.votes : 0 }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
     return;
   }
 
-  // ── 天才发射台提交（下单 → 自动发布到社区）───────────
   if (req.method === 'POST' && url === '/api/launch/submit') {
     try {
       const data = await parseBody(req);
-      // 保存订单
-      const orderFile = path.join(__dirname, 'data', 'orders.json');
-      let orders = fs.existsSync(orderFile) ? JSON.parse(fs.readFileSync(orderFile, 'utf8')) : [];
-      const order = { ...data, id: Date.now(), receivedAt: new Date().toISOString() };
-      orders.unshift(order);
-      fs.writeFileSync(orderFile, JSON.stringify(orders, null, 2), 'utf8');
+      const order = {
+        id: Date.now(),
+        product: data.product || '',
+        audience: data.audience || '',
+        contact: data.contact || '',
+        plan: data.plan || '',
+        price: data.price || '',
+        paymentMethod: data.paymentMethod || '',
+        receivedAt: new Date().toISOString()
+      };
+      
+      db.prepare(`INSERT INTO orders (id, product, audience, contact, plan, price, paymentMethod, receivedAt)
+        VALUES (@id, @product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt)`).run(order);
+        
       console.log(`⚡ [天才发射台] 新订单: ${data.plan} | ${data.contact}`);
       sendToTelegram(order);
 
-      // 自动发布产品到社区（状态 pending，待审核）
       if (data.product) {
-        const products = readDB();
         const autoEntry = {
           id: Date.now() + 1,
           name: data.product.substring(0, 40),
@@ -240,17 +214,17 @@ const server = http.createServer(async (req, res) => {
           url: '',
           tag: 'AI Agent',
           contact: data.contact || '',
-        contributor: data.contributor || '',
-        wallet: data.wallet || '',
+          contributor: data.contributor || '',
+          wallet: data.wallet || '',
           icon: '⚡',
           votes: 0,
-          featured: false,
+          featured: 0,
           status: 'pending',
           source: 'genius_plan',
           receivedAt: new Date().toISOString()
         };
-        products.unshift(autoEntry);
-        writeDB(products);
+        db.prepare(`INSERT INTO products (id, name, tagline, desc, url, tag, contact, contributor, wallet, icon, votes, featured, status, source, receivedAt)
+          VALUES (@id, @name, @tagline, @desc, @url, @tag, @contact, @contributor, @wallet, @icon, @votes, @featured, @status, @source, @receivedAt)`).run(autoEntry);
         console.log(`🌾 [自动投稿] ${autoEntry.name} 已提交社区审核`);
       }
 
@@ -262,17 +236,17 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  // 健康检查
   if (req.method === 'GET' && url === '/health') {
+    const count = db.prepare("SELECT COUNT(*) as count FROM products").get().count;
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ ok: true, products: readDB().length })); return;
+    res.end(JSON.stringify({ ok: true, products: count })); return;
   }
 
   res.writeHead(404); res.end('Not found');
 });
 
 server.listen(PORT, () => {
-  console.log(`\n🌾 麦穗社区服务器已启动`);
+  console.log(`\n🌾 麦穗社区服务器已启动 (SQLite模式)`);
   console.log(`🌐 http://localhost:${PORT}`);
   console.log(`🔧 管理后台: http://localhost:${PORT}/admin\n`);
 });

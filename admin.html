@@ -48,12 +48,26 @@
   <div id="tableWrap"></div>
 
 <script>
+let adminToken = localStorage.getItem('wheat_admin_token') || '';
 let currentTab='pending';
 let allProducts=[];
 
 async function loadAll(){
+  if (!adminToken) {
+    adminToken = prompt("Enter Admin Password:");
+    if (!adminToken) return;
+    localStorage.setItem('wheat_admin_token', adminToken);
+  }
   try{
-    const res=await fetch('/api/products/all');
+    const res=await fetch('/api/products/all', {
+      headers: { 'Authorization': 'Bearer ' + adminToken }
+    });
+    if (res.status === 401) {
+      alert("Unauthorized! Incorrect password.");
+      localStorage.removeItem('wheat_admin_token');
+      adminToken = '';
+      return;
+    }
     allProducts=await res.json();
   }catch(e){allProducts=[];}
   updateCounts();renderTable(currentTab);
@@ -110,7 +124,18 @@ function renderTable(status){
 
 async function review(id,status){
   try{
-    await fetch('/api/products/review',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,status})});
+    const res = await fetch('/api/products/review',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': 'Bearer ' + adminToken
+      },
+      body:JSON.stringify({id,status})
+    });
+    if (res.status === 401) {
+      alert("Unauthorized! Incorrect password.");
+      return;
+    }
     const idx=allProducts.findIndex(p=>p.id==id);
     if(idx>=0)allProducts[idx].status=status;
     updateCounts();renderTable(currentTab);
