@@ -238,9 +238,12 @@
       <div class="copy-hint" id="copyHintWHC" data-i="clickCopy2">👆 Click to copy</div>
       <div style="margin-top:8px;font-size:11px;color:#6b7280;">CA: <span style="color:#f4c430;font-family:monospace;font-size:10px;word-break:break-all;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</span></div>
     </div>
-    <div class="modal-btns">
-      <button class="modal-btn secondary" onclick="closeModal('whc')" data-i="cancel2">Cancel</button>
-      <button class="modal-btn primary whc" onclick="confirmPayment('whc')" data-i="iPaid2">✅ I've Paid</button>
+    <div class="modal-btns" style="flex-direction:column; gap:10px;">
+      <button class="modal-btn primary whc" id="solanaPayBtn" onclick="payWithPhantom()" style="background: linear-gradient(135deg, #ab9ff2, #512da8); color: #fff; font-size:16px;">🟣 Pay via Phantom / Solana Pay</button>
+      <div style="display:flex; gap:10px; width:100%;">
+        <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')" data-i="cancel2">Cancel</button>
+        <button class="modal-btn secondary" style="flex:1; color:#f4c430; border-color:#3a3000;" onclick="confirmPayment('whc')" data-i="iPaid2">✅ I've Paid Manually</button>
+      </div>
     </div>
   </div>
 </div>
@@ -432,6 +435,18 @@ function copyAddr(type) {
     const el=document.getElementById(hints[type]);
     if(el){el.textContent=lang==='zh'?'✅ 已复制！':'✅ Copied!';setTimeout(()=>el.textContent=lang==='zh'?'👆 点击复制地址':'👆 Click to copy',2000);}
   });
+}
+
+function payWithPhantom() {
+  const plan = PLANS[selectedPlan];
+  const amount = plan.whcDiscount;
+  const recipient = "6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK";
+  const splToken = "4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump";
+  const uri = `solana:${recipient}?amount=${amount}&spl-token=${splToken}&message=Wheat%20Launch%20Pad`;
+  window.location.href = uri;
+  setTimeout(() => {
+    alert(lang === 'zh' ? '正在唤起 Phantom 钱包 / Solana Pay...\\n支付完成后，请点击【我已手动支付】提交订单。' : 'Attempting to open Phantom / Solana Pay...\\nAfter confirming the transaction, click [I\\'ve Paid Manually] to submit your order.');
+  }, 800);
 }
 
 function closeModal(type){document.getElementById(type==='whc'?'payModalWHC':'payModalUSDT').classList.remove('show');}
