@@ -134,19 +134,26 @@ const server = http.createServer(async (req, res) => {
 
   // ── 页面路由 ───────────────────────────────────────
   if (req.method === 'GET' && url === '/') { serveFile(res, path.join(__dirname, 'index.html'), 'text/html'); return; }
-  if (req.method === 'GET' && url === '/admin') { serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return; }
+  if (req.method === 'GET' && url === '/admin') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Unauthorized'); return;
+    }
+    serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return;
+  }
   if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
 
   // ── API ───────────────────────────────────────────
 
   function checkAdminAuth(req) {
-    const adminPass = process.env.ADMIN_PASSWORD;
-    if (!adminPass) return true; // 如果没有配密码，默认放行（方便本地开发）
-    const authHeader = req.headers['authorization'];
-    if (!authHeader) return false;
-    const token = authHeader.replace('Bearer ', '');
-    return token === adminPass;
+    const adminToken = process.env.ADMIN_TOKEN;
+    // Require ADMIN_TOKEN to be set.
+    if (!adminToken) return false; 
+    
+    // Check for custom headers: 'x-admin-token' or 'admin-token'
+    const providedToken = req.headers['x-admin-token'] || req.headers['admin-token'];
+    return providedToken === adminToken;
   }
 
   if (req.method === "GET" && url === "/api/leaderboard") {
@@ -185,6 +192,43 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
     return;
+  }
+
+  
+  if (req.method === 'GET' && url === '/api/orders') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    const rows = db.prepare("SELECT * FROM orders ORDER BY receivedAt DESC").all();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(rows)); return;
+  }
+
+  if (req.method === 'POST' && url === '/api/orders/update') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    try {
+      const { id, status } = await parseBody(req);
+      db.prepare("UPDATE orders SET status = ? WHERE id = ?").run(status, id);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && url === '/api/leads') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    const rows = db.prepare("SELECT * FROM leads ORDER BY id DESC").all();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(rows)); return;
   }
 
   if (req.method === 'POST' && url === '/api/products/submit') {
