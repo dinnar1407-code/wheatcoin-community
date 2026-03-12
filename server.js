@@ -262,7 +262,7 @@ const server = http.createServer(async (req, res) => {
       const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
       const domain = protocol + '://' + host;
 
-      const orderId = 'ORD-' + Date.now();
+      const orderId = Date.now();
       const planName = data.plan; // basic, pro, vip
       const priceAmount = data.price; // 9.9, 39.9, 149.9
 
@@ -277,9 +277,9 @@ const server = http.createServer(async (req, res) => {
           quantity: 1,
         }],
         mode: 'payment',
-        success_url: domain + '/launch?success=true&order_id=' + orderId,
+        success_url: domain + '/launch?success=true&order_id=ORD-' + orderId,
         cancel_url: domain + '/launch?canceled=true',
-        client_reference_id: orderId,
+        client_reference_id: orderId.toString(),
       });
 
       const order = {
