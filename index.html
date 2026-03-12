@@ -132,6 +132,17 @@
   </div>
 </section>
 
+
+<div style="max-width: 800px; margin: 0 auto 48px; background: linear-gradient(135deg, #1a1a2e, #13131a); border: 1px solid #6366f1; border-radius: 16px; padding: 32px; text-align: center; box-shadow: 0 0 30px rgba(99,102,241,0.15);">
+  <h2 style="font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px;" data-i="lmTitle">🎁 Free Guide: The AI Founder Launch Playbook (2026)</h2>
+  <p style="font-size: 14px; color: #a5b4fc; margin-bottom: 24px;" data-i="lmDesc">Stop building in the dark. 5 proven frameworks to get your first 1,000 paying users without VC money. Join 500+ builders.</p>
+  <form onsubmit="submitLead(event)" style="display: flex; gap: 10px; max-width: 400px; margin: 0 auto;">
+    <input type="email" id="lmEmail" placeholder="Enter your email address" required style="flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid #2a2a3a; background: #0a0a0f; color: #fff; outline: none;">
+    <button type="submit" style="padding: 12px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap;" data-i="lmBtn">Send me the PDF</button>
+  </form>
+  <div id="lmSuccess" style="display: none; color: #10b981; font-weight: 700; font-size: 14px; margin-top: 16px;" data-i="lmSuccess">✅ Success! Check your inbox (and spam folder) in 5 minutes.</div>
+</div>
+
 <div class="stats">
   <div class="stat"><div class="stat-num" id="statProducts">12</div><div class="stat-label" data-i="statProducts">Products Listed</div></div>
   <div class="stat"><div class="stat-num">847</div><div class="stat-label" data-i="statVisitors">Weekly Visitors</div></div>
@@ -264,6 +275,7 @@ const I18N = {
     heroH1:'Discover the Best<br/>AI Agent Apps',
     heroP:"Wheat Community is an open platform for discovering and sharing AI Agent products.<br/>Submit your product for free and reach real users.",
     heroBtn1:'🚀 Submit My Product — Free', heroBtn2:'🌾 Buy $WHC', heroBtn3:'Get Marketing Plan →',
+    lmTitle:'🎁 Free Guide: The AI Founder Launch Playbook (2026)', lmDesc:'Stop building in the dark. 5 proven frameworks to get your first 1,000 paying users without VC money. Join 500+ builders.', lmBtn:'Send me the PDF', lmSuccess:'✅ Success! Check your inbox (and spam folder) in 5 minutes.',
     statProducts:'Products Listed', statVisitors:'Weekly Visitors', statVotes:'Total Upvotes', statToken:'Community Token',
     modLaunchTitle:'Genius Launch Pad', modLaunchDesc:"AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.",
     modFeatTitle:'Featured Spot', modFeatDesc:"Pin your product at the top. 500 WHC / 7 days.<br/>$WHC payments only — limited slots.",
@@ -296,6 +308,7 @@ const I18N = {
     heroH1:'发现最好的<br/>AI Agent 应用',
     heroP:"麦穗社区是一个开放的 AI Agent 产品发现与分享平台。<br/>免费提交你的产品，触达真实用户。",
     heroBtn1:'🚀 免费提交我的产品', heroBtn2:'🌾 购买 $WHC', heroBtn3:'获取营销方案 →',
+    lmTitle:'🎁 免费指南: AI 创始人发车手册 (2026)', lmDesc:'不要再闭门造车了。5套经验证的框架，不拿融资也能获取前 1000 名付费用户。加入 500+ 独立开发者的行列。', lmBtn:'发送 PDF 给我', lmSuccess:'✅ 索取成功！请在 5 分钟内检查您的邮箱（含垃圾箱）。',
     statProducts:'已上架产品', statVisitors:'每周访客', statVotes:'总投票数', statToken:'社区代币',
     modLaunchTitle:'天才发射台', modLaunchDesc:"AI 定制营销策略，60 分钟交付。<br/>下单后自动发布到社区广场。",
     modFeatTitle:'精选位竞价', modFeatDesc:"固定在首页最顶部。500 WHC / 7天。<br/>仅限 $WHC 支付，名额有限。",
@@ -448,6 +461,21 @@ function applyFilters(q=''){
   if(sq.trim()) list=list.filter(p=>(p.name+p.tagline+(p.nameZh||'')+(p.taglineZh||'')).toLowerCase().includes(sq.toLowerCase()));
   renderGrid(list);
 }
+
+function submitLead(e) {
+  e.preventDefault();
+  const email = document.getElementById('lmEmail').value;
+  if(!email) return;
+  fetch('/api/leads/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email, source: 'Playbook2026' })
+  }).then(()=> {
+    document.getElementById('lmSuccess').style.display = 'block';
+    document.getElementById('lmEmail').value = '';
+  }).catch(()=>{});
+}
+
 function openSubmit(){document.getElementById('submitModal').classList.add('show');document.getElementById('submitForm').style.display='block';document.getElementById('submitSuccess').style.display='none';}
 function closeSubmit(){document.getElementById('submitModal').classList.remove('show');}
 function submitProduct(){

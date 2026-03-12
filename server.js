@@ -44,6 +44,13 @@ db.exec(`
     points INTEGER DEFAULT 0,
     whc INTEGER DEFAULT 0
   );
+  
+  CREATE TABLE IF NOT EXISTS leads (
+    id INTEGER PRIMARY KEY,
+    email TEXT UNIQUE,
+    source TEXT,
+    receivedAt TEXT
+  );
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
     product TEXT,
@@ -162,6 +169,22 @@ const server = http.createServer(async (req, res) => {
     const rows = db.prepare("SELECT * FROM products ORDER BY id DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
     res.end(JSON.stringify(rows)); return;
+  }
+
+  
+  if (req.method === 'POST' && url === '/api/leads/submit') {
+    try {
+      const data = await parseBody(req);
+      if(data.email) {
+        db.prepare("INSERT OR IGNORE INTO leads (email, source, receivedAt) VALUES (?, ?, ?)").run(data.email, data.source || 'website', new Date().toISOString());
+        console.log(`📧 [New Lead] ${data.email}`);
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
   }
 
   if (req.method === 'POST' && url === '/api/products/submit') {
