@@ -140,6 +140,10 @@
     <input type="email" id="lmEmail" placeholder="Enter your email address" required style="flex: 1; padding: 12px 16px; border-radius: 8px; border: 1px solid #2a2a3a; background: #0a0a0f; color: #fff; outline: none;">
     <button type="submit" style="padding: 12px 24px; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; white-space: nowrap;" data-i="lmBtn">Send me the PDF</button>
   </form>
+  <div id="refSection" style="display:none; margin-top:16px;">
+    <p style="font-size:12px; color:#9ca3af; margin-bottom:8px;">Refer a friend and get 500 WHC:</p>
+    <input id="refLink" readonly style="width:100%; max-width:300px; padding:8px; border-radius:4px; border:none; background:#1e1e2e; color:#fff; font-size:12px;">
+  </div>
   <div id="lmSuccess" style="display: none; color: #10b981; font-weight: 700; font-size: 14px; margin-top: 16px;" data-i="lmSuccess">✅ Success! Check your inbox (and spam folder) in 5 minutes.</div>
 </div>
 
@@ -439,7 +443,26 @@ function applyFilters(q=''){
   renderGrid(list);
 }
 
+
 function submitLead(e) {
+  e.preventDefault();
+  const email = document.getElementById('lmEmail').value;
+  const referrer = new URLSearchParams(window.location.search).get('ref');
+  if(!email) return;
+  fetch('/api/leads/submit', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ email, source: 'Playbook2026', referrer })
+  }).then(()=> {
+    document.getElementById('lmSuccess').style.display = 'block';
+    document.getElementById('lmEmail').value = '';
+    // Show referral link
+    document.getElementById('refSection').style.display = 'block';
+    const refLink = window.location.origin + window.location.pathname + '?ref=' + email;
+    document.getElementById('refLink').value = refLink;
+  }).catch(()=>{});
+}
+
   e.preventDefault();
   const email = document.getElementById('lmEmail').value;
   if(!email) return;
