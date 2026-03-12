@@ -423,8 +423,28 @@ function submitForm() {
     document.getElementById('modalOriginalPrice').textContent=(I18N[lang].was||'was')+' '+plan.whcFull+' WHC';
     document.getElementById('payModalWHC').classList.add('show');
   } else {
-    document.getElementById('modalAmountUSDT').textContent=plan.price;
-    document.getElementById('payModalUSDT').classList.add('show');
+    // Stripe Checkout Flow
+    const btn = document.getElementById('submitBtn');
+    btn.innerHTML = '💳 Redirecting to Stripe...';
+    btn.disabled = true;
+
+    fetch('/api/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: plan.price })
+    }).then(res => res.json()).then(data => {
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert('Stripe is not configured yet. Missing STRIPE_SECRET_KEY in backend.');
+        btn.innerHTML = '💳 Pay Now & Launch';
+        btn.disabled = false;
+      }
+    }).catch(err => {
+      alert('Network error communicating with checkout server.');
+      btn.innerHTML = '💳 Pay Now & Launch';
+      btn.disabled = false;
+    });
   }
 }
 
