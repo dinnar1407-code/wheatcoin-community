@@ -188,18 +188,18 @@
   <div class="footer">Powered by <a href="/">Wheat Community</a> · Genius Plan ⚡</div>
 </div>
 
-<!-- USDT Modal -->
-<div class="modal-overlay" id="payModalUSDT">
+<!-- USD Modal -->
+<div class="modal-overlay" id="payModalUSD">
   <div class="modal">
-    <h2 data-i="usdtModalTitle">💵 Pay with USDT</h2>
-    <p data-i="usdtModalDesc">Send USDT on the <strong>Polygon network</strong> to the address below,<br/>then click "I've Paid" to confirm.</p>
-    <div class="modal-amount usdt" id="modalAmountUSDT">29.9</div>
-    <div class="modal-unit" data-i="usdtUnit">USDT · Polygon Network</div>
+    <h2 data-i="usdtModalTitle">💵 Pay with USD</h2>
+    <p data-i="usdtModalDesc">Send USD on the <strong>Polygon network</strong> to the address below,<br/>then click "I've Paid" to confirm.</p>
+    <div class="modal-amount usdt" id="modalAmountUSD">29.9</div>
+    <div class="modal-unit" data-i="usdtUnit">USD · Polygon Network</div>
     <div class="wallet-box">
-      <strong data-i="network">Network:</strong> Polygon (MATIC) · USDT/USDC<br/>
+      <strong data-i="network">Network:</strong> Polygon (MATIC) · USD/USDC<br/>
       <strong data-i="address">Address:</strong>
       <div class="wallet-addr" onclick="copyAddr('usdt')">0x479F19330F1a343B9d987216ccA80C627BA788e6</div>
-      <div class="copy-hint" id="copyHintUSDT" data-i="clickCopy">👆 Click to copy</div>
+      <div class="copy-hint" id="copyHintUSD" data-i="clickCopy">👆 Click to copy</div>
       <div style="margin-top:10px;font-size:11px;color:#4b5563;" data-i="polygonWarning">⚠️ Only send on <strong style="color:#a5b4fc">Polygon network</strong>. Other networks will not arrive.</div>
     </div>
     <div class="modal-btns">
@@ -286,9 +286,9 @@ const I18N = {
     audiencePH:'e.g. Indie developers, SaaS founders, content creators…',
     contactPH:'Email / Telegram / Twitter',
     btnSubmit:'💳 Pay Now & Launch',
-    usdtModalTitle:'💵 Pay with USDT',
-    usdtModalDesc:'Send USDT on the <strong>Polygon network</strong> to the address below,<br/>then click "I\'ve Paid" to confirm.',
-    usdtUnit:'USDT · Polygon Network', network:'Network:', address:'Address:', clickCopy:'👆 Click to copy',
+    usdtModalTitle:'💵 Pay with USD',
+    usdtModalDesc:'Send USD on the <strong>Polygon network</strong> to the address below,<br/>then click "I\'ve Paid" to confirm.',
+    usdtUnit:'USD · Polygon Network', network:'Network:', address:'Address:', clickCopy:'👆 Click to copy',
     polygonWarning:'⚠️ Only send on <strong style="color:#a5b4fc">Polygon network</strong>.',
     cancel:'Cancel', iPaid:'✅ I\'ve Paid', cancel2:'Cancel', iPaid2:'✅ I\'ve Paid',
     whcModalTitle:'🌾 Pay with $WHC', savingsTag:"🎉 You're saving 40%!",
@@ -325,9 +325,9 @@ const I18N = {
     audiencePH:'例如：独立开发者、SaaS 创始人、内容创作者、超级个体…',
     contactPH:'Email / Telegram / 微信',
     btnSubmit:'💳 立即支付，启动立项',
-    usdtModalTitle:'💵 支付 USDT',
-    usdtModalDesc:'请在 <strong>Polygon 网络</strong>上将 USDT 转入以下地址，<br/>转账完成后点击「已完成支付」。',
-    usdtUnit:'USDT · Polygon 网络', network:'收款网络：', address:'收款地址：', clickCopy:'👆 点击复制地址',
+    usdtModalTitle:'💵 支付 USD',
+    usdtModalDesc:'请在 <strong>Polygon 网络</strong>上将 USD 转入以下地址，<br/>转账完成后点击「已完成支付」。',
+    usdtUnit:'USD · Polygon 网络', network:'收款网络：', address:'收款地址：', clickCopy:'👆 点击复制地址',
     polygonWarning:'⚠️ 请确保在 <strong style="color:#a5b4fc">Polygon 网络</strong>上转账，其他网络无法到账。',
     cancel:'取消', iPaid:'✅ 已完成支付', cancel2:'取消', iPaid2:'✅ 已完成支付',
     whcModalTitle:'🌾 支付麦穗币 $WHC', savingsTag:'🎉 恭喜！享受 6折优惠',
@@ -407,7 +407,7 @@ function updateSummary() {
   } else {
     amountEl.textContent = '$'+plan.price;
     amountEl.className = 'amount';
-    unitEl.textContent = 'USDT';
+    unitEl.textContent = 'USD';
     origEl.style.display='none';
   }
 }
@@ -451,7 +451,7 @@ function submitForm() {
 function copyAddr(type) {
   const addrs={usdt:'0x479F19330F1a343B9d987216ccA80C627BA788e6',whc:'6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK'};
   navigator.clipboard.writeText(addrs[type]).then(()=>{
-    const hints={usdt:'copyHintUSDT',whc:'copyHintWHC'};
+    const hints={usdt:'copyHintUSD',whc:'copyHintWHC'};
     const el=document.getElementById(hints[type]);
     if(el){el.textContent=lang==='zh'?'✅ 已复制！':'✅ Copied!';setTimeout(()=>el.textContent=lang==='zh'?'👆 点击复制地址':'👆 Click to copy',2000);}
   });
@@ -469,7 +469,7 @@ function payWithPhantom() {
   }, 800);
 }
 
-function closeModal(type){document.getElementById(type==='whc'?'payModalWHC':'payModalUSDT').classList.remove('show');}
+function closeModal(type){document.getElementById(type==='whc'?'payModalWHC':'payModalUSD').classList.remove('show');}
 
 function confirmPayment(type){
   const product=document.getElementById('product').value.trim();
@@ -480,7 +480,7 @@ function confirmPayment(type){
   fetch('/api/launch/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: type === 'whc' ? plan.whcDiscount + ' WHC' : plan.price + ' USDT', paymentMethod: type, ts: new Date().toISOString() })
+    body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: type === 'whc' ? plan.whcDiscount + ' WHC' : plan.price + ' USD', paymentMethod: type, ts: new Date().toISOString() })
   }).then(res => {
     if (res.ok) {
       showSuccess(product, audience, contact, plan, type);
@@ -508,7 +508,7 @@ window.onload = () => {
 };
 
   const id='GL-'+Date.now().toString(36).toUpperCase();
-  const payInfo=payType==='whc'?`<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC</strong>`:`<strong>$${plan.price} USDT</strong>`;
+  const payInfo=payType==='whc'?`<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC</strong>`:`<strong>$${plan.price} USD</strong>`;
   const t=I18N[lang];
   document.getElementById('ticket').innerHTML=`<strong>${t.orderId}</strong> ${id}<br/><strong>${t.orderProduct}</strong> ${product.substring(0,50)}…<br/><strong>${t.orderAudience}</strong> ${audience.substring(0,40)}…<br/><strong>${t.orderPayment}</strong> ${payInfo}<br/><strong>${t.orderDeliver}</strong> ${contact}`;
   let total=60*60;
