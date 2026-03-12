@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const Database = require('better-sqlite3');
+const stripe = process.env.STRIPE_SECRET_KEY ? require('stripe')(process.env.STRIPE_SECRET_KEY) : null;
 
 const PORT = process.env.PORT || 3737;
 
@@ -54,6 +55,9 @@ db.exec(`
     receivedAt TEXT
   );
 `);
+
+try { db.exec("ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'pending'"); } catch(e) {}
+try { db.exec("ALTER TABLE orders ADD COLUMN stripe_session_id TEXT"); } catch(e) {}
 
 function sendToTelegram(order) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -241,6 +245,63 @@ const server = http.createServer(async (req, res) => {
       res.end(JSON.stringify({ ok: true, votes: product ? product.votes : 0 }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  
+  if (req.method === 'POST' && url === '/api/create-checkout-session') {
+    if (!stripe) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
+      return;
+    }
+    try {
+      const data = await parseBody(req);
+      const host = req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+      const domain = protocol + '://' + host;
+
+      const orderId = 'ORD-' + Date.now();
+      const planName = data.plan; // basic, pro, vip
+      const priceAmount = data.price; // 9.9, 39.9, 149.9
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'Genius Launch Pad - ' + planName.toUpperCase() + ' Plan' },
+            unit_amount: Math.round(priceAmount * 100), // in cents
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: domain + '/launch?success=true&order_id=' + orderId,
+        cancel_url: domain + '/launch?canceled=true',
+        client_reference_id: orderId,
+      });
+
+      const order = {
+        id: orderId,
+        product: data.product || '',
+        audience: data.audience || '',
+        contact: data.contact || '',
+        plan: data.plan || '',
+        price: data.price + ' USD',
+        paymentMethod: 'card',
+        receivedAt: new Date().toISOString()
+      };
+
+      db.prepare("INSERT INTO orders (id, product, audience, contact, plan, price, paymentMethod, receivedAt, status) VALUES (@id, @product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt, 'pending')").run(order);
+      try { db.prepare("UPDATE orders SET stripe_session_id = ? WHERE id = ?").run(session.id, orderId); } catch(e) {}
+
+      console.log(`💳 [Stripe Checkout] Session created for ${orderId}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: session.url }));
+    } catch(e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
     }
     return;
   }

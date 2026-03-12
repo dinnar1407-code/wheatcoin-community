@@ -119,20 +119,20 @@
     <div class="plans">
       <div class="plan" id="plan-basic" onclick="selectPlan('basic')">
         <div class="plan-name">🌱 <span data-i="planBasicName">Bootstrapper</span></div>
-        <div class="plan-price">$9.9 <span>USDT</span></div>
+        <div class="plan-price">$9.9 <span>USD</span></div>
         <div class="plan-whc" data-i="planBasicWhc">or 50 WHC</div>
         <div class="plan-desc" data-i="planBasicDesc">Skip queue + Basic Directory Submission</div>
       </div>
       <div class="plan selected" id="plan-pro" onclick="selectPlan('pro')">
         <div class="plan-badge" data-i="popular">Popular</div>
         <div class="plan-name">🚀 <span data-i="planProName">Momentum</span></div>
-        <div class="plan-price">$39.9 <span>USDT</span></div>
+        <div class="plan-price">$39.9 <span>USD</span></div>
         <div class="plan-whc" data-i="planProWhc">or 350 WHC</div>
         <div class="plan-desc" data-i="planProDesc">Next-day launch + Featured Placement</div>
       </div>
       <div class="plan" id="plan-vip" onclick="selectPlan('vip')">
         <div class="plan-name">💎 <span data-i="planVipName">Blast-Off</span></div>
-        <div class="plan-price">$149.9 <span>USDT</span></div>
+        <div class="plan-price">$149.9 <span>USD</span></div>
         <div class="plan-whc" data-i="planVipWhc">or 1,200 WHC</div>
         <div class="plan-desc" data-i="planVipDesc">Hero placement + Auto-submit to 60+ directories</div>
       </div>
@@ -144,7 +144,7 @@
     <div class="pay-toggle">
       <div class="pay-option usdt selected" id="pay-usdt" onclick="selectPayment('usdt')">
         <div class="pay-icon">💵</div>
-        <div class="pay-name">USDT</div>
+        <div class="pay-name">USD</div>
         <div class="pay-note" data-i="usdtNote">Polygon Network</div>
       </div>
       <div class="pay-option" id="pay-whc" onclick="selectPayment('whc')">
@@ -166,7 +166,7 @@
     <div class="label" data-i="youPay">You Pay</div>
     <div>
       <span class="amount" id="summaryAmount">$29.9</span>
-      <span id="summaryUnit" style="font-size:13px;color:#6b7280;margin-left:4px;">USDT</span>
+      <span id="summaryUnit" style="font-size:13px;color:#6b7280;margin-left:4px;">USD</span>
       <span class="original" id="summaryOriginal" style="display:none;"></span>
     </div>
   </div>
@@ -279,7 +279,7 @@ const I18N = {
     planBasicDesc:'Skip queue + Basic Directory Submission',
     planProDesc:'Next-day launch + Featured Placement',
     planVipDesc:'Hero placement + Auto-submit to 60+ directories',
-    usdtNote:'Polygon Network', whcNote:'Solana · Save 40%', howToBuy:'How to buy →', discBadge:'40% OFF',
+    usdtNote:'Credit Card / Apple Pay', whcNote:'Solana · Save 40%', howToBuy:'How to buy →', discBadge:'40% OFF',
     whcTipText:"💡 Don't have $WHC? The payment popup includes a step-by-step guide.",
     buyWhcLink:'👉 Buy $WHC on pump.fun now', youPay:'You Pay',
     productPH:'e.g. An AI tool that auto-generates marketing copy for indie developers…',
@@ -318,7 +318,7 @@ const I18N = {
     planBasicDesc:'免排队审核 + 基础导航站收录',
     planProDesc:'次日极速上架 + 首页推荐位强曝光',
     planVipDesc:'全站首页霸屏 + 全自动提交至全网60家导航站',
-    usdtNote:'Polygon 网络', whcNote:'Solana 网络 · 省40%', howToBuy:'如何购买 →', discBadge:'6折',
+    usdtNote:'信用卡 / 借记卡', whcNote:'Solana 网络 · 省40%', howToBuy:'如何购买 →', discBadge:'6折',
     whcTipText:'💡 没有 $WHC？支付弹窗内有一键购买教程，30秒搞定。',
     buyWhcLink:'👉 立即在 pump.fun 购买 $WHC', youPay:'应付金额',
     productPH:'例如：一款帮助独立开发者自动生成营销文案的 AI 工具，支持多平台一键发布…',
@@ -475,7 +475,18 @@ function confirmPayment(type){
 function showSuccess(product,audience,contact,plan,payType){
   document.getElementById('formCard').style.display='none';
   document.getElementById('successCard').style.display='block';
+  
+window.onload = () => {
   setLang(lang);
+  if (window.location.search.includes('success=true')) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const orderId = urlParams.get('order_id') || 'ORD-' + Date.now();
+    document.getElementById('formCard').style.display='none';
+    document.getElementById('successCard').style.display='block';
+    document.getElementById('ticket').innerHTML=`<strong>${I18N[lang].orderId}</strong> ${orderId}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
+  }
+};
+
   const id='GL-'+Date.now().toString(36).toUpperCase();
   const payInfo=payType==='whc'?`<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC</strong>`:`<strong>$${plan.price} USDT</strong>`;
   const t=I18N[lang];
