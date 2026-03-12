@@ -445,7 +445,7 @@ function payWithPhantom() {
   const uri = `solana:${recipient}?amount=${amount}&spl-token=${splToken}&message=Wheat%20Launch%20Pad`;
   window.location.href = uri;
   setTimeout(() => {
-    alert(lang === 'zh' ? '正在唤起 Phantom 钱包 / Solana Pay...\\n支付完成后，请点击【我已手动支付】提交订单。' : 'Attempting to open Phantom / Solana Pay...\\nAfter confirming the transaction, click [I\\'ve Paid Manually] to submit your order.');
+    alert(lang === 'zh' ? '正在唤起 Phantom 钱包 / Solana Pay...\\n支付完成后，请点击【我已手动支付】提交订单。' : 'Attempting to open Phantom / Solana Pay...\\nAfter confirming the transaction, click [I have Paid Manually] to submit your order.');
   }, 800);
 }
 
