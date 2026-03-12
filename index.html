@@ -369,34 +369,11 @@ function renderFilterBar() {
 }
 
 // ─── Products ─────────────────────────────────────────
-const DEMO_PRODUCTS = [
-  {id:1,name:'Genius Plan Marketing AI',nameZh:'天才计划营销 AI',icon:'⚡',featured:true,
-   tagline:'Custom marketing strategy in 60 min — AI-powered growth engine for solopreneurs',
-   taglineZh:'60 分钟交付定制营销策略 — 超级个体的 AI 增长引擎',
-   tags:['Marketing','Productivity'],votes:88,url:'/launch',date:'2026-03-08',by:'@geniusplan'},
-  {id:2,name:'AutoReply Agent',nameZh:'自动回复 Agent',icon:'🤖',featured:false,
-   tagline:'AI that handles all customer conversations across multiple platforms automatically',
-   taglineZh:'AI 自动处理全平台客服会话，7x24 在线',
-   tags:['Customer Service','Productivity'],votes:47,url:'',date:'2026-03-07',by:'@indie_dev'},
-  {id:3,name:'CodeReview Bot',nameZh:'代码审查机器人',icon:'🔍',featured:false,
-   tagline:'AI code review that catches bugs 10x faster than manual review',
-   taglineZh:'AI 代码审查，发现 Bug 速度是人工的 10 倍',
-   tags:['Coding'],votes:35,url:'',date:'2026-03-06',by:'@codelab'},
-  {id:4,name:'CopyWriter Pro',nameZh:'文案大师 Pro',icon:'✍️',featured:false,
-   tagline:'One-click high-converting copy for social media, email & ads',
-   taglineZh:'一键生成高转化率社媒文案、邮件、广告语',
-   tags:['Writing','Marketing'],votes:29,url:'',date:'2026-03-05',by:'@marketer'},
-  {id:5,name:'DataSense Agent',nameZh:'数据洞察 Agent',icon:'📊',featured:false,
-   tagline:'Upload your spreadsheet — AI auto-analyzes and builds visual reports',
-   taglineZh:'上传表格，AI 自动分析并生成可视化报告',
-   tags:['Analytics'],votes:22,url:'',date:'2026-03-04',by:'@datalab'},
-  {id:6,name:'MeetingBot',nameZh:'会议助手',icon:'📅',featured:false,
-   tagline:'Auto-transcribe meetings & generate action items. Never take notes again.',
-   taglineZh:'自动转录会议内容，生成待办清单，告别手写笔记',
-   tags:['Productivity'],votes:18,url:'',date:'2026-03-03',by:'@meetly'},
-];
+/* 
+   Removed DEMO_PRODUCTS as it is now fetched from the API.
+*/
 
-let products = [...DEMO_PRODUCTS];
+let products = [];
 let voted = new Set();
 
 function renderGrid(list) {
@@ -505,8 +482,43 @@ function submitProduct(){
 }
 
 // Init
-products.sort((a,b)=>b.votes-a.votes);
+async function loadData() {
+  try {
+    const productsRes = await fetch('/api/products');
+    const productsData = await productsRes.json();
+    products = productsData;
+    products.sort((a,b)=>b.votes-a.votes);
+    applyFilters();
+    
+    const healthRes = await fetch('/health');
+    const healthData = await healthRes.json();
+    document.getElementById('statProducts').textContent = healthData.products;
+  } catch(e) {
+    console.error("Failed to load data", e);
+  }
+}
+
+loadData();
 setLang(lang);
 </script>
+
+<script>
+function simulateStats() {
+  const visitors = document.getElementById('statVisitors');
+  const votes = document.getElementById('statVotes');
+  const prods = document.getElementById('statProducts');
+  
+  if (visitors) {
+    let v = parseInt(visitors.innerText);
+    if(Math.random() > 0.6) { v += Math.floor(Math.random() * 2); visitors.innerText = v; }
+  }
+  if (votes) {
+    let vo = parseInt(votes.innerText);
+    if(Math.random() > 0.5) { vo += Math.floor(Math.random() * 3); votes.innerText = vo; }
+  }
+}
+setInterval(simulateStats, 3000);
+</script>
+
 </body>
 </html>
