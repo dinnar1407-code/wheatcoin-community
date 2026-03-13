@@ -362,7 +362,7 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
-\n  if (req.method === 'POST' && url === '/api/create-checkout-session') {
+  if (req.method === 'POST' && url === '/api/create-checkout-session') {
     if (!stripe) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
