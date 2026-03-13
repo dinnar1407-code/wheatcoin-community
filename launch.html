@@ -523,5 +523,63 @@ if (window.location.search.includes('success=true')) {
   const timer=setInterval(()=>{total--;if(total<=0){clearInterval(timer);el.textContent=lang==='zh'?'方案已发出 🎉':'Strategy Sent 🎉';return;}const m=String(Math.floor(total/60)).padStart(2,'0');const s=String(total%60).padStart(2,'0');el.textContent=`${m}:${s}`;},1000);
 }
 </script>
+
+<!-- Genius Launch Pad Asset Store -->
+<div style="width:100%; max-width:800px; margin-top:20px; z-index:10;" id="wheat-market-container"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+<script>
+const ASSET_URLS = [
+    "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/deep-researcher.wheat.yaml",
+    "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-web-navigator.wheat.yaml",
+    "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-devops-assistant.wheat.yaml"
+];
+
+async function loadWheatMarket() {
+    const container = document.getElementById('wheat-market-container');
+    if(!container) return;
+    
+    container.innerHTML = `
+    <div style="background: #13131a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 40px; box-shadow: 0 0 60px rgba(99,102,241,0.12);">
+        <h2 style="color: #fff; margin-bottom: 24px; font-size: 1.8rem;">Genius Launch Pad <span style="font-size: 1rem; color: #6366f1; background: #1e1e2e; padding: 4px 12px; border-radius: 20px; vertical-align: middle;">Live Assets</span></h2>
+        <div id="wheat-market-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
+            <p style="color: #888;">正在同步最新 Agent 资产...</p>
+        </div>
+    </div>`;
+
+    const grid = document.getElementById('wheat-market-grid');
+    try {
+        const cardsHTML = [];
+        for (const url of ASSET_URLS) {
+            const response = await fetch(url);
+            const yamlText = await response.text();
+            const asset = jsyaml.load(yamlText);
+
+            const card = `
+                <div style="border: 1px solid #2a2a3a; border-radius: 12px; padding: 24px; background: #1e1e2e; color: #fff; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#6366f1'" onmouseout="this.style.transform='none'; this.style.borderColor='#2a2a3a'">
+                    <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                        <h3 style="margin: 0; font-size: 1.2rem; color: #a5b4fc;">${asset.name}</h3>
+                        <span style="background: #13131a; border: 1px solid #333; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; color: #9ca3af;">v${asset.version}</span>
+                    </div>
+                    <p style="font-size: 0.9rem; color: #9ca3af; margin-bottom: 20px; line-height: 1.5; min-height: 60px;">${asset.description}</p>
+                    <div style="margin-bottom: 20px; min-height: 30px;">
+                        ${asset.tags.map(tag => `<span style="display: inline-block; background: #1a1a35; color: #6366f1; font-size: 0.75rem; padding: 4px 8px; border-radius: 6px; margin: 0 6px 6px 0;">#${tag}</span>`).join('')}
+                    </div>
+                    <div style="border-top: 1px solid #2a2a3a; padding-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.8rem; color: #6b7280;">By ${asset.author}</span>
+                        <button onclick="alert('Deploy function coming soon! Required: ${asset.pricing.whc_stake_required} WHC')" style="background: transparent; color: #6366f1; border: 1px solid #6366f1; padding: 6px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#6366f1'; this.style.color='#fff'" onmouseout="this.style.background='transparent'; this.style.color='#6366f1'">
+                            Deploy
+                        </button>
+                    </div>
+                </div>
+            `;
+            cardsHTML.push(card);
+        }
+        grid.innerHTML = cardsHTML.join('');
+    } catch (error) {
+        grid.innerHTML = '<p style="color: #ef4444;">从 Registry 同步资产失败，请检查网络。</p>';
+    }
+}
+document.addEventListener('DOMContentLoaded', loadWheatMarket);
+</script>
 </body>
 </html>
