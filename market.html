@@ -32,6 +32,25 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   <script>
+  
+  async function checkoutAgent(agentName, url) {
+      try {
+          const res = await fetch('/api/market-checkout', {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({ agentName, assetUrl: url })
+          });
+          const data = await res.json();
+          if (data.url) {
+              window.location.href = data.url;
+          } else {
+              alert('Checkout failed: ' + (data.error || 'Unknown error'));
+          }
+      } catch(e) {
+          alert('Network error connecting to checkout.');
+      }
+  }
+
   const ASSET_URLS = [
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/deep-researcher.wheat.yaml",
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-web-navigator.wheat.yaml",
@@ -69,7 +88,7 @@
                       </div>
                       <div style="border-top: 1px solid #2a2a3a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
                           <span style="font-size: 0.85rem; color: #6b7280; font-weight: 500;">By ${asset.author}</span>
-                          <button onclick="alert('Deploy function coming soon! Price: $0.99 USD')" style="background: #6366f1; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;" onmouseover="this.style.background='#4f46e5';" onmouseout="this.style.background='#6366f1';">
+                          <button onclick="checkoutAgent('${asset.name}', '${url}')" style="background: #6366f1; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;" onmouseover="this.style.background='#4f46e5';" onmouseout="this.style.background='#6366f1';">
                               Deploy - $0.99
                           </button>
                       </div>
@@ -82,7 +101,27 @@
           grid.innerHTML = '<p style="color: #ef4444; text-align:center; width:100%;">从 Registry 同步资产失败，请检查网络。</p>';
       }
   }
-  document.addEventListener('DOMContentLoaded', loadWheatMarket);
+  
+  document.addEventListener('DOMContentLoaded', () => {
+      if (window.location.search.includes('success=true')) {
+          const params = new URLSearchParams(window.location.search);
+          const agent = params.get('agent');
+          const assetUrl = params.get('url');
+          
+          const container = document.getElementById('wheat-market-container');
+          if(container) {
+              container.insertAdjacentHTML('beforebegin', `
+              <div style="width:100%; max-width:1000px; background:#10b9811a; border:1px solid #10b981; border-radius:12px; padding:24px; margin-bottom:24px; text-align:center;">
+                  <h3 style="color:#10b981; margin-bottom:12px; font-size: 1.4rem;">🎉 Payment Successful for ${agent}!</h3>
+                  <p style="color:#e0e0e0; margin-bottom:20px; font-size:1rem;">Your agent asset is ready for deployment.</p>
+                  <a href="${assetUrl}" target="_blank" style="display:inline-block; background:#10b981; color:#fff; padding:12px 28px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:1rem; transition: background 0.2s;" onmouseover="this.style.background='#059669';" onmouseout="this.style.background='#10b981';">Download Configuration (.yaml)</a>
+              </div>
+              `);
+          }
+      }
+      loadWheatMarket();
+  });
+
   </script>
 </body>
 </html>

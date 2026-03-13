@@ -319,7 +319,50 @@ const server = http.createServer(async (req, res) => {
   }
 
   
-  if (req.method === 'POST' && url === '/api/create-checkout-session') {
+  
+  if (req.method === 'POST' && url === '/api/market-checkout') {
+    if (!stripe) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
+      return;
+    }
+    try {
+      const data = await parseBody(req);
+      const host = req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+      const domain = protocol + '://' + host;
+
+      const agentName = data.agentName || 'Wheat Agent';
+      const assetUrl = data.assetUrl || '';
+      const orderId = 'MKT-' + Date.now();
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'Wheat Market Deploy: ' + agentName },
+            unit_amount: 99,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: domain + '/market?success=true&agent=' + encodeURIComponent(agentName) + '&url=' + encodeURIComponent(assetUrl),
+        cancel_url: domain + '/market?canceled=true',
+        client_reference_id: orderId,
+      });
+
+      console.log(`💳 [Stripe Market] Session created for ${agentName}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: session.url }));
+    } catch (err) {
+      console.error(err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+\n  if (req.method === 'POST' && url === '/api/create-checkout-session') {
     if (!stripe) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
