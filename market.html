@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wheat App Market · Agent Infrastructure</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 24px; gap: 40px; }
+    .top-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1000px; margin-bottom: 20px; }
+    .back-link { font-size: 14px; color: #6366f1; cursor: pointer; text-decoration: none; font-weight: 500;}
+    .badge { display: inline-block; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
+    h1 { font-size: 32px; font-weight: 800; color: #fff; line-height: 1.3; margin-bottom: 16px; }
+    .subtitle { font-size: 16px; color: #9ca3af; margin-bottom: 40px; line-height: 1.6; max-width: 600px; text-align: center;}
+    .header-container {text-align: center;}
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <a class="back-link" href="/">← Back to Community</a>
+  </div>
+
+  <div class="header-container">
+      <div class="badge">⚡ Wheat Agent Ecosystem</div>
+      <h1>Wheat App Market</h1>
+      <p class="subtitle">Discover, install, and deploy production-ready AI agents instantly. Our modular assets power high-frequency trading, market research, and intelligent operations.</p>
+  </div>
+
+  <!-- Genius Launch Pad Asset Store -->
+  <div style="width:100%; max-width:1000px; z-index:10;" id="wheat-market-container"></div>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+  <script>
+  const ASSET_URLS = [
+      "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/deep-researcher.wheat.yaml",
+      "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-web-navigator.wheat.yaml",
+      "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-devops-assistant.wheat.yaml"
+  ];
+
+  async function loadWheatMarket() {
+      const container = document.getElementById('wheat-market-container');
+      if(!container) return;
+      
+      container.innerHTML = `
+      <div style="background: transparent;">
+          <div id="wheat-market-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px;">
+              <p style="color: #888; text-align:center; width:100%;">正在同步最新 Agent 资产...</p>
+          </div>
+      </div>`;
+
+      const grid = document.getElementById('wheat-market-grid');
+      try {
+          const cardsHTML = [];
+          for (const url of ASSET_URLS) {
+              const response = await fetch(url);
+              const yamlText = await response.text();
+              const asset = jsyaml.load(yamlText);
+
+              const card = `
+                  <div style="border: 1px solid #2a2a3a; border-radius: 16px; padding: 28px; background: #13131a; color: #fff; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#6366f1'; this.style.boxShadow='0 10px 40px rgba(99,102,241,0.1)'" onmouseout="this.style.transform='none'; this.style.borderColor='#2a2a3a'; this.style.boxShadow='none'">
+                      <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
+                          <h3 style="margin: 0; font-size: 1.3rem; color: #a5b4fc; font-weight: 700;">${asset.name}</h3>
+                          <span style="background: #1e1e2e; border: 1px solid #333; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; color: #9ca3af; font-weight: 600;">v${asset.version}</span>
+                      </div>
+                      <p style="font-size: 0.95rem; color: #9ca3af; margin-bottom: 24px; line-height: 1.6; flex-grow: 1;">${asset.description}</p>
+                      <div style="margin-bottom: 24px; min-height: 30px;">
+                          ${asset.tags.map(tag => `<span style="display: inline-block; background: #1a1a35; color: #8b5cf6; font-size: 0.75rem; padding: 5px 10px; border-radius: 6px; margin: 0 8px 8px 0; font-weight: 600;">#${tag}</span>`).join('')}
+                      </div>
+                      <div style="border-top: 1px solid #2a2a3a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
+                          <span style="font-size: 0.85rem; color: #6b7280; font-weight: 500;">By ${asset.author}</span>
+                          <button onclick="alert('Deploy function coming soon! Required: ${asset.pricing.whc_stake_required} WHC')" style="background: #6366f1; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;" onmouseover="this.style.background='#4f46e5';" onmouseout="this.style.background='#6366f1';">
+                              Deploy Asset
+                          </button>
+                      </div>
+                  </div>
+              `;
+              cardsHTML.push(card);
+          }
+          grid.innerHTML = cardsHTML.join('');
+      } catch (error) {
+          grid.innerHTML = '<p style="color: #ef4444; text-align:center; width:100%;">从 Registry 同步资产失败，请检查网络。</p>';
+      }
+  }
+  document.addEventListener('DOMContentLoaded', loadWheatMarket);
+  </script>
+</body>
+</html>
