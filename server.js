@@ -143,16 +143,18 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/market' || url === '/market.html')) { serveFile(res, path.join(__dirname, 'market.html'), 'text/html'); return; }
 
   // ── API ───────────────────────────────────────────
 
   function checkAdminAuth(req) {
     const adminToken = process.env.ADMIN_TOKEN;
-    // Require ADMIN_TOKEN to be set.
     if (!adminToken) return false; 
     
-    // Check for custom headers: 'x-admin-token' or 'admin-token'
-    const providedToken = req.headers['x-admin-token'] || req.headers['admin-token'];
+    // Support Bearer Token or custom headers
+    const authHeader = req.headers['authorization'];
+    const providedToken = req.headers['x-admin-token'] || req.headers['admin-token'] || (authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null);
+    
     return providedToken === adminToken;
   }
 
