@@ -53,7 +53,8 @@
     .compare-table th, .compare-table td { border:1px solid var(--border); padding:14px; text-align:left; font-size:13px; }
     .compare-table th { background:#151524; color:#fff; }
     .compare-table td { background:#0f0f17; color:#d1d5db; }
-    .faq { margin-top:36px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .faq { margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .faq .q { color:#fff; font-size:14px; font-weight:800; margin-bottom:8px; }
     .success { margin:0 auto 26px; max-width:920px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.4); border-radius:16px; padding:22px; }
     .success h3 { color:#fff; font-size:20px; margin-bottom:8px; }
     .success p { color:#d1fae5; line-height:1.7; font-size:14px; }
@@ -98,9 +99,7 @@
           ['Fixed pricing', 'Every starter kit is priced at $4.99 for a simple, low-friction entry point.'],
           ['Upgradeable later', 'Buy the starter pack first, then move into custom agents, Launch Pad, or the full App Market later.']
         ],
-        bundles: 'Starter bundles', included: 'Included skills', resultLabel: 'What you get', compare: 'Bundle comparison', faqTitle: 'How these kits work',
-        faqA: 'These kits remove the guesswork for beginners. Instead of searching dozens of skills one by one, the user buys a curated package designed around an actual outcome.',
-        faqB: 'After payment, users now land on a dedicated delivery page with a copyable install command, downloadable installer script, and bundle manifest JSON.',
+        bundles: 'Starter bundles', included: 'Included skills', resultLabel: 'What you get', compare: 'Bundle comparison', faqTitle: 'Frequently asked questions',
         compareHeaders: ['Kit', 'Best for', 'Skills', 'Outcome'],
         buy: 'Buy Kit · $4.99', canceledTitle: 'Checkout canceled', canceledBody: 'No worries — your payment was not completed. You can come back anytime and pick the bundle that fits your current stage.',
         popular: 'Most Popular'
@@ -115,23 +114,54 @@
           ['统一定价', '每个 Starter Kit 都是 $4.99，决策成本低，适合先试再升级。'],
           ['后续可升级', '先买入门包，后续再升级到 App Market、Launch Pad 或定制方案。']
         ],
-        bundles: 'Starter 套装', included: '包含的 skills', resultLabel: '你将得到什么', compare: '套装对比', faqTitle: '这些套装怎么用',
-        faqA: '这些 Starter Kits 的核心价值，是帮小白跳过“乱装、装错、装半天”的阶段，直接买到针对某个结果的组合包。',
-        faqB: '现在付款后，用户会进入专属交付页，可以直接复制安装命令、打开 installer 脚本、查看 manifest JSON。',
+        bundles: 'Starter 套装', included: '包含能力', resultLabel: '你将得到什么', compare: '套装对比', faqTitle: '常见问题',
         compareHeaders: ['套装', '适合谁', '技能数', '核心结果'],
         buy: '购买套装 · $4.99', canceledTitle: '支付已取消', canceledBody: '没关系，这次没有完成扣款。你可以随时回来继续挑选适合当前阶段的套装。',
         popular: '最受欢迎'
       }
     };
 
+    const SKILL_LABELS = {
+      'agent-browser': { en: 'Browser Automation', zh: '浏览器自动化' },
+      'weather': { en: 'Weather Reports', zh: '天气查询' },
+      'gog': { en: 'Google Workspace', zh: '谷歌工作区' },
+      'obsidian-notesmd-cli': { en: 'Obsidian Vault Notes', zh: 'Obsidian 笔记库' },
+      'apple-notes': { en: 'Apple Notes Manager', zh: 'Apple 备忘录' },
+      'things-mac': { en: 'Things Task Manager', zh: 'Things 任务管理' },
+      'markdown-converter': { en: 'Document to Markdown', zh: '文档转 Markdown' },
+      'openai-whisper-api': { en: 'Audio Transcription', zh: '音频转录' },
+      'video-frames': { en: 'Video Frame Extractor', zh: '视频抽帧' },
+      'find-skills': { en: 'Skill Discovery', zh: 'Skill 发现器' },
+      'himalaya': { en: 'Email Client', zh: '邮件客户端' }
+    };
+
+    const FAQS = {
+      en: [
+        { q: 'What exactly am I buying?', a: 'You are buying a curated starter bundle designed around a real beginner outcome, not a random list of skills. Each kit is organized so a new user can get value fast.' },
+        { q: 'How is the kit delivered?', a: 'After payment, you land on a delivery page with a copyable install command, a downloadable installer script, and a bundle manifest JSON for auditing or future automation.' },
+        { q: 'Is this a one-time fee?', a: 'Yes. Starter Kits are sold as a one-time purchase. You keep access to that kit’s installer and manifest.' },
+        { q: 'What if an install step fails?', a: 'Try the installer again, confirm Node/npm is available, and make sure your network can reach ClawHub. The bundle is intentionally simple so recovery is easy.' },
+        { q: 'Can I upgrade later?', a: 'Absolutely. Starter Kits are the entry layer. When you need deeper workflows, you can upgrade into Genius Launch, App Market, or custom delivery.' },
+        { q: 'Who are these kits best for?', a: 'They are best for first-time OpenClaw users, solo founders, operators, researchers, and people who want a useful setup without reading dozens of docs first.' }
+      ],
+      zh: [
+        { q: '我买到的到底是什么？', a: '你买到的不是一串随机 skill 名单，而是一套围绕真实结果设计的入门组合包，目的是让新用户更快跑起来。' },
+        { q: '付款后怎么交付？', a: '付款完成后，你会进入专属交付页，可以直接复制安装命令、下载 installer 脚本，并查看 manifest JSON 做审计或后续自动化。' },
+        { q: '这是一次性付费吗？', a: '是的。Starter Kits 采用一次性购买方式，对应套装的 installer 和 manifest 都会保留给你使用。' },
+        { q: '如果安装某一步失败怎么办？', a: '先重试 installer，并确认本机已安装 Node/npm，且网络能访问 ClawHub。整个交付链路故意做得很轻，恢复成本很低。' },
+        { q: '后面还能升级吗？', a: '当然可以。Starter Kits 是入门层。等你需要更深的工作流时，可以继续升级到 Genius Launch、App Market 或定制交付。' },
+        { q: '这套东西最适合谁？', a: '最适合第一次使用 OpenClaw 的用户、独立创业者、运营、研究员，以及不想先看一堆文档再动手的人。' }
+      ]
+    };
+
     const KITS = [
       {
         slug:'starter-10', emoji:'🌱', price:'$4.99', badgeKey:'popular',
-        name:{en:'Must-Have 10 Skills', zh:'必装 10 大 Skills'},
+        name:{en:'Must-Have 10 Skills', zh:'必装 10 大能力包'},
         desc:{en:'The safest first purchase for total beginners. A broad starter stack covering notes, docs, browser tasks, email, weather, and practical day-to-day automation.', zh:'最稳妥的新手第一单。覆盖笔记、文档、浏览器任务、邮箱、天气和日常自动化。'},
         audience:{en:'Best for: total OpenClaw beginners who want a default setup without overthinking.', zh:'适合：完全新手，想一次装好默认配置的人。'},
         result:{en:'Finish the safest beginner setup in about 10 minutes.', zh:'大约 10 分钟完成一套最稳的 OpenClaw 新手配置。'},
-        skills:['Agent Browser','weather','gog','obsidian-notesmd-cli','apple-notes','things-mac','markdown-converter','openai-whisper-api','video-frames','find-skills']
+        skills:['agent-browser','weather','gog','obsidian-notesmd-cli','apple-notes','things-mac','markdown-converter','openai-whisper-api','video-frames','find-skills']
       },
       {
         slug:'founder-ops', emoji:'🚀', price:'$4.99',
@@ -176,6 +206,10 @@
     ];
 
     let lang = localStorage.getItem('kits_lang') || 'en';
+
+    function skillLabel(slug) {
+      return (SKILL_LABELS[slug] && SKILL_LABELS[slug][lang]) || slug;
+    }
 
     function setLang(next) {
       lang = next;
@@ -232,7 +266,7 @@
               <div class="desc">${kit.desc[lang]}</div>
               <div class="result"><strong>${t.resultLabel}:</strong> ${kit.result[lang]}</div>
               <div class="mini-label">${t.included}</div>
-              <ul class="skills">${kit.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+              <ul class="skills">${kit.skills.map(s => `<li>${skillLabel(s)}</li>`).join('')}</ul>
               <div class="meta">
                 <div class="forwho">${kit.audience[lang]}</div>
                 <button class="buy" onclick="buyKitBySlug('${kit.slug}')">${t.buy}</button>
@@ -259,9 +293,13 @@
         </div>`;
 
       document.getElementById('faqMount').innerHTML = `
+        <h2 class="section-title">${t.faqTitle}</h2>
         <div class="faq">
-          <div class="section-card"><h2 class="section-title" style="margin-top:0;">${t.faqTitle}</h2><p>${t.faqA}</p></div>
-          <div class="section-card"><h2 class="section-title" style="margin-top:0;">Delivery</h2><p>${t.faqB}</p></div>
+          ${FAQS[lang].map(item => `
+            <div class="section-card">
+              <div class="q">${item.q}</div>
+              <p>${item.a}</p>
+            </div>`).join('')}
         </div>`;
 
       const params = new URLSearchParams(window.location.search);

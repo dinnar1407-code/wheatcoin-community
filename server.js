@@ -51,6 +51,15 @@ db.exec(`
     source TEXT,
     receivedAt TEXT
   );
+  CREATE TABLE IF NOT EXISTS kits_orders (
+    id INTEGER PRIMARY KEY,
+    kit_slug TEXT,
+    stripe_session_id TEXT UNIQUE,
+    customer_email TEXT,
+    status TEXT DEFAULT 'pending',
+    receivedAt TEXT,
+    paidAt TEXT
+  );
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
     product TEXT,
@@ -59,37 +68,34 @@ db.exec(`
     plan TEXT,
     price TEXT,
     paymentMethod TEXT,
-    receivedAt TEXT
+    receivedAt TEXT,
+    status TEXT DEFAULT 'pending',
+    stripe_session_id TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS kits_tracking (
+    id INTEGER PRIMARY KEY,
+    kit_slug TEXT,
+    event_type TEXT,
+    stripe_session_id TEXT,
+    timestamp TEXT
   );
 `);
 
 try { db.exec("ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'pending'"); } catch(e) {}
 try { db.exec("ALTER TABLE orders ADD COLUMN stripe_session_id TEXT"); } catch(e) {}
 
-function sendToTelegram(order) {
+function sendToTelegramMessage(title, fields = {}) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
-  
-  const text = encodeURIComponent(
-    '🚨 <b>新订单 (天才发射台)</b>\n\n' +
-    '<b>单号:</b> ' + order.id + '\n' +
-    '<b>产品:</b> ' + (order.product || '无') + '\n' +
-    '<b>用户:</b> ' + (order.audience || '无') + '\n' +
-    '<b>联系方式:</b> ' + (order.contact || '无') + '\n' +
-    '<b>套餐:</b> ' + (order.plan || '无') + '\n' +
-    '<b>支付:</b> ' + (order.price || '无') + ' (' + (order.paymentMethod || '无') + ')\n' +
-    '<b>时间:</b> ' + order.receivedAt
-  );
 
-  const req = https.request({
-    hostname: 'api.telegram.org',
-    port: 443,
-    path: '/bot' + token + '/sendMessage?chat_id=' + chatId + '&parse_mode=HTML&text=' + text,
-    method: 'GET'
-  });
-  req.on('error', (e) => console.error('Telegram 通知失败:', e.message));
-  req.end();
+  const pairs = Object.entries(fields).map(([k,v]) => `<b>${k}:</b> ${v}`);
+  const text = encodeURIComponent(`🚨 <b>${title}</b>\n\n` + pairs.join("\n"));
+
+  https.get(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&parse_mode=HTML&text=${text}`, (res) => {
+    res.on('error', (e) => console.error('Telegram 通知失败:', e.message));
+  }).on('error', (e) => console.error('Telegram 通知失败:', e.message));
 }
 
 function serveFile(res, filePath, contentType) {
@@ -258,6 +264,17 @@ const server = http.createServer(async (req, res) => {
     res.end(JSON.stringify(rows)); return;
   }
 
+  if (req.method === 'GET' && url === '/api/kits/orders') {
+    try {
+      const rows = db.prepare("SELECT * FROM kits_orders ORDER BY receivedAt DESC").all();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(rows));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (req.method === 'POST' && url === '/api/products/submit') {
     try {
       const data = await parseBody(req);
@@ -343,51 +360,6 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  
-  
-  if (req.method === 'POST' && url === '/api/market-checkout') {
-    if (!stripe) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
-      return;
-    }
-    try {
-      const data = await parseBody(req);
-      const host = req.headers.host;
-      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
-      const domain = protocol + '://' + host;
-
-      const agentName = data.agentName || 'Wheat Agent';
-      const assetUrl = data.assetUrl || '';
-      const orderId = 'MKT-' + Date.now();
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: { name: 'Wheat Market Deploy: ' + agentName },
-            unit_amount: 99,
-          },
-          quantity: 1,
-        }],
-        mode: 'payment',
-        success_url: domain + '/market?success=true&agent=' + encodeURIComponent(agentName) + '&url=' + encodeURIComponent(assetUrl),
-        cancel_url: domain + '/market?canceled=true',
-        client_reference_id: orderId,
-      });
-
-      console.log(`💳 [Stripe Market] Session created for ${agentName}`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ url: session.url }));
-    } catch (err) {
-      console.error(err);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
   if (req.method === 'POST' && url === '/api/kits-checkout') {
     if (!stripe) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -399,11 +371,9 @@ const server = http.createServer(async (req, res) => {
       const host = req.headers.host;
       const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
       const domain = protocol + '://' + host;
-
       const kitName = data.kitName || 'Wheat Starter Kit';
       const kitSlug = data.kitSlug || 'starter-kit';
       const orderId = 'KIT-' + Date.now();
-
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [{
@@ -415,11 +385,11 @@ const server = http.createServer(async (req, res) => {
           quantity: 1,
         }],
         mode: 'payment',
-        success_url: domain + '/kits/delivery?paid=true&kit=' + encodeURIComponent(kitName) + '&slug=' + encodeURIComponent(kitSlug),
-        cancel_url: domain + '/kits?canceled=true',
+        success_url: `${domain}/kits/delivery?paid=true\u0026session_id={CHECKOUT_SESSION_ID}\u0026kit=${encodeURIComponent(kitName)}\u0026slug=${encodeURIComponent(kitSlug)}`,
+        cancel_url: `${domain}/kits?canceled=true`,
         client_reference_id: orderId,
       });
-
+      db.prepare("INSERT INTO kits_orders (stripe_session_id, kit_slug, customer_email, status, receivedAt) VALUES (?, ?, ?, 'pending', ?)").run(session.id, kitSlug, '', new Date().toISOString());
       console.log(`💳 [Stripe Kits] Session created for ${kitName}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ url: session.url }));
@@ -430,105 +400,128 @@ const server = http.createServer(async (req, res) => {
     }
     return;
   }
-  if (req.method === 'POST' && url === '/api/create-checkout-session') {
-    if (!stripe) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' })); 
-      return;
-    }
+
+  if (req.method === 'POST' && url === '/api/kits/track') {
     try {
-      const data = await parseBody(req);
-      const host = req.headers.host;
-      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
-      const domain = protocol + '://' + host;
-
-      const orderId = Date.now();
-      const planName = data.plan; // basic, pro, vip
-      const priceAmount = data.price; // 9.9, 39.9, 149.9
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: { name: 'Genius Launch Pad - ' + planName.toUpperCase() + ' Plan' },
-            unit_amount: Math.round(priceAmount * 100), // in cents
-          },
-          quantity: 1,
-        }],
-        mode: 'payment',
-        success_url: domain + '/launch?success=true&order_id=ORD-' + orderId,
-        cancel_url: domain + '/launch?canceled=true',
-        client_reference_id: orderId.toString(),
-      });
-
-      const order = {
-        id: orderId,
-        product: data.product || '',
-        audience: data.audience || '',
-        contact: data.contact || '',
-        plan: data.plan || '',
-        price: data.price + ' USD',
-        paymentMethod: 'card',
-        receivedAt: new Date().toISOString()
-      };
-
-      db.prepare("INSERT INTO orders (id, product, audience, contact, plan, price, paymentMethod, receivedAt, status) VALUES (@id, @product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt, 'pending')").run(order);
-      try { db.prepare("UPDATE orders SET stripe_session_id = ? WHERE id = ?").run(session.id, orderId); } catch(e) {}
-
-      console.log(`💳 [Stripe Checkout] Session created for ${orderId}`);
+      const { kit_slug, event_type, session_id } = await parseBody(req);
+      db.prepare("INSERT INTO kits_tracking (kit_slug, event_type, stripe_session_id, timestamp) VALUES (?, ?, ?, ?)").run(kit_slug, event_type, session_id, new Date().toISOString());
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ url: session.url }));
+      res.end(JSON.stringify({ ok: true }));
     } catch(e) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: e.message }));
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
     return;
   }
 
-  if (req.method === 'POST' && url === '/api/launch/submit') {
+  if (req.method === 'GET' && url === '/api/kits/verify') {
+    const query = new URL(req.url, `http://${req.headers.host}`).searchParams;
+    const session_id = query.get('session_id');
+    const kit_slug = query.get('slug');
+    if (!session_id) { res.writeHead(400); res.end('Missing session_id'); return; }
+    if (!kit_slug) { res.writeHead(400); res.end('Missing slug'); return; }
     try {
-      const data = await parseBody(req);
-      const order = {
-        id: Date.now(),
-        product: data.product || '',
-        audience: data.audience || '',
-        contact: data.contact || '',
-        plan: data.plan || '',
-        price: data.price || '',
-        paymentMethod: data.paymentMethod || '',
-        receivedAt: new Date().toISOString()
-      };
-      
-      db.prepare(`INSERT INTO orders (id, product, audience, contact, plan, price, paymentMethod, receivedAt)
-        VALUES (@id, @product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt)`).run(order);
-        
-      console.log(`⚡ [天才发射台] 新订单: ${data.plan} | ${data.contact}`);
-      sendToTelegram(order);
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      if (session.payment_status === 'paid') {
+        const email = session.customer_details ? session.customer_details.email : 'N/A';
+        const order = db.prepare("UPDATE kits_orders SET status = 'paid', customer_email = ?, paidAt = ? WHERE stripe_session_id = ?").run(email, new Date().toISOString(), session_id);
+        if (order.changes > 0) {
+          sendToTelegramMessage('📦 Starter Kit Verified', {
+            'ID': session_id,
+            'Kit': kit_slug,
+            'Email': email,
+            'Price': `$${(session.amount_total / 100).toFixed(2)}`,
+            'Status': 'Paid & Delivered',
+            'Timestamp': new Date().toISOString()
+          });
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ paid: true }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ paid: false }));
+      }
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
 
-      if (data.product) {
-        const autoEntry = {
-          id: Date.now() + 1,
-          name: data.product.substring(0, 40),
-          tagline: `来自天才发射台 · ${data.plan}用户`,
-          desc: `产品：${data.product}\n目标用户：${data.audience || ''}`,
-          url: '',
-          tag: 'AI Agent',
-          contact: data.contact || '',
-          contributor: data.contributor || '',
-          wallet: data.wallet || '',
-          icon: '⚡',
-          votes: 0,
-          featured: 0,
-          status: 'pending',
-          source: 'genius_plan',
-          receivedAt: new Date().toISOString()
-        };
-        db.prepare(`INSERT INTO products (id, name, tagline, desc, url, tag, contact, contributor, wallet, icon, votes, featured, status, source, receivedAt)
-          VALUES (@id, @name, @tagline, @desc, @url, @tag, @contact, @contributor, @wallet, @icon, @votes, @featured, @status, @source, @receivedAt)`).run(autoEntry);
-        console.log(`🌾 [自动投稿] ${autoEntry.name} 已提交社区审核`);
+  if (req.method === 'POST' && url === '/api/products/vote') {
+    try {
+      const { id } = await parseBody(req);
+      const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+
+      const hasVoted = db.prepare("SELECT 1 FROM votes_log WHERE ip = ? AND product_id = ?").get(ip, id);
+      if (hasVoted) {
+        res.writeHead(429, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'You have already voted for this product.' }));
+        return;
       }
 
+      const voteTransaction = db.transaction(() => {
+        db.prepare("INSERT INTO votes_log (ip, product_id, timestamp) VALUES (?, ?, ?)").run(ip, id, new Date().toISOString());
+        db.prepare("UPDATE products SET votes = votes + 1 WHERE id = ?").run(id);
+        return db.prepare("SELECT votes FROM products WHERE id = ?").get(id);
+      });
+
+      const product = voteTransaction();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, votes: product ? product.votes : 0 }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  
+  if (req.method === 'POST' && url === '/api/products/submit') {
+    try {
+      const data = await parseBody(req);
+      const entry = {
+        id: Date.now(),
+        name: data.name || '',
+        tagline: data.tagline || '',
+        desc: data.desc || '',
+        url: data.url || '',
+        tag: data.tag || '其他',
+        contact: data.contact || '',
+        contributor: data.contributor || '',
+        wallet: data.wallet || '',
+        icon: data.icon || '🤖',
+        votes: 0,
+        featured: 0,
+        status: 'pending',
+        source: data.source || 'community',
+        receivedAt: new Date().toISOString()
+      };
+      db.prepare(`INSERT INTO products (id, name, tagline, desc, url, tag, contact, contributor, wallet, icon, votes, featured, status, source, receivedAt)
+        VALUES (@id, @name, @tagline, @desc, @url, @tag, @contact, @contributor, @wallet, @icon, @votes, @featured, @status, @source, @receivedAt)`).run(entry);
+      console.log(`🌾 [新投稿] ${entry.name} | ${entry.contact} | 来源: ${entry.source}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, id: entry.id }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/products/review') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    try {
+      const { id, status } = await parseBody(req);
+      const product = db.prepare("SELECT * FROM products WHERE id = ?").get(id);
+      if (product) {
+        const wasApproved = product.status === "approved";
+        db.prepare("UPDATE products SET status = ?, reviewedAt = ? WHERE id = ?").run(status, new Date().toISOString(), id);
+        console.log(`[审核] ID ${id} → ${status}`);
+        
+        if (status === "approved" && !wasApproved && product.contributor) {
+          addPoints(product.contributor, product.wallet, 50);
+        }
+      }
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true }));
     } catch(e) {

@@ -6,7 +6,7 @@
   <title>Wheat Starter Kits · Delivery</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { --bg:#0a0a0f; --card:#13131a; --border:#2a2a3a; --purple:#6366f1; --purple2:#8b5cf6; --gold:#f4c430; --text:#e5e7eb; --muted:#9ca3af; --green:#10b981; }
+    :root { --bg:#0a0a0f; --card:#13131a; --border:#2a2a3a; --purple:#6366f1; --purple2:#8b5cf6; --gold:#f4c430; --text:#e5e7eb; --muted:#9ca3af; --green:#10b981; --warn:#f59e0b; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 36px 20px 60px; }
     .wrap { max-width: 1120px; margin: 0 auto; }
     .topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
@@ -16,6 +16,8 @@
     .lang-btn.active { background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; }
     .hero { background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(99,102,241,.10)); border:1px solid rgba(16,185,129,.35); border-radius:22px; padding:28px; margin-bottom:26px; }
     .badge { display:inline-block; padding:6px 12px; border-radius:999px; background:#102018; color:#86efac; font-size:12px; font-weight:900; margin-bottom:14px; }
+    .badge.preview { background:#1b1631; color:#c4b5fd; }
+    .badge.warn { background:#28170b; color:#fdba74; }
     h1 { font-size: clamp(32px, 5vw, 48px); line-height:1.1; margin-bottom:10px; color:#fff; }
     .sub { color:#d1fae5; line-height:1.7; font-size:15px; }
     .grid { display:grid; grid-template-columns: 1.1fr .9fr; gap:20px; }
@@ -38,6 +40,8 @@
     .onboarding { margin-top: 24px; }
     .onboarding ol { margin-top:12px; display:grid; gap:10px; }
     .onboarding li { list-style:none; }
+    .status-note { margin-top:14px; padding:12px 14px; border-radius:12px; border:1px solid rgba(99,102,241,.25); background:#101320; color:#cbd5ff; font-size:13px; line-height:1.7; }
+    .status-note.warn { border-color:rgba(245,158,11,.35); background:#1c140a; color:#fdba74; }
     @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
   </style>
 </head>
@@ -60,42 +64,60 @@
         paid: '✅ Payment confirmed', preview: '🧰 Delivery Preview',
         heroPaid: 'Your kit is ready. Use the installer below to install the mapped OpenClaw skills in one shot.',
         heroPreview: 'This is the delivery page structure for the selected kit. Once payment completes, users land here and can install the mapped skills immediately.',
-        oneClick: 'One-click delivery', oneClickDesc: 'This bundle now maps to a real installer script plus a manifest JSON. The installer uses clawhub install for each mapped skill.',
+        oneClick: 'One-click delivery', oneClickDesc: 'This bundle maps to a real installer script plus a manifest JSON. The installer uses clawhub install for each mapped skill.',
         step1: 'Step 1 · Prerequisite', step1desc: 'Install the ClawHub CLI if you don’t already have it:', copyPre: 'Copy prerequisite',
         step2: 'Step 2 · One-click install', step2desc: 'Run this command in Terminal to install the full bundle:', copyCmd: 'Copy install command', openScript: 'Open installer script',
         step3: 'Step 3 · Bundle manifest', step3desc: 'Use this JSON manifest for auditing, internal tooling, or future automation.', openJson: 'Open manifest JSON',
-        included: 'Included skill mapping', installs: 'What gets installed', installsDesc: 'This bundle currently maps to the following installable skills:',
+        included: 'Included skill mapping', installs: 'What gets installed', installsDesc: 'This bundle currently maps to the following installable capabilities:',
         onboarding: 'What to do after installation',
         onboardingItems: [
           'Open your OpenClaw workspace and confirm the new skills appear under ./skills or your configured skills directory.',
           'Restart OpenClaw if needed so the newly installed skills are picked up cleanly.',
           'Try one simple task immediately to validate the bundle, instead of installing and forgetting.',
-          'If this kit worked well, upsell path = App Market / Genius Launch / custom workflow package.'
+          'If this kit worked well, the natural upsell path is App Market / Genius Launch / custom workflow delivery.'
         ],
-        workspaceNote: 'Recommended workspace target: ~/.openclaw/workspace. The installer also respects OPENCLAW_WORKDIR if you want a custom path.'
+        workspaceNote: 'Recommended workspace target: ~/.openclaw/workspace. The installer also respects OPENCLAW_WORKDIR if you want a custom path.',
+        verifyPending: 'We are validating the payment session in the background so the delivery record can be finalized.',
+        verifyFailed: 'We could not verify this payment session automatically. Your links still work, but internal delivery tracking may not be fully marked yet.'
       },
       zh: {
         paid: '✅ 支付已确认', preview: '🧰 交付页预览',
-        heroPaid: '你的 Starter Kit 已经准备好。下面可以直接复制一键安装命令，把映射好的 OpenClaw skills 一次装完。',
+        heroPaid: '你的 Starter Kit 已经准备好。下面可以直接复制一键安装命令，把映射好的 OpenClaw 能力一次装完。',
         heroPreview: '这是所选套装的交付页结构。付款完成后，用户会直接落到这里并立即开始安装。',
         oneClick: '一键交付', oneClickDesc: '这个 bundle 现在已经映射到真实 installer 脚本和 manifest JSON。脚本内部会对每个 skill 执行 clawhub install。',
         step1: '步骤 1 · 前置依赖', step1desc: '如果你还没有 ClawHub CLI，请先安装：', copyPre: '复制前置命令',
         step2: '步骤 2 · 一键安装', step2desc: '在 Terminal 里运行下面这条命令，安装整套 bundle：', copyCmd: '复制安装命令', openScript: '打开 installer 脚本',
         step3: '步骤 3 · Bundle 清单', step3desc: '这个 JSON manifest 可以用于审计、内部自动化或后续升级。', openJson: '打开 manifest JSON',
-        included: '包含的 skill 映射', installs: '实际会安装什么', installsDesc: '当前这套 bundle 映射到以下可安装 skills：',
+        included: '包含的能力映射', installs: '实际会安装什么', installsDesc: '当前这套 bundle 映射到以下可安装能力：',
         onboarding: '安装完成后做什么',
         onboardingItems: [
-          '打开你的 OpenClaw workspace，确认新 skills 已经出现在 ./skills 或你配置的 skills 目录中。',
-          '如有需要，重启 OpenClaw，让新安装的 skills 被稳定加载。',
+          '打开你的 OpenClaw workspace，确认新能力已经出现在 ./skills 或你配置的 skills 目录中。',
+          '如有需要，重启 OpenClaw，让新安装的能力被稳定加载。',
           '立刻做一个最简单的真实任务验证，不要装完就放着。',
           '如果这套好用，后续升级路径就是 App Market / Genius Launch / 定制工作流。'
         ],
-        workspaceNote: '推荐安装目录：~/.openclaw/workspace。如果你想换路径，installer 也支持读取 OPENCLAW_WORKDIR。'
+        workspaceNote: '推荐安装目录：~/.openclaw/workspace。如果你想换路径，installer 也支持读取 OPENCLAW_WORKDIR。',
+        verifyPending: '系统正在后台校验这笔支付会话，并补全交付记录。',
+        verifyFailed: '这笔支付会话未能自动校验成功。你的交付链接仍可使用，但内部追踪可能不会完整标记。'
       }
     };
 
+    const SKILL_LABELS = {
+      'agent-browser': { en: 'Browser Automation', zh: '浏览器自动化' },
+      'weather': { en: 'Weather Reports', zh: '天气查询' },
+      'gog': { en: 'Google Workspace', zh: '谷歌工作区' },
+      'obsidian-notesmd-cli': { en: 'Obsidian Vault Notes', zh: 'Obsidian 笔记库' },
+      'apple-notes': { en: 'Apple Notes Manager', zh: 'Apple 备忘录' },
+      'things-mac': { en: 'Things Task Manager', zh: 'Things 任务管理' },
+      'markdown-converter': { en: 'Document to Markdown', zh: '文档转 Markdown' },
+      'openai-whisper-api': { en: 'Audio Transcription', zh: '音频转录' },
+      'video-frames': { en: 'Video Frame Extractor', zh: '视频抽帧' },
+      'find-skills': { en: 'Skill Discovery', zh: 'Skill 发现器' },
+      'himalaya': { en: 'Email Client', zh: '邮件客户端' }
+    };
+
     const KITS = {
-      'starter-10': { name: { en: 'Must-Have 10 Skills', zh: '必装 10 大 Skills' }, emoji:'🌱', skills:['agent-browser','weather','gog','obsidian-notesmd-cli','apple-notes','things-mac','markdown-converter','openai-whisper-api','video-frames','find-skills'] },
+      'starter-10': { name: { en: 'Must-Have 10 Skills', zh: '必装 10 大能力包' }, emoji:'🌱', skills:['agent-browser','weather','gog','obsidian-notesmd-cli','apple-notes','things-mac','markdown-converter','openai-whisper-api','video-frames','find-skills'] },
       'founder-ops': { name: { en: 'Solo Founder Ops Kit', zh: '独立创业者运营套装' }, emoji:'🚀', skills:['gog','himalaya','obsidian-notesmd-cli','markdown-converter','agent-browser','weather','find-skills'] },
       'content-growth': { name: { en: 'Content & Growth Kit', zh: '内容增长套装' }, emoji:'📣', skills:['markdown-converter','openai-whisper-api','video-frames','agent-browser','obsidian-notesmd-cli','find-skills'] },
       'personal-ai-assistant': { name: { en: 'Personal AI Assistant Kit', zh: '个人 AI 助理套装' }, emoji:'🧠', skills:['gog','things-mac','apple-notes','obsidian-notesmd-cli','weather','openai-whisper-api'] },
@@ -104,6 +126,47 @@
     };
 
     let lang = localStorage.getItem('kits_lang') || 'en';
+    let verificationState = 'idle';
+
+    function skillLabel(slug) {
+      return (SKILL_LABELS[slug] && SKILL_LABELS[slug][lang]) || slug;
+    }
+
+    function getParams() {
+      return new URLSearchParams(window.location.search);
+    }
+
+    function trackEvent(slug, event) {
+      const params = getParams();
+      if (!slug) return;
+      fetch('/api/kits/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        keepalive: true,
+        body: JSON.stringify({
+          kit_slug: slug,
+          event_type: event,
+          session_id: params.get('session_id') || 'preview'
+        })
+      }).catch(() => {});
+    }
+
+    async function verifyPaidSession(slug) {
+      const params = getParams();
+      const sessionId = params.get('session_id');
+      const paid = params.get('paid') === 'true';
+      if (!paid || !sessionId || !slug) return;
+      verificationState = 'pending';
+      render();
+      try {
+        const res = await fetch(`/api/kits/verify?session_id=${encodeURIComponent(sessionId)}&slug=${encodeURIComponent(slug)}`);
+        const data = await res.json();
+        verificationState = data && data.paid ? 'verified' : 'failed';
+      } catch {
+        verificationState = 'failed';
+      }
+      render();
+    }
 
     function setLang(next) {
       lang = next;
@@ -118,7 +181,7 @@
     }
 
     function render() {
-      const params = new URLSearchParams(window.location.search);
+      const params = getParams();
       const slug = params.get('slug');
       const paid = params.get('paid') === 'true';
       const kit = KITS[slug];
@@ -136,12 +199,21 @@
       const manifestUrl = `${origin}/starter-kits/manifests/${slug}.json`;
       const installCommand = `bash <(curl -fsSL ${installerUrl})`;
       const prerequisite = `npm i -g clawhub`;
+      const badgeClass = paid ? 'badge' : 'badge preview';
+
+      let statusBlock = '';
+      if (verificationState === 'pending') {
+        statusBlock = `<div class="status-note">${t.verifyPending}</div>`;
+      } else if (verificationState === 'failed') {
+        statusBlock = `<div class="status-note warn">${t.verifyFailed}</div>`;
+      }
 
       app.innerHTML = `
         <div class="hero">
-          <div class="badge">${paid ? t.paid : t.preview}</div>
+          <div class="${badgeClass}">${paid ? t.paid : t.preview}</div>
           <h1>${kit.emoji} ${kit.name[lang]}</h1>
           <div class="sub">${paid ? t.heroPaid : t.heroPreview}</div>
+          ${statusBlock}
         </div>
         <div class="grid">
           <div class="card">
@@ -152,21 +224,21 @@
                 <div class="step-num">${t.step1}</div>
                 <div class="muted">${t.step1desc}</div>
                 <pre><code>${prerequisite}</code></pre>
-                <div class="btn-row"><button class="btn secondary" onclick="copyText(${JSON.stringify(prerequisite)})">${t.copyPre}</button></div>
+                <div class="btn-row"><button class="btn secondary" onclick="copyText(${JSON.stringify(prerequisite)}); trackEvent('${slug}', 'copy-prerequisite')">${t.copyPre}</button></div>
               </div>
               <div class="step">
                 <div class="step-num">${t.step2}</div>
                 <div class="muted">${t.step2desc}</div>
                 <pre><code>${installCommand}</code></pre>
                 <div class="btn-row">
-                  <button class="btn primary" onclick="copyText(${JSON.stringify(installCommand)})">${t.copyCmd}</button>
-                  <a class="btn secondary" href="${installerUrl}" target="_blank">${t.openScript}</a>
+                  <button class="btn primary" onclick="copyText(${JSON.stringify(installCommand)}); trackEvent('${slug}', 'copy-install-command')">${t.copyCmd}</button>
+                  <a class="btn secondary" href="${installerUrl}" target="_blank" rel="noopener noreferrer" onclick="trackEvent('${slug}', 'open-installer-script')">${t.openScript}</a>
                 </div>
               </div>
               <div class="step">
                 <div class="step-num">${t.step3}</div>
                 <div class="muted">${t.step3desc}</div>
-                <div class="btn-row"><a class="btn secondary" href="${manifestUrl}" target="_blank">${t.openJson}</a></div>
+                <div class="btn-row"><a class="btn secondary" href="${manifestUrl}" target="_blank" rel="noopener noreferrer" onclick="trackEvent('${slug}', 'open-manifest-json')">${t.openJson}</a></div>
               </div>
             </div>
             <div class="note" style="margin-top:16px;">${t.workspaceNote}</div>
@@ -175,7 +247,7 @@
             <div class="pill">${t.included}</div>
             <div class="title">${t.installs}</div>
             <div class="muted">${t.installsDesc}</div>
-            <ul>${kit.skills.map(skill => `<li>${skill}</li>`).join('')}</ul>
+            <ul>${kit.skills.map(skill => `<li>${skillLabel(skill)}</li>`).join('')}</ul>
             <div class="onboarding">
               <div class="title" style="font-size:20px; margin-top:18px;">${t.onboarding}</div>
               <ol>${t.onboardingItems.map(item => `<li>${item}</li>`).join('')}</ol>
@@ -183,6 +255,14 @@
           </div>
         </div>`;
     }
+
+    window.addEventListener('load', () => {
+      const params = getParams();
+      const slug = params.get('slug');
+      render();
+      if (slug) trackEvent(slug, 'delivery-page-viewed');
+      verifyPaidSession(slug);
+    });
 
     setLang(lang);
   </script>
