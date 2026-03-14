@@ -93,6 +93,11 @@
       border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 900;
       white-space: nowrap;
     }
+    .ribbon {
+      display:inline-block; margin: 0 0 10px; padding: 5px 10px; border-radius: 999px;
+      background: rgba(99,102,241,.14); border: 1px solid rgba(99,102,241,.35); color: #c4b5fd;
+      font-size: 11px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase;
+    }
     .title { font-size: 20px; font-weight: 900; color:#fff; margin-bottom: 6px; }
     .desc { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
     .label {
@@ -201,6 +206,7 @@
         slug: 'starter-10',
         emoji: '🌱',
         name: 'Must-Have 10 Skills',
+        badge: 'Most Popular',
         description: 'The safest first purchase for total beginners. A broad starter stack covering notes, docs, browser tasks, email, weather, and practical day-to-day automation.',
         audience: 'Best for: total OpenClaw beginners who want a default setup without overthinking.',
         skills: ['Agent Browser', 'weather', 'gog', 'obsidian', 'apple-notes', 'things-mac', 'markdown-converter', 'openai-whisper-api', 'video-frames', 'find-skills']
@@ -271,6 +277,7 @@
       const grid = document.getElementById('grid');
       grid.innerHTML = KITS.map(kit => `
         <div class="card">
+          ${kit.badge ? `<div class="ribbon">${kit.badge}</div>` : ''}
           <div class="card-top">
             <div class="emoji">${kit.emoji}</div>
             <div class="price">$4.99</div>
@@ -283,7 +290,7 @@
           </ul>
           <div class="meta">
             <div class="forwho">${kit.audience}</div>
-            <button class="buy" onclick="buyKitBySlug('${kit.slug}')">Deploy · $4.99</button>
+            <button class="buy" onclick="buyKitBySlug('${kit.slug}')">Buy Kit · $4.99</button>
           </div>
         </div>
       `).join('');
@@ -291,18 +298,30 @@
 
     function renderSuccess() {
       const params = new URLSearchParams(window.location.search);
-      if (!params.get('success')) return;
-      const kit = params.get('kit') || 'Starter Kit';
-      const slug = params.get('slug') || 'bundle';
-      document.getElementById('successMount').innerHTML = `
-        <div class="success">
-          <h3>🎉 Payment successful for ${kit}</h3>
-          <p>
-            Your order is confirmed. Bundle key: <code>${slug}</code>.<br/>
-            This starter-kit purchase flow is now live in Wheat Community. Next step is to map each bundle key to a fully automated installer/download package.
-          </p>
-        </div>
-      `;
+      if (params.get('success')) {
+        const kit = params.get('kit') || 'Starter Kit';
+        const slug = params.get('slug') || 'bundle';
+        document.getElementById('successMount').innerHTML = `
+          <div class="success">
+            <h3>🎉 Payment successful for ${kit}</h3>
+            <p>
+              Your order is confirmed. Bundle key: <code>${slug}</code>.<br/>
+              This starter-kit purchase flow is now live in Wheat Community. Next step is to map each bundle key to a fully automated installer/download package.
+            </p>
+          </div>
+        `;
+        return;
+      }
+      if (params.get('canceled')) {
+        document.getElementById('successMount').innerHTML = `
+          <div class="success" style="background: rgba(244,196,48,.08); border-color: rgba(244,196,48,.35);">
+            <h3>Checkout canceled</h3>
+            <p style="color:#fde68a;">
+              No worries — your payment was not completed. You can come back anytime and pick the bundle that fits your current stage.
+            </p>
+          </div>
+        `;
+      }
     }
 
     render();
