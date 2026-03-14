@@ -146,6 +146,11 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/market' || url === '/market.html')) { serveFile(res, path.join(__dirname, 'market.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/kits' || url === '/kits.html')) { serveFile(res, path.join(__dirname, 'kits.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/kits/delivery' || url === '/kits-delivery.html')) { serveFile(res, path.join(__dirname, 'kits-delivery.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/about' || url === '/about.html')) { serveFile(res, path.join(__dirname, 'about.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/contact' || url === '/contact.html')) { serveFile(res, path.join(__dirname, 'contact.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/privacy' || url === '/privacy.html')) { serveFile(res, path.join(__dirname, 'privacy.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/terms' || url === '/terms.html')) { serveFile(res, path.join(__dirname, 'terms.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/refund' || url === '/refund.html')) { serveFile(res, path.join(__dirname, 'refund.html'), 'text/html'); return; }
   if (req.method === 'GET' && url.startsWith('/starter-kits/')) {
     const requested = decodeURIComponent(url.replace('/starter-kits/', ''));
     const safePath = path.normalize(requested).replace(/^([.][.][/\\])+/, '');
