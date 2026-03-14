@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheat Starter Kits · OpenClaw Bundles</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --purple: #6366f1;
+      --purple2: #8b5cf6;
+      --gold: #f4c430;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --green: #10b981;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 36px 20px 60px;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; }
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; gap: 12px; flex-wrap: wrap;
+    }
+    .back {
+      color: #a5b4fc; text-decoration: none; font-weight: 700; font-size: 14px;
+    }
+    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .nav-btn {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: #171722; color: var(--text); text-decoration: none; font-size: 13px; font-weight: 700;
+    }
+    .nav-btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple2)); border: none; }
+    .hero {
+      text-align: center; max-width: 900px; margin: 0 auto 36px;
+    }
+    .badge {
+      display: inline-block; padding: 6px 14px; border-radius: 999px;
+      background: #17172a; border: 1px solid var(--border); color: #c4b5fd;
+      font-size: 12px; font-weight: 800; letter-spacing: .04em; margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(34px, 6vw, 56px); line-height: 1.08; font-weight: 900;
+      margin-bottom: 14px; color: #fff;
+    }
+    .sub {
+      color: var(--muted); line-height: 1.75; font-size: 16px; max-width: 760px; margin: 0 auto 24px;
+    }
+    .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn {
+      cursor:pointer; border:none; border-radius: 12px; padding: 14px 22px; font-weight: 800;
+      font-size: 14px; text-decoration:none; display:inline-block;
+    }
+    .btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple2)); color:#fff; }
+    .btn.gold { background: linear-gradient(135deg, var(--gold), #f59e0b); color:#111; }
+    .info-strip {
+      margin: 36px 0; display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
+    }
+    .info-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
+    }
+    .info-card .k { color:#fff; font-size:14px; font-weight:800; margin-bottom:6px; }
+    .info-card .v { color:var(--muted); font-size:13px; line-height:1.6; }
+    .section-title {
+      font-size: 24px; font-weight: 900; color: #fff; margin: 12px 0 18px;
+    }
+    .grid {
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;
+    }
+    .card {
+      background: linear-gradient(180deg, #151520 0%, #101017 100%);
+      border: 1px solid var(--border); border-radius: 20px; padding: 24px;
+      display:flex; flex-direction:column; min-height: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,.2);
+    }
+    .card:hover { border-color: #4f46e5; }
+    .card-top {
+      display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; margin-bottom: 16px;
+    }
+    .emoji {
+      width: 52px; height: 52px; display:flex; align-items:center; justify-content:center;
+      border-radius: 14px; background: linear-gradient(135deg, #1d1d35, #241a38); font-size: 26px;
+    }
+    .price {
+      background: rgba(244,196,48,.12); color: var(--gold); border: 1px solid rgba(244,196,48,.25);
+      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 900;
+      white-space: nowrap;
+    }
+    .title { font-size: 20px; font-weight: 900; color:#fff; margin-bottom: 6px; }
+    .desc { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
+    .label {
+      display:inline-block; margin-bottom: 12px; color:#a5b4fc; font-size: 11px; font-weight: 900;
+      text-transform: uppercase; letter-spacing: .08em;
+    }
+    ul.skills {
+      list-style: none; display:grid; gap: 8px; margin-bottom: 18px;
+    }
+    ul.skills li {
+      font-size: 13px; color:#d1d5db; padding: 10px 12px; border-radius: 10px;
+      border: 1px solid #232336; background: #11111a;
+    }
+    .meta {
+      margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border);
+      display:flex; justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;
+    }
+    .forwho { color: var(--muted); font-size: 12px; line-height:1.5; }
+    .buy {
+      background: linear-gradient(135deg, var(--purple), var(--purple2)); color:#fff; border:none;
+      border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 900; cursor:pointer;
+    }
+    .faq {
+      margin-top: 44px; background: var(--card); border: 1px solid var(--border);
+      border-radius: 18px; padding: 24px;
+    }
+    .faq p { color: var(--muted); line-height: 1.8; font-size: 14px; margin-top: 10px; }
+    .success {
+      margin: 0 auto 26px; max-width: 920px; background: rgba(16,185,129,.08);
+      border: 1px solid rgba(16,185,129,.4); border-radius: 16px; padding: 22px;
+    }
+    .success h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
+    .success p { color: #d1fae5; line-height: 1.7; font-size: 14px; }
+    .success code { background:#08130f; padding:3px 7px; border-radius:8px; }
+    footer {
+      text-align:center; margin-top: 38px; color:#6b7280; font-size: 12px;
+    }
+    @media (max-width: 768px) {
+      .info-strip { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" href="/">← Back to Wheat Community</a>
+      <div class="nav-actions">
+        <a class="nav-btn" href="/market">⚡ App Market</a>
+        <a class="nav-btn" href="/launch">🚀 Genius Launch</a>
+        <a class="nav-btn primary" href="/kits">🧰 Starter Kits</a>
+      </div>
+    </div>
+
+    <div class="hero">
+      <div class="badge">🧰 OpenClaw Starter Kits · Built for Beginners</div>
+      <h1>Don’t install random skills.<br/>Start with battle-tested bundles.</h1>
+      <p class="sub">
+        Wheat Starter Kits are curated mini-bundles for OpenClaw newcomers, solo founders, and small operators.
+        Every kit is packaged around a real beginner job-to-be-done: launch faster, automate repetitive work, do research, or start growing online.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#kits-grid">Browse Kits</a>
+        <a class="btn gold" href="/market">Explore App Market</a>
+      </div>
+    </div>
+
+    <div id="successMount"></div>
+
+    <div class="info-strip">
+      <div class="info-card">
+        <div class="k">Curated for beginners</div>
+        <div class="v">No decision paralysis. We group the most useful starting skills into practical bundles.</div>
+      </div>
+      <div class="info-card">
+        <div class="k">Fixed pricing</div>
+        <div class="v">Every starter kit is priced at <strong style="color:#fff;">$4.99</strong> for a simple, low-friction entry point.</div>
+      </div>
+      <div class="info-card">
+        <div class="k">Upgradeable later</div>
+        <div class="v">Buy the starter pack first, then move into custom agents, Launch Pad, or the full App Market later.</div>
+      </div>
+    </div>
+
+    <h2 class="section-title" id="kits-grid">Starter bundles</h2>
+    <div class="grid" id="grid"></div>
+
+    <div class="faq">
+      <h2 class="section-title" style="margin-top:0;">How these kits work</h2>
+      <p>
+        Each kit represents a curated bundle recommendation and starter install path. Right now, the checkout flow is live and production-ready.
+        After purchase, the user gets a recommended starter stack plus a bundle identifier that we can map to a more automated one-click installer in the next iteration.
+      </p>
+      <p>
+        This lets Wheat Community start monetizing beginner demand immediately, instead of waiting until every installer is fully automated.
+      </p>
+    </div>
+
+    <footer>
+      🌾 Wheat Community · Starter Kits for OpenClaw beginners
+    </footer>
+  </div>
+
+  <script>
+    const KITS = [
+      {
+        slug: 'starter-10',
+        emoji: '🌱',
+        name: 'Must-Have 10 Skills',
+        description: 'The safest first purchase for total beginners. A broad starter stack covering notes, docs, browser tasks, email, weather, and practical day-to-day automation.',
+        audience: 'Best for: total OpenClaw beginners who want a default setup without overthinking.',
+        skills: ['Agent Browser', 'weather', 'gog', 'obsidian', 'apple-notes', 'things-mac', 'markdown-converter', 'openai-whisper-api', 'video-frames', 'find-skills']
+      },
+      {
+        slug: 'founder-ops',
+        emoji: '🚀',
+        name: 'Solo Founder Ops Kit',
+        description: 'For indie founders who need research, launch execution, notes, inbox handling, and lightweight workflow leverage from day one.',
+        audience: 'Best for: founders, makers, and builders shipping MVPs fast.',
+        skills: ['gog', 'himalaya', 'obsidian', 'markdown-converter', 'Agent Browser', 'weather', 'find-skills']
+      },
+      {
+        slug: 'content-growth',
+        emoji: '📣',
+        name: 'Content & Growth Kit',
+        description: 'A beginner-friendly bundle for writing, repurposing, scraping, converting content, and finding growth surfaces without hiring a team.',
+        audience: 'Best for: creators, marketers, community builders, and distribution-first teams.',
+        skills: ['markdown-converter', 'openai-whisper-api', 'video-frames', 'Agent Browser', 'obsidian', 'find-skills']
+      },
+      {
+        slug: 'personal-ai-assistant',
+        emoji: '🧠',
+        name: 'Personal AI Assistant Kit',
+        description: 'Turn OpenClaw into a useful daily-life copilot for calendar, reminders, notes, tasks, travel planning, and quick information capture.',
+        audience: 'Best for: personal productivity, family ops, and executive assistant workflows.',
+        skills: ['gog', 'things-mac', 'apple-notes', 'obsidian', 'weather', 'openai-whisper-api']
+      },
+      {
+        slug: 'researcher',
+        emoji: '🔬',
+        name: 'Researcher Kit',
+        description: 'A compact research workflow for browsing, fetching, extracting, converting, organizing, and archiving information fast.',
+        audience: 'Best for: analysts, students, consultants, and AI-native researchers.',
+        skills: ['Agent Browser', 'markdown-converter', 'obsidian', 'video-frames', 'openai-whisper-api', 'find-skills']
+      },
+      {
+        slug: 'automation-admin',
+        emoji: '⚙️',
+        name: 'Automation Admin Kit',
+        description: 'A practical starter stack for operators who want systemized admin work, documents, inbox, and browser workflows handled with less manual effort.',
+        audience: 'Best for: operators, chiefs of staff, assistants, and backend process owners.',
+        skills: ['gog', 'himalaya', 'apple-notes', 'things-mac', 'Agent Browser', 'markdown-converter']
+      }
+    ];
+
+    async function buyKitBySlug(slug) {
+      const kit = KITS.find(k => k.slug === slug);
+      if (!kit) return;
+      try {
+        const res = await fetch('/api/kits-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kitName: kit.name, kitSlug: kit.slug })
+        });
+        const data = await res.json();
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          alert('Checkout failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        alert('Network error while creating checkout session.');
+      }
+    }
+
+    function render() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = KITS.map(kit => `
+        <div class="card">
+          <div class="card-top">
+            <div class="emoji">${kit.emoji}</div>
+            <div class="price">$4.99</div>
+          </div>
+          <div class="title">${kit.name}</div>
+          <div class="desc">${kit.description}</div>
+          <div class="label">Included skills</div>
+          <ul class="skills">
+            ${kit.skills.map(skill => `<li>${skill}</li>`).join('')}
+          </ul>
+          <div class="meta">
+            <div class="forwho">${kit.audience}</div>
+            <button class="buy" onclick="buyKitBySlug('${kit.slug}')">Deploy · $4.99</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderSuccess() {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.get('success')) return;
+      const kit = params.get('kit') || 'Starter Kit';
+      const slug = params.get('slug') || 'bundle';
+      document.getElementById('successMount').innerHTML = `
+        <div class="success">
+          <h3>🎉 Payment successful for ${kit}</h3>
+          <p>
+            Your order is confirmed. Bundle key: <code>${slug}</code>.<br/>
+            This starter-kit purchase flow is now live in Wheat Community. Next step is to map each bundle key to a fully automated installer/download package.
+          </p>
+        </div>
+      `;
+    }
+
+    render();
+    renderSuccess();
+  </script>
+</body>
+</html>

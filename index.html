@@ -62,7 +62,7 @@
     .card-meta{font-size:11px;color:var(--muted);}
     .featured-badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,var(--gold),#f59e0b);color:#000;font-size:10px;font-weight:800;padding:2px 10px;border-radius:12px;}
     .new-badge{position:absolute;top:14px;right:14px;background:linear-gradient(135deg,#10b981,#059669);color:#fff;font-size:10px;font-weight:800;padding:2px 10px;border-radius:12px;}
-    .modules{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px;}
+    .modules{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px;}
     .module-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;display:flex;align-items:center;gap:18px;cursor:pointer;transition:all .2s;}
     .module-card:hover{border-color:var(--purple);}
     .module-card.gold:hover{border-color:var(--gold);}
@@ -106,6 +106,7 @@
 <nav>
   <a class="nav-logo" href="/"><span class="logo-icon">🌾</span><span>Wheat Community</span></a>
   <div class="nav-links"><button class="nav-link" onclick="window.location.href='/market.html'" style="color:#f4c430; font-weight:bold;">⚡ App Market</button>
+    <button class="nav-link" onclick="window.location.href='/kits'" style="color:#a5b4fc; font-weight:bold;">🧰 Starter Kits</button>
     <button class="nav-link active" data-i="navDiscover">Discover</button>
     <button class="nav-link" onclick="location.href='/leaderboard'" data-i="navLeaderboard">Leaderboard</button>
     <button class="nav-link" onclick="location.href='/launch'" data-i="navLaunch">Genius Launch</button>
@@ -173,6 +174,14 @@
       <div>
         <div class="module-title" data-i="modLaunchTitle">Genius Launch Pad</div>
         <div class="module-desc" data-i="modLaunchDesc">AI-powered custom marketing strategy.<br/>Delivered in 60 minutes. Orders auto-publish here.</div>
+      </div>
+      <div class="module-arrow">→</div>
+    </div>
+    <div class="module-card" onclick="location.href='/kits'">
+      <div class="module-icon">🧰</div>
+      <div>
+        <div class="module-title">Starter Kits</div>
+        <div class="module-desc">Beginner-friendly OpenClaw bundles.<br/>Curated packs at $4.99 each for fast setup.</div>
       </div>
       <div class="module-arrow">→</div>
     </div>
@@ -456,23 +465,9 @@ function submitLead(e) {
   }).then(()=> {
     document.getElementById('lmSuccess').style.display = 'block';
     document.getElementById('lmEmail').value = '';
-    // Show referral link
     document.getElementById('refSection').style.display = 'block';
     const refLink = window.location.origin + window.location.pathname + '?ref=' + email;
     document.getElementById('refLink').value = refLink;
-  }).catch(()=>{});
-}
-
-  e.preventDefault();
-  const email = document.getElementById('lmEmail').value;
-  if(!email) return;
-  fetch('/api/leads/submit', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ email, source: 'Playbook2026' })
-  }).then(()=> {
-    document.getElementById('lmSuccess').style.display = 'block';
-    document.getElementById('lmEmail').value = '';
   }).catch(()=>{});
 }
 
@@ -488,7 +483,7 @@ function submitProduct(){
   const t=I18N[lang];
   if(!name||!tagline||!desc) {alert(t.alertFields);return;}
   if(!tag) {alert(t.selectCat);return;}
-  if(!contributor) {alert(curLang==="zh"?"请填写您的用户名以赚取 WHC":"Please provide your username to earn WHC");return;}
+  if(!contributor) {alert(lang==="zh"?"请填写您的用户名以赚取 WHC":"Please provide your username to earn WHC");return;}
   const payload = {
     name, tagline, desc, 
     url: document.getElementById('f-url').value.trim(),

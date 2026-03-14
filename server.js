@@ -144,6 +144,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/market' || url === '/market.html')) { serveFile(res, path.join(__dirname, 'market.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/kits' || url === '/kits.html')) { serveFile(res, path.join(__dirname, 'kits.html'), 'text/html'); return; }
 
   // ── API ───────────────────────────────────────────
 
@@ -353,6 +354,49 @@ const server = http.createServer(async (req, res) => {
       });
 
       console.log(`💳 [Stripe Market] Session created for ${agentName}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: session.url }));
+    } catch (err) {
+      console.error(err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/kits-checkout') {
+    if (!stripe) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' }));
+      return;
+    }
+    try {
+      const data = await parseBody(req);
+      const host = req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+      const domain = protocol + '://' + host;
+
+      const kitName = data.kitName || 'Wheat Starter Kit';
+      const kitSlug = data.kitSlug || 'starter-kit';
+      const orderId = 'KIT-' + Date.now();
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: 'Wheat Starter Kit: ' + kitName },
+            unit_amount: 499,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: domain + '/kits?success=true&kit=' + encodeURIComponent(kitName) + '&slug=' + encodeURIComponent(kitSlug),
+        cancel_url: domain + '/kits?canceled=true',
+        client_reference_id: orderId,
+      });
+
+      console.log(`💳 [Stripe Kits] Session created for ${kitName}`);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ url: session.url }));
     } catch (err) {
