@@ -7,137 +7,58 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #0a0a0f;
-      --card: #13131a;
-      --border: #2a2a3a;
-      --purple: #6366f1;
-      --purple2: #8b5cf6;
-      --gold: #f4c430;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --green: #10b981;
+      --bg: #0a0a0f; --card: #13131a; --border: #2a2a3a; --purple: #6366f1; --purple2: #8b5cf6;
+      --gold: #f4c430; --text: #e5e7eb; --muted: #9ca3af; --green: #10b981;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      padding: 36px 20px 60px;
-    }
-    .wrap { max-width: 1120px; margin: 0 auto; }
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px; gap: 12px; flex-wrap: wrap;
-    }
-    .back {
-      color: #a5b4fc; text-decoration: none; font-weight: 700; font-size: 14px;
-    }
-    .nav-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-    .nav-btn {
-      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
-      background: #171722; color: var(--text); text-decoration: none; font-size: 13px; font-weight: 700;
-    }
-    .nav-btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple2)); border: none; }
-    .hero {
-      text-align: center; max-width: 900px; margin: 0 auto 36px;
-    }
-    .badge {
-      display: inline-block; padding: 6px 14px; border-radius: 999px;
-      background: #17172a; border: 1px solid var(--border); color: #c4b5fd;
-      font-size: 12px; font-weight: 800; letter-spacing: .04em; margin-bottom: 16px;
-    }
-    h1 {
-      font-size: clamp(34px, 6vw, 56px); line-height: 1.08; font-weight: 900;
-      margin-bottom: 14px; color: #fff;
-    }
-    .sub {
-      color: var(--muted); line-height: 1.75; font-size: 16px; max-width: 760px; margin: 0 auto 24px;
-    }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding: 36px 20px 60px; }
+    .wrap { max-width: 1140px; margin: 0 auto; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:28px; }
+    .back { color:#a5b4fc; text-decoration:none; font-weight:700; font-size:14px; }
+    .nav-actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .nav-btn { padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:#171722; color:#fff; text-decoration:none; font-size:13px; font-weight:700; }
+    .nav-btn.primary { background:linear-gradient(135deg,var(--purple),var(--purple2)); border:none; }
+    .lang-toggle { display:flex; gap:3px; background:#171722; border:1px solid var(--border); border-radius:10px; padding:3px; }
+    .lang-btn { background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; }
+    .lang-btn.active { background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; }
+    .hero { text-align:center; max-width:900px; margin:0 auto 36px; }
+    .badge { display:inline-block; padding:6px 14px; border-radius:999px; background:#17172a; border:1px solid var(--border); color:#c4b5fd; font-size:12px; font-weight:800; margin-bottom:16px; }
+    h1 { font-size:clamp(34px,6vw,56px); line-height:1.08; font-weight:900; margin-bottom:14px; color:#fff; }
+    .sub { color:var(--muted); line-height:1.75; font-size:16px; max-width:760px; margin:0 auto 24px; }
     .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
-    .btn {
-      cursor:pointer; border:none; border-radius: 12px; padding: 14px 22px; font-weight: 800;
-      font-size: 14px; text-decoration:none; display:inline-block;
-    }
-    .btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple2)); color:#fff; }
-    .btn.gold { background: linear-gradient(135deg, var(--gold), #f59e0b); color:#111; }
-    .info-strip {
-      margin: 36px 0; display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px;
-    }
-    .info-card {
-      background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px;
-    }
+    .btn { cursor:pointer; border:none; border-radius:12px; padding:14px 22px; font-weight:800; font-size:14px; text-decoration:none; display:inline-block; }
+    .btn.primary { background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; }
+    .btn.gold { background:linear-gradient(135deg,var(--gold),#f59e0b); color:#111; }
+    .info-strip { margin:36px 0; display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+    .info-card, .section-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; }
     .info-card .k { color:#fff; font-size:14px; font-weight:800; margin-bottom:6px; }
-    .info-card .v { color:var(--muted); font-size:13px; line-height:1.6; }
-    .section-title {
-      font-size: 24px; font-weight: 900; color: #fff; margin: 12px 0 18px;
-    }
-    .grid {
-      display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px;
-    }
-    .card {
-      background: linear-gradient(180deg, #151520 0%, #101017 100%);
-      border: 1px solid var(--border); border-radius: 20px; padding: 24px;
-      display:flex; flex-direction:column; min-height: 100%;
-      box-shadow: 0 10px 30px rgba(0,0,0,.2);
-    }
-    .card:hover { border-color: #4f46e5; }
-    .card-top {
-      display:flex; align-items:flex-start; justify-content:space-between; gap: 12px; margin-bottom: 16px;
-    }
-    .emoji {
-      width: 52px; height: 52px; display:flex; align-items:center; justify-content:center;
-      border-radius: 14px; background: linear-gradient(135deg, #1d1d35, #241a38); font-size: 26px;
-    }
-    .price {
-      background: rgba(244,196,48,.12); color: var(--gold); border: 1px solid rgba(244,196,48,.25);
-      border-radius: 999px; padding: 8px 12px; font-size: 12px; font-weight: 900;
-      white-space: nowrap;
-    }
-    .ribbon {
-      display:inline-block; margin: 0 0 10px; padding: 5px 10px; border-radius: 999px;
-      background: rgba(99,102,241,.14); border: 1px solid rgba(99,102,241,.35); color: #c4b5fd;
-      font-size: 11px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase;
-    }
-    .title { font-size: 20px; font-weight: 900; color:#fff; margin-bottom: 6px; }
-    .desc { color: var(--muted); font-size: 14px; line-height: 1.7; margin-bottom: 16px; }
-    .label {
-      display:inline-block; margin-bottom: 12px; color:#a5b4fc; font-size: 11px; font-weight: 900;
-      text-transform: uppercase; letter-spacing: .08em;
-    }
-    ul.skills {
-      list-style: none; display:grid; gap: 8px; margin-bottom: 18px;
-    }
-    ul.skills li {
-      font-size: 13px; color:#d1d5db; padding: 10px 12px; border-radius: 10px;
-      border: 1px solid #232336; background: #11111a;
-    }
-    .meta {
-      margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border);
-      display:flex; justify-content:space-between; align-items:center; gap: 12px; flex-wrap: wrap;
-    }
-    .forwho { color: var(--muted); font-size: 12px; line-height:1.5; }
-    .buy {
-      background: linear-gradient(135deg, var(--purple), var(--purple2)); color:#fff; border:none;
-      border-radius: 10px; padding: 12px 18px; font-size: 13px; font-weight: 900; cursor:pointer;
-    }
-    .faq {
-      margin-top: 44px; background: var(--card); border: 1px solid var(--border);
-      border-radius: 18px; padding: 24px;
-    }
-    .faq p { color: var(--muted); line-height: 1.8; font-size: 14px; margin-top: 10px; }
-    .success {
-      margin: 0 auto 26px; max-width: 920px; background: rgba(16,185,129,.08);
-      border: 1px solid rgba(16,185,129,.4); border-radius: 16px; padding: 22px;
-    }
-    .success h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
-    .success p { color: #d1fae5; line-height: 1.7; font-size: 14px; }
-    .success code { background:#08130f; padding:3px 7px; border-radius:8px; }
-    footer {
-      text-align:center; margin-top: 38px; color:#6b7280; font-size: 12px;
-    }
-    @media (max-width: 768px) {
-      .info-strip { grid-template-columns: 1fr; }
-    }
+    .info-card .v, .section-card p, .section-card li { color:var(--muted); font-size:13px; line-height:1.7; }
+    .section-title { font-size:24px; font-weight:900; color:#fff; margin:12px 0 18px; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:20px; }
+    .card { background:linear-gradient(180deg,#151520 0%,#101017 100%); border:1px solid var(--border); border-radius:20px; padding:24px; display:flex; flex-direction:column; min-height:100%; }
+    .card:hover { border-color:#4f46e5; }
+    .ribbon { display:inline-block; margin:0 0 10px; padding:5px 10px; border-radius:999px; background:rgba(99,102,241,.14); border:1px solid rgba(99,102,241,.35); color:#c4b5fd; font-size:11px; font-weight:900; text-transform:uppercase; }
+    .card-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:16px; }
+    .emoji { width:52px; height:52px; display:flex; align-items:center; justify-content:center; border-radius:14px; background:linear-gradient(135deg,#1d1d35,#241a38); font-size:26px; }
+    .price { background:rgba(244,196,48,.12); color:var(--gold); border:1px solid rgba(244,196,48,.25); border-radius:999px; padding:8px 12px; font-size:12px; font-weight:900; }
+    .title { font-size:20px; font-weight:900; color:#fff; margin-bottom:6px; }
+    .desc { color:var(--muted); font-size:14px; line-height:1.7; margin-bottom:16px; }
+    .mini-label { display:inline-block; margin-bottom:12px; color:#a5b4fc; font-size:11px; font-weight:900; text-transform:uppercase; }
+    ul.skills { list-style:none; display:grid; gap:8px; margin-bottom:18px; }
+    ul.skills li { font-size:13px; color:#d1d5db; padding:10px 12px; border-radius:10px; border:1px solid #232336; background:#11111a; }
+    .result { margin:0 0 16px; background:#101018; border:1px solid #252538; border-radius:12px; padding:12px 14px; color:#d1d5db; font-size:13px; line-height:1.6; }
+    .meta { margin-top:auto; padding-top:16px; border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .forwho { color:var(--muted); font-size:12px; line-height:1.5; }
+    .buy { background:linear-gradient(135deg,var(--purple),var(--purple2)); color:#fff; border:none; border-radius:10px; padding:12px 18px; font-size:13px; font-weight:900; cursor:pointer; }
+    .compare-table { width:100%; border-collapse:collapse; overflow:hidden; border-radius:14px; }
+    .compare-table th, .compare-table td { border:1px solid var(--border); padding:14px; text-align:left; font-size:13px; }
+    .compare-table th { background:#151524; color:#fff; }
+    .compare-table td { background:#0f0f17; color:#d1d5db; }
+    .faq { margin-top:36px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .success { margin:0 auto 26px; max-width:920px; background:rgba(16,185,129,.08); border:1px solid rgba(16,185,129,.4); border-radius:16px; padding:22px; }
+    .success h3 { color:#fff; font-size:20px; margin-bottom:8px; }
+    .success p { color:#d1fae5; line-height:1.7; font-size:14px; }
+    footer { text-align:center; margin-top:38px; color:#6b7280; font-size:12px; }
+    @media (max-width: 900px) { .info-strip, .faq { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
@@ -145,187 +66,214 @@
     <div class="topbar">
       <a class="back" href="/">← Back to Wheat Community</a>
       <div class="nav-actions">
+        <div class="lang-toggle">
+          <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-zh" onclick="setLang('zh')">中文</button>
+        </div>
         <a class="nav-btn" href="/market">⚡ App Market</a>
         <a class="nav-btn" href="/launch">🚀 Genius Launch</a>
         <a class="nav-btn primary" href="/kits">🧰 Starter Kits</a>
       </div>
     </div>
 
-    <div class="hero">
-      <div class="badge">🧰 OpenClaw Starter Kits · Built for Beginners</div>
-      <h1>Don’t install random skills.<br/>Start with battle-tested bundles.</h1>
-      <p class="sub">
-        Wheat Starter Kits are curated mini-bundles for OpenClaw newcomers, solo founders, and small operators.
-        Every kit is packaged around a real beginner job-to-be-done: launch faster, automate repetitive work, do research, or start growing online.
-      </p>
-      <div class="hero-actions">
-        <a class="btn primary" href="#kits-grid">Browse Kits</a>
-        <a class="btn gold" href="/market">Explore App Market</a>
-      </div>
-    </div>
-
     <div id="successMount"></div>
+    <div id="heroMount"></div>
+    <div id="infoMount"></div>
+    <div id="gridMount"></div>
+    <div id="compareMount"></div>
+    <div id="faqMount"></div>
 
-    <div class="info-strip">
-      <div class="info-card">
-        <div class="k">Curated for beginners</div>
-        <div class="v">No decision paralysis. We group the most useful starting skills into practical bundles.</div>
-      </div>
-      <div class="info-card">
-        <div class="k">Fixed pricing</div>
-        <div class="v">Every starter kit is priced at <strong style="color:#fff;">$4.99</strong> for a simple, low-friction entry point.</div>
-      </div>
-      <div class="info-card">
-        <div class="k">Upgradeable later</div>
-        <div class="v">Buy the starter pack first, then move into custom agents, Launch Pad, or the full App Market later.</div>
-      </div>
-    </div>
-
-    <h2 class="section-title" id="kits-grid">Starter bundles</h2>
-    <div class="grid" id="grid"></div>
-
-    <div class="faq">
-      <h2 class="section-title" style="margin-top:0;">How these kits work</h2>
-      <p>
-        Each kit represents a curated bundle recommendation and starter install path. Right now, the checkout flow is live and production-ready.
-        After purchase, the user gets a recommended starter stack plus a bundle identifier that we can map to a more automated one-click installer in the next iteration.
-      </p>
-      <p>
-        This lets Wheat Community start monetizing beginner demand immediately, instead of waiting until every installer is fully automated.
-      </p>
-    </div>
-
-    <footer>
-      🌾 Wheat Community · Starter Kits for OpenClaw beginners
-    </footer>
+    <footer>🌾 Wheat Community · Starter Kits for OpenClaw beginners</footer>
   </div>
 
   <script>
+    const I18N = {
+      en: {
+        badge: '🧰 OpenClaw Starter Kits · Built for Beginners',
+        title: 'Don’t install random skills.<br/>Start with battle-tested bundles.',
+        sub: 'Wheat Starter Kits are curated mini-bundles for OpenClaw newcomers, solo founders, and small operators. Every kit is packaged around a real beginner job-to-be-done: launch faster, automate repetitive work, do research, or start growing online.',
+        browse: 'Browse Kits', explore: 'Explore App Market',
+        info: [
+          ['Curated for beginners', 'No decision paralysis. We group the most useful starting skills into practical bundles.'],
+          ['Fixed pricing', 'Every starter kit is priced at $4.99 for a simple, low-friction entry point.'],
+          ['Upgradeable later', 'Buy the starter pack first, then move into custom agents, Launch Pad, or the full App Market later.']
+        ],
+        bundles: 'Starter bundles', included: 'Included skills', resultLabel: 'What you get', compare: 'Bundle comparison', faqTitle: 'How these kits work',
+        faqA: 'These kits remove the guesswork for beginners. Instead of searching dozens of skills one by one, the user buys a curated package designed around an actual outcome.',
+        faqB: 'After payment, users now land on a dedicated delivery page with a copyable install command, downloadable installer script, and bundle manifest JSON.',
+        compareHeaders: ['Kit', 'Best for', 'Skills', 'Outcome'],
+        buy: 'Buy Kit · $4.99', canceledTitle: 'Checkout canceled', canceledBody: 'No worries — your payment was not completed. You can come back anytime and pick the bundle that fits your current stage.',
+        popular: 'Most Popular'
+      },
+      zh: {
+        badge: '🧰 OpenClaw 新手套装 · 为小白准备',
+        title: '别再乱装 skill。<br/>直接从验证过的套装开始。',
+        sub: 'Wheat Starter Kits 是为 OpenClaw 新手、独立开发者、以及小团队操盘手整理的迷你全家桶。每一个套装都围绕真实场景设计：更快启动、更少折腾、能直接上手。',
+        browse: '浏览套装', explore: '查看 App Market',
+        info: [
+          ['专为新手整理', '不用自己在一堆 skills 里瞎挑，我们已经按真实使用场景组合好。'],
+          ['统一定价', '每个 Starter Kit 都是 $4.99，决策成本低，适合先试再升级。'],
+          ['后续可升级', '先买入门包，后续再升级到 App Market、Launch Pad 或定制方案。']
+        ],
+        bundles: 'Starter 套装', included: '包含的 skills', resultLabel: '你将得到什么', compare: '套装对比', faqTitle: '这些套装怎么用',
+        faqA: '这些 Starter Kits 的核心价值，是帮小白跳过“乱装、装错、装半天”的阶段，直接买到针对某个结果的组合包。',
+        faqB: '现在付款后，用户会进入专属交付页，可以直接复制安装命令、打开 installer 脚本、查看 manifest JSON。',
+        compareHeaders: ['套装', '适合谁', '技能数', '核心结果'],
+        buy: '购买套装 · $4.99', canceledTitle: '支付已取消', canceledBody: '没关系，这次没有完成扣款。你可以随时回来继续挑选适合当前阶段的套装。',
+        popular: '最受欢迎'
+      }
+    };
+
     const KITS = [
       {
-        slug: 'starter-10',
-        emoji: '🌱',
-        name: 'Must-Have 10 Skills',
-        badge: 'Most Popular',
-        description: 'The safest first purchase for total beginners. A broad starter stack covering notes, docs, browser tasks, email, weather, and practical day-to-day automation.',
-        audience: 'Best for: total OpenClaw beginners who want a default setup without overthinking.',
-        skills: ['Agent Browser', 'weather', 'gog', 'obsidian', 'apple-notes', 'things-mac', 'markdown-converter', 'openai-whisper-api', 'video-frames', 'find-skills']
+        slug:'starter-10', emoji:'🌱', price:'$4.99', badgeKey:'popular',
+        name:{en:'Must-Have 10 Skills', zh:'必装 10 大 Skills'},
+        desc:{en:'The safest first purchase for total beginners. A broad starter stack covering notes, docs, browser tasks, email, weather, and practical day-to-day automation.', zh:'最稳妥的新手第一单。覆盖笔记、文档、浏览器任务、邮箱、天气和日常自动化。'},
+        audience:{en:'Best for: total OpenClaw beginners who want a default setup without overthinking.', zh:'适合：完全新手，想一次装好默认配置的人。'},
+        result:{en:'Finish the safest beginner setup in about 10 minutes.', zh:'大约 10 分钟完成一套最稳的 OpenClaw 新手配置。'},
+        skills:['Agent Browser','weather','gog','obsidian-notesmd-cli','apple-notes','things-mac','markdown-converter','openai-whisper-api','video-frames','find-skills']
       },
       {
-        slug: 'founder-ops',
-        emoji: '🚀',
-        name: 'Solo Founder Ops Kit',
-        description: 'For indie founders who need research, launch execution, notes, inbox handling, and lightweight workflow leverage from day one.',
-        audience: 'Best for: founders, makers, and builders shipping MVPs fast.',
-        skills: ['gog', 'himalaya', 'obsidian', 'markdown-converter', 'Agent Browser', 'weather', 'find-skills']
+        slug:'founder-ops', emoji:'🚀', price:'$4.99',
+        name:{en:'Solo Founder Ops Kit', zh:'独立创业者运营套装'},
+        desc:{en:'For indie founders who need research, launch execution, notes, inbox handling, and lightweight workflow leverage from day one.', zh:'适合独立创业者，从第一天就把调研、启动、笔记、邮箱和轻量流程跑起来。'},
+        audience:{en:'Best for: founders, makers, and builders shipping MVPs fast.', zh:'适合：创始人、独立开发者、快速做 MVP 的 builder。'},
+        result:{en:'Go from scattered tools to a founder-ready operating stack.', zh:'从零散工具切换成真正可用的创始人作战栈。'},
+        skills:['gog','himalaya','obsidian-notesmd-cli','markdown-converter','agent-browser','weather','find-skills']
       },
       {
-        slug: 'content-growth',
-        emoji: '📣',
-        name: 'Content & Growth Kit',
-        description: 'A beginner-friendly bundle for writing, repurposing, scraping, converting content, and finding growth surfaces without hiring a team.',
-        audience: 'Best for: creators, marketers, community builders, and distribution-first teams.',
-        skills: ['markdown-converter', 'openai-whisper-api', 'video-frames', 'Agent Browser', 'obsidian', 'find-skills']
+        slug:'content-growth', emoji:'📣', price:'$4.99',
+        name:{en:'Content & Growth Kit', zh:'内容增长套装'},
+        desc:{en:'A beginner-friendly bundle for writing, repurposing, scraping, converting content, and finding growth surfaces without hiring a team.', zh:'围绕内容生产、改写、提取、转格式和增长触点搜集的小白友好组合。'},
+        audience:{en:'Best for: creators, marketers, community builders, and distribution-first teams.', zh:'适合：内容创作者、营销人员、社区操盘手、重分发团队。'},
+        result:{en:'Build a low-cost content engine without hiring an agency.', zh:'不用养团队，也能先搭起低成本内容引擎。'},
+        skills:['markdown-converter','openai-whisper-api','video-frames','agent-browser','obsidian-notesmd-cli','find-skills']
       },
       {
-        slug: 'personal-ai-assistant',
-        emoji: '🧠',
-        name: 'Personal AI Assistant Kit',
-        description: 'Turn OpenClaw into a useful daily-life copilot for calendar, reminders, notes, tasks, travel planning, and quick information capture.',
-        audience: 'Best for: personal productivity, family ops, and executive assistant workflows.',
-        skills: ['gog', 'things-mac', 'apple-notes', 'obsidian', 'weather', 'openai-whisper-api']
+        slug:'personal-ai-assistant', emoji:'🧠', price:'$4.99',
+        name:{en:'Personal AI Assistant Kit', zh:'个人 AI 助理套装'},
+        desc:{en:'Turn OpenClaw into a useful daily-life copilot for calendar, reminders, notes, tasks, travel planning, and quick information capture.', zh:'把 OpenClaw 变成你的日常 AI 助理，覆盖日程、提醒、笔记、任务、出行和信息收集。'},
+        audience:{en:'Best for: personal productivity, family ops, and executive assistant workflows.', zh:'适合：个人效率、家庭事务、行政助理流程。'},
+        result:{en:'Turn OpenClaw into an actually useful daily operator.', zh:'把 OpenClaw 从“能聊”升级成“真能帮你干活”。'},
+        skills:['gog','things-mac','apple-notes','obsidian-notesmd-cli','weather','openai-whisper-api']
       },
       {
-        slug: 'researcher',
-        emoji: '🔬',
-        name: 'Researcher Kit',
-        description: 'A compact research workflow for browsing, fetching, extracting, converting, organizing, and archiving information fast.',
-        audience: 'Best for: analysts, students, consultants, and AI-native researchers.',
-        skills: ['Agent Browser', 'markdown-converter', 'obsidian', 'video-frames', 'openai-whisper-api', 'find-skills']
+        slug:'researcher', emoji:'🔬', price:'$4.99',
+        name:{en:'Researcher Kit', zh:'调研分析套装'},
+        desc:{en:'A compact research workflow for browsing, fetching, extracting, converting, organizing, and archiving information fast.', zh:'围绕浏览、抓取、提取、转换、整理和归档的一套紧凑调研工作流。'},
+        audience:{en:'Best for: analysts, students, consultants, and AI-native researchers.', zh:'适合：分析师、学生、顾问、AI 原生研究员。'},
+        result:{en:'Get to structured answers faster with less manual copying.', zh:'更快拿到结构化结论，少做重复搬运。'},
+        skills:['agent-browser','markdown-converter','obsidian-notesmd-cli','video-frames','openai-whisper-api','find-skills']
       },
       {
-        slug: 'automation-admin',
-        emoji: '⚙️',
-        name: 'Automation Admin Kit',
-        description: 'A practical starter stack for operators who want systemized admin work, documents, inbox, and browser workflows handled with less manual effort.',
-        audience: 'Best for: operators, chiefs of staff, assistants, and backend process owners.',
-        skills: ['gog', 'himalaya', 'apple-notes', 'things-mac', 'Agent Browser', 'markdown-converter']
+        slug:'automation-admin', emoji:'⚙️', price:'$4.99',
+        name:{en:'Automation Admin Kit', zh:'自动化行政套装'},
+        desc:{en:'A practical starter stack for operators who want systemized admin work, documents, inbox, and browser workflows handled with less manual effort.', zh:'适合做行政、运营和中后台的人，把文档、邮箱、浏览器流程系统化。'},
+        audience:{en:'Best for: operators, chiefs of staff, assistants, and backend process owners.', zh:'适合：运营、幕僚长、助理、后台流程负责人。'},
+        result:{en:'Reduce repetitive admin work and standardize execution.', zh:'减少重复行政工作，把执行流程标准化。'},
+        skills:['gog','himalaya','apple-notes','things-mac','agent-browser','markdown-converter']
       }
     ];
+
+    let lang = localStorage.getItem('kits_lang') || 'en';
+
+    function setLang(next) {
+      lang = next;
+      localStorage.setItem('kits_lang', next);
+      document.getElementById('btn-en').classList.toggle('active', next === 'en');
+      document.getElementById('btn-zh').classList.toggle('active', next === 'zh');
+      render();
+    }
 
     async function buyKitBySlug(slug) {
       const kit = KITS.find(k => k.slug === slug);
       if (!kit) return;
       try {
         const res = await fetch('/api/kits-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ kitName: kit.name, kitSlug: kit.slug })
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ kitName: kit.name.en, kitSlug: kit.slug })
         });
         const data = await res.json();
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          alert('Checkout failed: ' + (data.error || 'Unknown error'));
-        }
-      } catch (err) {
+        if (data.url) window.location.href = data.url;
+        else alert('Checkout failed: ' + (data.error || 'Unknown error'));
+      } catch (e) {
         alert('Network error while creating checkout session.');
       }
     }
 
     function render() {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = KITS.map(kit => `
-        <div class="card">
-          ${kit.badge ? `<div class="ribbon">${kit.badge}</div>` : ''}
-          <div class="card-top">
-            <div class="emoji">${kit.emoji}</div>
-            <div class="price">$4.99</div>
-          </div>
-          <div class="title">${kit.name}</div>
-          <div class="desc">${kit.description}</div>
-          <div class="label">Included skills</div>
-          <ul class="skills">
-            ${kit.skills.map(skill => `<li>${skill}</li>`).join('')}
-          </ul>
-          <div class="meta">
-            <div class="forwho">${kit.audience}</div>
-            <button class="buy" onclick="buyKitBySlug('${kit.slug}')">Buy Kit · $4.99</button>
-          </div>
-        </div>
-      `).join('');
-    }
+      const t = I18N[lang];
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
 
-    function renderSuccess() {
+      document.getElementById('heroMount').innerHTML = `
+        <div class="hero">
+          <div class="badge">${t.badge}</div>
+          <h1>${t.title}</h1>
+          <div class="sub">${t.sub}</div>
+          <div class="hero-actions">
+            <a class="btn primary" href="#kits-grid">${t.browse}</a>
+            <a class="btn gold" href="/market">${t.explore}</a>
+          </div>
+        </div>`;
+
+      document.getElementById('infoMount').innerHTML = `
+        <div class="info-strip">
+          ${t.info.map(([k,v]) => `<div class="info-card"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+        </div>`;
+
+      document.getElementById('gridMount').innerHTML = `
+        <h2 class="section-title" id="kits-grid">${t.bundles}</h2>
+        <div class="grid">
+          ${KITS.map(kit => `
+            <div class="card">
+              ${kit.badgeKey ? `<div class="ribbon">${t[kit.badgeKey]}</div>` : ''}
+              <div class="card-top"><div class="emoji">${kit.emoji}</div><div class="price">${kit.price}</div></div>
+              <div class="title">${kit.name[lang]}</div>
+              <div class="desc">${kit.desc[lang]}</div>
+              <div class="result"><strong>${t.resultLabel}:</strong> ${kit.result[lang]}</div>
+              <div class="mini-label">${t.included}</div>
+              <ul class="skills">${kit.skills.map(s => `<li>${s}</li>`).join('')}</ul>
+              <div class="meta">
+                <div class="forwho">${kit.audience[lang]}</div>
+                <button class="buy" onclick="buyKitBySlug('${kit.slug}')">${t.buy}</button>
+              </div>
+            </div>`).join('')}
+        </div>`;
+
+      document.getElementById('compareMount').innerHTML = `
+        <h2 class="section-title">${t.compare}</h2>
+        <div class="section-card">
+          <table class="compare-table">
+            <thead>
+              <tr>${t.compareHeaders.map(h => `<th>${h}</th>`).join('')}</tr>
+            </thead>
+            <tbody>
+              ${KITS.map(kit => `<tr>
+                <td>${kit.name[lang]}</td>
+                <td>${kit.audience[lang].replace(/^Best for:\s*/,'').replace(/^适合：/,'')}</td>
+                <td>${kit.skills.length}</td>
+                <td>${kit.result[lang]}</td>
+              </tr>`).join('')}
+            </tbody>
+          </table>
+        </div>`;
+
+      document.getElementById('faqMount').innerHTML = `
+        <div class="faq">
+          <div class="section-card"><h2 class="section-title" style="margin-top:0;">${t.faqTitle}</h2><p>${t.faqA}</p></div>
+          <div class="section-card"><h2 class="section-title" style="margin-top:0;">Delivery</h2><p>${t.faqB}</p></div>
+        </div>`;
+
       const params = new URLSearchParams(window.location.search);
-      if (params.get('success')) {
-        const kit = params.get('kit') || 'Starter Kit';
-        const slug = params.get('slug') || 'bundle';
-        document.getElementById('successMount').innerHTML = `
-          <div class="success">
-            <h3>🎉 Payment successful for ${kit}</h3>
-            <p>
-              Your order is confirmed. Bundle key: <code>${slug}</code>.<br/>
-              This starter-kit purchase flow is now live in Wheat Community. Next step is to map each bundle key to a fully automated installer/download package.
-            </p>
-          </div>
-        `;
-        return;
-      }
+      const successMount = document.getElementById('successMount');
       if (params.get('canceled')) {
-        document.getElementById('successMount').innerHTML = `
-          <div class="success" style="background: rgba(244,196,48,.08); border-color: rgba(244,196,48,.35);">
-            <h3>Checkout canceled</h3>
-            <p style="color:#fde68a;">
-              No worries — your payment was not completed. You can come back anytime and pick the bundle that fits your current stage.
-            </p>
-          </div>
-        `;
+        successMount.innerHTML = `<div class="success" style="background:rgba(244,196,48,.08); border-color:rgba(244,196,48,.35);"><h3>${t.canceledTitle}</h3><p style="color:#fde68a;">${t.canceledBody}</p></div>`;
+      } else {
+        successMount.innerHTML = '';
       }
     }
 
-    render();
-    renderSuccess();
+    setLang(lang);
   </script>
 </body>
 </html>
