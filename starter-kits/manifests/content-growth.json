@@ -1,0 +1,32 @@
+{
+  "slug": "content-growth",
+  "name": "Content & Growth Kit",
+  "priceUsd": 4.99,
+  "installMethod": "clawhub-batch",
+  "skills": [
+    {
+      "slug": "markdown-converter",
+      "name": "Markdown Converter"
+    },
+    {
+      "slug": "openai-whisper-api",
+      "name": "OpenAI Whisper API"
+    },
+    {
+      "slug": "video-frames",
+      "name": "Video Frames"
+    },
+    {
+      "slug": "agent-browser",
+      "name": "Agent Browser"
+    },
+    {
+      "slug": "obsidian-notesmd-cli",
+      "name": "Obsidian"
+    },
+    {
+      "slug": "find-skills",
+      "name": "Find Skills"
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wheat Starter Kits · Delivery</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0f;
+      --card: #13131a;
+      --border: #2a2a3a;
+      --purple: #6366f1;
+      --purple2: #8b5cf6;
+      --gold: #f4c430;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --green: #10b981;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 36px 20px 60px;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    .topbar {
+      display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:28px;
+    }
+    .back { color:#a5b4fc; text-decoration:none; font-weight:700; font-size:14px; }
+    .hero {
+      background: linear-gradient(135deg, rgba(16,185,129,.12), rgba(99,102,241,.10));
+      border:1px solid rgba(16,185,129,.35); border-radius:22px; padding:28px; margin-bottom:26px;
+    }
+    .badge { display:inline-block; padding:6px 12px; border-radius:999px; background:#102018; color:#86efac; font-size:12px; font-weight:900; margin-bottom:14px; }
+    h1 { font-size: clamp(32px, 5vw, 48px); line-height:1.1; margin-bottom:10px; color:#fff; }
+    .sub { color:#d1fae5; line-height:1.7; font-size:15px; }
+    .grid { display:grid; grid-template-columns: 1.1fr .9fr; gap:20px; }
+    .card { background: var(--card); border:1px solid var(--border); border-radius:20px; padding:24px; }
+    .title { font-size:22px; font-weight:900; margin-bottom:10px; }
+    .muted { color: var(--muted); line-height:1.7; font-size:14px; }
+    .steps { display:grid; gap:14px; margin-top:16px; }
+    .step { background:#101018; border:1px solid #252538; border-radius:14px; padding:16px; }
+    .step-num { color:#c4b5fd; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.08em; margin-bottom:6px; }
+    pre {
+      margin-top:10px; background:#09090d; border:1px solid #242433; border-radius:14px; padding:14px; overflow:auto;
+      color:#e5e7eb; font-size:13px; line-height:1.7; white-space:pre-wrap; word-break:break-word;
+    }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .btn {
+      cursor:pointer; border:none; border-radius:12px; padding:12px 18px; font-size:14px; font-weight:800;
+      text-decoration:none; display:inline-block;
+    }
+    .btn.primary { background: linear-gradient(135deg, var(--purple), var(--purple2)); color:#fff; }
+    .btn.secondary { background:#171722; border:1px solid var(--border); color:#fff; }
+    .pill { display:inline-block; padding:6px 12px; border-radius:999px; background:rgba(244,196,48,.12); color:var(--gold); border:1px solid rgba(244,196,48,.25); font-size:12px; font-weight:900; margin-bottom:10px; }
+    ul { margin-top:12px; display:grid; gap:8px; }
+    li { list-style:none; background:#101018; border:1px solid #252538; padding:12px 14px; border-radius:12px; font-size:13px; }
+    .empty { text-align:center; padding:60px 20px; color:var(--muted); }
+    .note { margin-top:16px; font-size:13px; color:var(--muted); line-height:1.8; }
+    @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" href="/kits">← Back to Starter Kits</a>
+    </div>
+
+    <div id="app"></div>
+  </div>
+
+  <script>
+    const KITS = {
+      'starter-10': {
+        name: 'Must-Have 10 Skills',
+        emoji: '🌱',
+        description: 'The safest starter setup for total beginners.',
+        skills: ['agent-browser', 'weather', 'gog', 'obsidian-notesmd-cli', 'apple-notes', 'things-mac', 'markdown-converter', 'openai-whisper-api', 'video-frames', 'find-skills']
+      },
+      'founder-ops': {
+        name: 'Solo Founder Ops Kit',
+        emoji: '🚀',
+        description: 'A practical stack for solo founders and operators.',
+        skills: ['gog', 'himalaya', 'obsidian-notesmd-cli', 'markdown-converter', 'agent-browser', 'weather', 'find-skills']
+      },
+      'content-growth': {
+        name: 'Content & Growth Kit',
+        emoji: '📣',
+        description: 'A beginner-friendly stack for content repurposing and distribution.',
+        skills: ['markdown-converter', 'openai-whisper-api', 'video-frames', 'agent-browser', 'obsidian-notesmd-cli', 'find-skills']
+      },
+      'personal-ai-assistant': {
+        name: 'Personal AI Assistant Kit',
+        emoji: '🧠',
+        description: 'Turn OpenClaw into a useful daily-life copilot.',
+        skills: ['gog', 'things-mac', 'apple-notes', 'obsidian-notesmd-cli', 'weather', 'openai-whisper-api']
+      },
+      'researcher': {
+        name: 'Researcher Kit',
+        emoji: '🔬',
+        description: 'A compact research workflow for fast knowledge work.',
+        skills: ['agent-browser', 'markdown-converter', 'obsidian-notesmd-cli', 'video-frames', 'openai-whisper-api', 'find-skills']
+      },
+      'automation-admin': {
+        name: 'Automation Admin Kit',
+        emoji: '⚙️',
+        description: 'A practical stack for operators and assistants.',
+        skills: ['gog', 'himalaya', 'apple-notes', 'things-mac', 'agent-browser', 'markdown-converter']
+      }
+    };
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => alert('Copied!')).catch(() => alert('Copy failed.'));
+    }
+
+    function render() {
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+      const paid = params.get('paid') === 'true';
+      const kit = KITS[slug];
+      const app = document.getElementById('app');
+
+      if (!kit) {
+        app.innerHTML = `<div class="card empty">No delivery bundle found. Please return to <a href="/kits" style="color:#a5b4fc;">Starter Kits</a>.</div>`;
+        return;
+      }
+
+      const origin = window.location.origin;
+      const installerUrl = `${origin}/starter-kits/installers/${slug}.sh`;
+      const manifestUrl = `${origin}/starter-kits/manifests/${slug}.json`;
+      const installCommand = `bash <(curl -fsSL ${installerUrl})`;
+      const prerequisite = `npm i -g clawhub`;
+
+      app.innerHTML = `
+        <div class="hero">
+          <div class="badge">${paid ? '✅ Payment confirmed' : '🧰 Delivery Preview'}</div>
+          <h1>${kit.emoji} ${kit.name}</h1>
+          <div class="sub">
+            ${paid ? 'Your kit is ready. Use the installer below to install the mapped OpenClaw skills in one shot.' : 'This is the delivery page structure for the selected kit. Once payment completes, users land here and can install the mapped skills immediately.'}
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <div class="title">One-click delivery</div>
+            <div class="muted">This bundle now maps to a real installer script plus a manifest JSON. The installer uses <code>clawhub install</code> for each mapped skill.</div>
+            <div class="steps">
+              <div class="step">
+                <div class="step-num">Step 1 · Prerequisite</div>
+                <div class="muted">Install the ClawHub CLI if you don't already have it:</div>
+                <pre><code>${prerequisite}</code></pre>
+                <div class="btn-row"><button class="btn secondary" onclick="copyText(${JSON.stringify(prerequisite)})">Copy prerequisite</button></div>
+              </div>
+              <div class="step">
+                <div class="step-num">Step 2 · One-click install</div>
+                <div class="muted">Run this command in Terminal to install the full bundle:</div>
+                <pre><code>${installCommand}</code></pre>
+                <div class="btn-row">
+                  <button class="btn primary" onclick="copyText(${JSON.stringify(installCommand)})">Copy install command</button>
+                  <a class="btn secondary" href="${installerUrl}" target="_blank">Open installer script</a>
+                </div>
+              </div>
+              <div class="step">
+                <div class="step-num">Step 3 · Bundle manifest</div>
+                <div class="muted">Use this JSON manifest for auditing, internal tooling, or future automation.</div>
+                <div class="btn-row">
+                  <a class="btn secondary" href="${manifestUrl}" target="_blank">Open manifest JSON</a>
+                </div>
+              </div>
+            </div>
+            <div class="note">
+              Recommended workspace target: <code>~/.openclaw/workspace</code>. The installer also respects <code>OPENCLAW_WORKDIR</code> if you want a custom path.
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="pill">Included skill mapping</div>
+            <div class="title">What gets installed</div>
+            <div class="muted">This bundle currently maps to the following installable skills:</div>
+            <ul>
+              ${kit.skills.map(skill => `<li>${skill}</li>`).join('')}
+            </ul>
+            <div class="note">
+              Next upgrade path: after installation, this delivery page can evolve into a personalized onboarding flow, recommended config, and upsell path into App Market / Genius Launch.
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    render();
+  </script>
+</body>
+</html>

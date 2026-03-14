@@ -145,6 +145,25 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/market' || url === '/market.html')) { serveFile(res, path.join(__dirname, 'market.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/kits' || url === '/kits.html')) { serveFile(res, path.join(__dirname, 'kits.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/kits/delivery' || url === '/kits-delivery.html')) { serveFile(res, path.join(__dirname, 'kits-delivery.html'), 'text/html'); return; }
+  if (req.method === 'GET' && url.startsWith('/starter-kits/')) {
+    const requested = decodeURIComponent(url.replace('/starter-kits/', ''));
+    const safePath = path.normalize(requested).replace(/^([.][.][/\\])+/, '');
+    const filePath = path.join(__dirname, 'starter-kits', safePath);
+    if (!filePath.startsWith(path.join(__dirname, 'starter-kits'))) {
+      res.writeHead(403); res.end('Forbidden'); return;
+    }
+    const ext = path.extname(filePath).toLowerCase();
+    const contentType = ext === '.json' ? 'application/json' : (ext === '.sh' ? 'text/plain' : 'application/octet-stream');
+    try {
+      const content = fs.readFileSync(filePath);
+      res.writeHead(200, { 'Content-Type': contentType + '; charset=utf-8' });
+      res.end(content);
+    } catch {
+      res.writeHead(404); res.end('Not found');
+    }
+    return;
+  }
 
   // ── API ───────────────────────────────────────────
 
@@ -391,7 +410,7 @@ const server = http.createServer(async (req, res) => {
           quantity: 1,
         }],
         mode: 'payment',
-        success_url: domain + '/kits?success=true&kit=' + encodeURIComponent(kitName) + '&slug=' + encodeURIComponent(kitSlug),
+        success_url: domain + '/kits/delivery?paid=true&kit=' + encodeURIComponent(kitName) + '&slug=' + encodeURIComponent(kitSlug),
         cancel_url: domain + '/kits?canceled=true',
         client_reference_id: orderId,
       });

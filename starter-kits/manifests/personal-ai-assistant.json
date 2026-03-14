@@ -1,0 +1,32 @@
+{
+  "slug": "personal-ai-assistant",
+  "name": "Personal AI Assistant Kit",
+  "priceUsd": 4.99,
+  "installMethod": "clawhub-batch",
+  "skills": [
+    {
+      "slug": "gog",
+      "name": "Google Workspace (Gog)"
+    },
+    {
+      "slug": "things-mac",
+      "name": "Things for Mac"
+    },
+    {
+      "slug": "apple-notes",
+      "name": "Apple Notes"
+    },
+    {
+      "slug": "obsidian-notesmd-cli",
+      "name": "Obsidian"
+    },
+    {
+      "slug": "weather",
+      "name": "Weather"
+    },
+    {
+      "slug": "openai-whisper-api",
+      "name": "OpenAI Whisper API"
+    }
+  ]
+}

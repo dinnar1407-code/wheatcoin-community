@@ -1,0 +1,48 @@
+{
+  "slug": "starter-10",
+  "name": "Must-Have 10 Skills",
+  "priceUsd": 4.99,
+  "installMethod": "clawhub-batch",
+  "skills": [
+    {
+      "slug": "agent-browser",
+      "name": "Agent Browser"
+    },
+    {
+      "slug": "weather",
+      "name": "Weather"
+    },
+    {
+      "slug": "gog",
+      "name": "Google Workspace (Gog)"
+    },
+    {
+      "slug": "obsidian-notesmd-cli",
+      "name": "Obsidian"
+    },
+    {
+      "slug": "apple-notes",
+      "name": "Apple Notes"
+    },
+    {
+      "slug": "things-mac",
+      "name": "Things for Mac"
+    },
+    {
+      "slug": "markdown-converter",
+      "name": "Markdown Converter"
+    },
+    {
+      "slug": "openai-whisper-api",
+      "name": "OpenAI Whisper API"
+    },
+    {
+      "slug": "video-frames",
+      "name": "Video Frames"
+    },
+    {
+      "slug": "find-skills",
+      "name": "Find Skills"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "slug": "automation-admin",
+  "name": "Automation Admin Kit",
+  "priceUsd": 4.99,
+  "installMethod": "clawhub-batch",
+  "skills": [
+    {
+      "slug": "gog",
+      "name": "Google Workspace (Gog)"
+    },
+    {
+      "slug": "himalaya",
+      "name": "Himalaya"
+    },
+    {
+      "slug": "apple-notes",
+      "name": "Apple Notes"
+    },
+    {
+      "slug": "things-mac",
+      "name": "Things for Mac"
+    },
+    {
+      "slug": "agent-browser",
+      "name": "Agent Browser"
+    },
+    {
+      "slug": "markdown-converter",
+      "name": "Markdown Converter"
+    }
+  ]
+}
