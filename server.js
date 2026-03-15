@@ -530,6 +530,43 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── Market Checkout ──────────────────────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/market-checkout') {
+    if (!stripe) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Stripe is not configured.' })); return;
+    }
+    try {
+      const data = await parseBody(req);
+      const agentName = data.agentName || 'Wheat Agent';
+      const assetUrl  = data.assetUrl  || '';
+      // per-asset price table (cents); default $0.99
+      const PRICE_TABLE = {
+        'Chronos Memory OS': 999,
+      };
+      const unitAmount = PRICE_TABLE[agentName] || 99;
+      const host     = req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+      const domain   = protocol + '://' + host;
+      const session  = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{ price_data: { currency: 'usd', product_data: { name: agentName }, unit_amount: unitAmount }, quantity: 1 }],
+        mode: 'payment',
+        success_url: `${domain}/market?success=true&agent=${encodeURIComponent(agentName)}&url=${encodeURIComponent(assetUrl)}`,
+        cancel_url:  `${domain}/market?canceled=true`,
+        client_reference_id: 'MKT-' + Date.now(),
+        metadata: { agentName, assetUrl },
+      });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: session.url }));
+    } catch(e) {
+      console.error(e);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (req.method === 'GET' && url === '/health') {
     const count = db.prepare("SELECT COUNT(*) as count FROM products").get().count;
     res.writeHead(200, { 'Content-Type': 'application/json' });

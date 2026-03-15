@@ -54,6 +54,7 @@
   }
 
   const ASSET_URLS = [
+      "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/chronos-memory-os.wheat.yaml",
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/deep-researcher.wheat.yaml",
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-web-navigator.wheat.yaml",
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-devops-assistant.wheat.yaml",
@@ -94,7 +95,7 @@
                       <div style="border-top: 1px solid #2a2a3a; padding-top: 24px; display: flex; justify-content: space-between; align-items: center;">
                           <span style="font-size: 0.85rem; color: #6b7280; font-weight: 500;">By ${asset.author}</span>
                           <button onclick="checkoutAgent('${asset.name}', '${url}')" style="background: #6366f1; color: #fff; border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 0.9rem;" onmouseover="this.style.background='#4f46e5';" onmouseout="this.style.background='#6366f1';">
-                              Deploy - $0.99
+                              Deploy - $${(asset.pricing && asset.pricing.usd_price) ? Number(asset.pricing.usd_price).toFixed(2) : '0.99'}
                           </button>
                       </div>
                   </div>
