@@ -80,6 +80,24 @@ db.exec(`
     stripe_session_id TEXT,
     timestamp TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS whc_claims (
+    id INTEGER PRIMARY KEY,
+    claim_id TEXT UNIQUE,
+    mission_id TEXT,
+    moltbook_handle TEXT,
+    wallet_address TEXT,
+    proof_url TEXT,
+    claim_code TEXT,
+    telegram_handle TEXT,
+    x_handle TEXT,
+    note TEXT,
+    status TEXT DEFAULT 'submitted',
+    reviewer TEXT,
+    tx_hash TEXT,
+    receivedAt TEXT,
+    paidAt TEXT
+  );
 `);
 
 try { db.exec("ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'pending'"); } catch(e) {}
@@ -154,6 +172,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/kits/delivery' || url === '/kits-delivery.html')) { serveFile(res, path.join(__dirname, 'kits-delivery.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/about' || url === '/about.html')) { serveFile(res, path.join(__dirname, 'about.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/contact' || url === '/contact.html')) { serveFile(res, path.join(__dirname, 'contact.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/claim-whc' || url === '/claim-whc.html')) { serveFile(res, path.join(__dirname, 'claim-whc.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/privacy' || url === '/privacy.html')) { serveFile(res, path.join(__dirname, 'privacy.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/terms' || url === '/terms.html')) { serveFile(res, path.join(__dirname, 'terms.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/refund' || url === '/refund.html')) { serveFile(res, path.join(__dirname, 'refund.html'), 'text/html'); return; }
@@ -225,6 +244,61 @@ const server = http.createServer(async (req, res) => {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
     return;
+  }
+
+  if (req.method === 'POST' && url === '/api/claims/submit') {
+    try {
+      const data = await parseBody(req);
+      if (!data.missionId || !data.moltbookHandle || !data.walletAddress || !data.proofUrl) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'missionId, moltbookHandle, walletAddress, and proofUrl are required' }));
+        return;
+      }
+
+      const claimId = `CL-${Date.now()}`;
+      db.prepare(`INSERT INTO whc_claims (
+        claim_id, mission_id, moltbook_handle, wallet_address, proof_url, claim_code,
+        telegram_handle, x_handle, note, status, receivedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'submitted', ?)`)
+        .run(
+          claimId,
+          data.missionId,
+          data.moltbookHandle,
+          data.walletAddress,
+          data.proofUrl,
+          data.claimCode || '',
+          data.telegramHandle || '',
+          data.xHandle || '',
+          data.note || '',
+          new Date().toISOString()
+        );
+
+      sendToTelegramMessage('New WHC Claim', {
+        claim_id: claimId,
+        mission_id: data.missionId,
+        handle: data.moltbookHandle,
+        wallet: data.walletAddress,
+        proof: data.proofUrl
+      });
+
+      console.log(`🌾 [New WHC Claim] ${claimId} | ${data.moltbookHandle} | ${data.missionId}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, claimId }));
+    } catch(e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && url === '/api/claims') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
+    const rows = db.prepare("SELECT * FROM whc_claims ORDER BY receivedAt DESC").all();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(rows)); return;
   }
 
   
@@ -579,5 +653,6 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`\n🌾 麦穗社区服务器已启动 (SQLite模式)`);
   console.log(`🌐 http://localhost:${PORT}`);
-  console.log(`🔧 管理后台: http://localhost:${PORT}/admin\n`);
+  console.log(`🔧 管理后台: http://localhost:${PORT}/admin`);
+  console.log(`🌾 Claim 页面: http://localhost:${PORT}/claim-whc\n`);
 });
