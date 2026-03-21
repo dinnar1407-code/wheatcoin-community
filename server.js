@@ -174,6 +174,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/contact' || url === '/contact.html')) { serveFile(res, path.join(__dirname, 'contact.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/claim-whc' || url === '/claim-whc.html')) { serveFile(res, path.join(__dirname, 'claim-whc.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/whc-policy' || url === '/whc-policy.html')) { serveFile(res, path.join(__dirname, 'whc-policy.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/privacy' || url === '/privacy.html')) { serveFile(res, path.join(__dirname, 'privacy.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/terms' || url === '/terms.html')) { serveFile(res, path.join(__dirname, 'terms.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/refund' || url === '/refund.html')) { serveFile(res, path.join(__dirname, 'refund.html'), 'text/html'); return; }
