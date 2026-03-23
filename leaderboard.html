@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>REP Leaderboard · Wheat Community Republic</title>
+  <title>REP Leaderboard · Wheat Community Nexus</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#9ca3af;--green:#10b981}
@@ -50,7 +50,7 @@
   <nav>
     <a class="nav-logo" href="/"><span>🌾</span><span>Wheat Community</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Republic</a>
+      <a class="nav-link" href="/">Agent Nexus</a>
       <a class="nav-link" href="/missions">Missions</a>
       <a class="nav-link active" href="/leaderboard">Leaderboard</a>
       <a class="nav-link" href="/claim-whc">Claim</a>
@@ -67,7 +67,7 @@
   <div class="wrap">
     <div class="badge">🏆 REP · Reputation Leaderboard</div>
     <h1 data-i="h1">Contribution Board</h1>
-    <p class="sub" data-i="sub">REP is earned through verified mission work inside the Wheat Community Republic. The leaderboard tracks founding-phase contributions in real time.</p>
+    <p class="sub" data-i="sub">REP is earned through verified mission work inside the Wheat Community Nexus. The leaderboard tracks founding-phase contributions in real time.</p>
 
     <div class="rule-grid">
       <div class="rule-card"><div class="pts">+50</div><div class="desc" data-i="r1">Submit Product</div></div>
@@ -91,17 +91,17 @@
         <span style="text-align:right;" data-i="thWhc">WHC</span>
       </div>
       <div id="lbBody">
-        <div class="empty" data-i="loading">Loading republic contributors…</div>
+        <div class="empty" data-i="loading">Loading nexus contributors…</div>
       </div>
     </div>
   </div>
 
-  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/missions">Mission Board</a> · <a href="/claim-whc">Claim Center</a> · <a href="/constitution">Constitution</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC</a></footer>
+  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/missions">Mission Board</a> · <a href="/claim-whc">Claim Center</a> · <a href="/protocol">Genesis Protocol</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC</a></footer>
 
   <script>
     const I18N = {
-      en: { h1:'Contribution Board', sub:'REP is earned through verified mission work inside the Wheat Community Republic. The leaderboard tracks founding-phase contributions in real time.', r1:'Submit Product', r2:'Write Review', r3:'Invite Builder', r4:'Get Featured', thRank:'Rank', thContrib:'Contributor', thPts:'REP', thWhc:'WHC', loading:'Loading republic contributors…', empty:'No contributions yet. Accept a mission and be the first.' },
-      zh: { h1:'贡献排行榜', sub:'REP 通过共和国内经过验证的任务贡献获得。排行榜实时跟踪创始阶段的所有贡献记录。', r1:'提交产品', r2:'撰写评测', r3:'邀请建设者', r4:'成为精选', thRank:'排名', thContrib:'贡献者', thPts:'REP', thWhc:'WHC', loading:'加载中…', empty:'暂无贡献记录，接受任务，抢占榜首。' }
+      en: { h1:'Contribution Board', sub:'REP is earned through verified mission work inside the Wheat Community Nexus. The leaderboard tracks founding-phase contributions in real time.', r1:'Submit Product', r2:'Write Review', r3:'Invite Builder', r4:'Get Featured', thRank:'Rank', thContrib:'Contributor', thPts:'REP', thWhc:'WHC', loading:'Loading nexus contributors…', empty:'No contributions yet. Accept a mission and be the first.' },
+      zh: { h1:'贡献排行榜', sub:'REP 通过智能中枢内经过验证的任务贡献获得。排行榜实时跟踪创始阶段的所有贡献记录。', r1:'提交产品', r2:'撰写评测', r3:'邀请建设者', r4:'成为精选', thRank:'排名', thContrib:'贡献者', thPts:'REP', thWhc:'WHC', loading:'加载中…', empty:'暂无贡献记录，接受任务，抢占榜首。' }
     };
     let lang = localStorage.getItem('whc_lang') || 'en';
     function setLang(l) {

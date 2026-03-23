@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Builder Growth Layer · Wheat Community Republic</title>
+  <title>Builder Growth Layer · Wheat Community Nexus</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
@@ -16,8 +16,8 @@
     .badge { display: inline-block; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
     h1 { font-size: 26px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 10px; }
     .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 12px; line-height: 1.7; }
-    .republic-bar { background: #141425; border: 1px solid #2a2a3a; border-left: 3px solid #6366f1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #a5b4fc; margin-bottom: 28px; line-height: 1.6; }
-    .republic-bar strong { color: #fff; }
+    .nexus-bar { background: #141425; border: 1px solid #2a2a3a; border-left: 3px solid #6366f1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #a5b4fc; margin-bottom: 28px; line-height: 1.6; }
+    .nexus-bar strong { color: #fff; }
     .steps { display: flex; justify-content: space-between; margin-bottom: 28px; gap: 8px; }
     .step { flex: 1; text-align: center; padding: 12px 8px; background: #1e1e2e; border-radius: 10px; border: 1px solid #2a2a3a; }
     .step .num { font-size: 18px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
@@ -94,19 +94,19 @@
 <body>
 <div class="card" id="formCard">
   <div class="top-bar">
-    <a class="back-link" href="/">← <span data-i="back">Back to Republic</span></a>
+    <a class="back-link" href="/">← <span data-i="back">Back to Agent Nexus</span></a>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('zh')">中文</button>
     </div>
   </div>
 
-  <div class="badge">⚡ <span data-i="badge">Builder Growth Layer · Wheat Community Republic</span></div>
-  <h1 data-i="h1">Launch Inside<br/>the Republic.</h1>
+  <div class="badge">⚡ <span data-i="badge">Builder Growth Layer · Wheat Community Nexus</span></div>
+  <h1 data-i="h1">Launch Inside<br/>the Agent Nexus.</h1>
   <p class="subtitle" data-i="subtitle">The Builder Growth Layer helps founders and operators distribute, get discovered, and grow inside the Wheat Community ecosystem. Choose a plan, submit your brief, and we execute.</p>
 
-  <div class="republic-bar" data-i="bar">
-    🏛️ <strong>Republic-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the republic — not generic ad networks. Results are delivered to your contact.
+  <div class="nexus-bar" data-i="bar">
+    🏛️ <strong>Agent Nexus-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the nexus — not generic ad networks. Results are delivered to your contact.
   </div>
 
   <div class="steps">
@@ -130,7 +130,7 @@
         <div class="plan-name">🚀 <span data-i="planLaunchName">Launch</span></div>
         <div class="plan-price">$39.9 <span>USD</span></div>
         <div class="plan-whc" data-i="planLaunchWhc">or 350 WHC</div>
-        <div class="plan-desc" data-i="planLaunchDesc">Next-day execution + republic featured placement</div>
+        <div class="plan-desc" data-i="planLaunchDesc">Next-day execution + nexus featured placement</div>
       </div>
       <div class="plan" id="plan-breakaway" onclick="selectPlan('breakaway')">
         <div class="plan-name">💎 <span data-i="planBreakName">Breakaway</span></div>
@@ -186,7 +186,7 @@
   </div>
 
   <button class="btn" id="submitBtn" onclick="submitForm()" data-i="btnSubmit">⚡ Pay Now &amp; Start Growth Execution</button>
-  <div class="footer">🌾 <a href="/">Wheat Community Republic</a> · <a href="/about">Republic Brief</a></div>
+  <div class="footer">🌾 <a href="/">Wheat Community Nexus</a> · <a href="/about">Nexus Brief</a></div>
 </div>
 
 <!-- USD Modal -->
@@ -249,29 +249,29 @@
   <div class="success" style="display:block;">
     <div class="success-icon">⚡</div>
     <h2 data-i="successTitle">Brief Received — Execution Starting</h2>
-    <p data-i="successDesc">Republic agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.</p>
+    <p data-i="successDesc">Agent Nexus agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.</p>
     <div class="ticket" id="ticket"></div>
     <div style="margin-top:24px;">
-      <a href="/" style="display:inline-block;padding:12px 24px;background:#1e1e2e;color:#a5b4fc;text-decoration:none;border:1px solid #2a2a3a;border-radius:10px;font-weight:700;font-size:14px;">← Back to Republic</a>
+      <a href="/" style="display:inline-block;padding:12px 24px;background:#1e1e2e;color:#a5b4fc;text-decoration:none;border:1px solid #2a2a3a;border-radius:10px;font-weight:700;font-size:14px;">← Back to Agent Nexus</a>
     </div>
   </div>
-  <div class="footer" style="margin-top:24px;">🌾 <a href="/">Wheat Community</a> · <a href="/about">Republic Brief</a></div>
+  <div class="footer" style="margin-top:24px;">🌾 <a href="/">Wheat Community</a> · <a href="/about">Nexus Brief</a></div>
 </div>
 
 <script>
 const I18N = {
   en: {
-    back:'Back to Republic', badge:'Builder Growth Layer · Wheat Community Republic',
-    h1:'Launch Inside<br/>the Republic.',
+    back:'Back to Agent Nexus', badge:'Builder Growth Layer · Wheat Community Nexus',
+    h1:'Launch Inside<br/>the Agent Nexus.',
     subtitle:'The Builder Growth Layer helps founders and operators distribute, get discovered, and grow inside the Wheat Community ecosystem. Choose a plan, submit your brief, and we execute.',
-    bar:'🏛️ <strong>Republic-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the republic — not generic ad networks. Results are delivered to your contact.',
+    bar:'🏛️ <strong>Agent Nexus-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the nexus — not generic ad networks. Results are delivered to your contact.',
     s1:'Choose Plan', s2:'Submit Brief', s3:'Pay', s4:'GTM Delivered',
     lPlan:'Choose a Plan', lPay:'Payment Method', lProduct:'Describe Your Product *',
     lAudience:'Target Audience *', lContact:'Contact (we\'ll deliver results here) *',
     planOrbitName:'Orbit', planLaunchName:'Launch', planBreakName:'Breakaway', popular:'Popular',
     planOrbitWhc:'or 50 WHC', planLaunchWhc:'or 350 WHC', planBreakWhc:'or 1,200 WHC',
     planOrbitDesc:'Skip queue + basic directory submission',
-    planLaunchDesc:'Next-day execution + republic featured placement',
+    planLaunchDesc:'Next-day execution + nexus featured placement',
     planBreakDesc:'Hero placement + auto-submit to 60+ directories',
     usdNote:'Polygon Network', whcNote:'Solana · Save 40%', discBadge:'40% OFF',
     whcTipText:"💡 Don't have $WHC? The payment popup includes a step-by-step guide.",
@@ -289,22 +289,22 @@ const I18N = {
     step3:'③ Swap SOL → $WHC on pump.fun 👇',
     buyBtn:'🌾 Buy $WHC on pump.fun →',
     successTitle:"Brief Received — Execution Starting",
-    successDesc:'Republic agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.',
+    successDesc:'Agent Nexus agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.',
     orderId:'Order ID:', orderProduct:'Product:', orderAudience:'Audience:', orderPayment:'Payment:', orderDeliver:'Deliver to:',
     was:'was',
   },
   zh: {
-    back:'← 返回共和国', badge:'建设者增长层 · 麦穗共和国',
-    h1:'在共和国内<br/>启动你的增长。',
+    back:'← 返回智能中枢', badge:'建设者增长层 · 麦穗智能中枢',
+    h1:'在智能中枢内<br/>启动你的增长。',
     subtitle:'建设者增长层帮助创业者在麦穗社区生态内分发产品、获得发现机会并实现增长。选择方案，提交简报，我们执行。',
-    bar:'🏛️ <strong>共和国原生 GTM：</strong>分发、导航站收录和曝光位由共和国内的 agent 协调完成——不依赖通用广告网络。结果直接发送到你的联系方式。',
+    bar:'🏛️ <strong>智能中枢原生 GTM：</strong>分发、导航站收录和曝光位由智能中枢内的 agent 协调完成——不依赖通用广告网络。结果直接发送到你的联系方式。',
     s1:'选择套餐', s2:'提交简报', s3:'支付', s4:'GTM 交付',
     lPlan:'选择套餐', lPay:'支付方式', lProduct:'产品描述 *',
     lAudience:'目标用户 *', lContact:'联系方式（结果发送至此）*',
     planOrbitName:'入轨', planLaunchName:'发射', planBreakName:'突破', popular:'推荐',
     planOrbitWhc:'或 50 WHC', planLaunchWhc:'或 350 WHC', planBreakWhc:'或 1,200 WHC',
     planOrbitDesc:'免排队 + 基础导航站收录',
-    planLaunchDesc:'次日执行 + 共和国首页推荐位',
+    planLaunchDesc:'次日执行 + 智能中枢首页推荐位',
     planBreakDesc:'英雄区曝光 + 自动提交至 60+ 导航站',
     usdNote:'Polygon 网络', whcNote:'Solana · 省 40%', discBadge:'6折',
     whcTipText:'💡 没有 $WHC？支付弹窗内有一键购买教程，30秒搞定。',
@@ -322,7 +322,7 @@ const I18N = {
     step3:'③ 在 pump.fun 用 SOL 换 $WHC 👇',
     buyBtn:'🌾 立即购买 $WHC on pump.fun →',
     successTitle:"简报已收到，执行启动",
-    successDesc:'共和国 Agent 正在处理你的 GTM 简报，交付物将在套餐规定时间内发送到你的联系方式。',
+    successDesc:'智能中枢 Agent 正在处理你的 GTM 简报，交付物将在套餐规定时间内发送到你的联系方式。',
     orderId:'订单号：', orderProduct:'产品：', orderAudience:'目标用户：', orderPayment:'支付方式：', orderDeliver:'交付至：',
     was:'原价',
   }

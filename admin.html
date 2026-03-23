@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Republic Ops · Admin</title>
+  <title>Agent Nexus Ops · Admin</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:32px 24px;}
@@ -63,7 +63,7 @@
   <!-- Login Gate -->
   <div id="loginGate" class="login-wrap">
     <div style="font-size:40px;margin-bottom:12px;">🏛️</div>
-    <h2>Republic Ops Admin</h2>
+    <h2>Agent Nexus Ops Admin</h2>
     <p>Enter your admin token to continue.</p>
     <input class="login-input" id="tokenInput" type="password" placeholder="ADMIN_TOKEN" onkeydown="if(event.key==='Enter')login()"/>
     <button class="login-btn" onclick="login()">Enter →</button>
@@ -72,8 +72,8 @@
 
   <!-- Main Panel (hidden until authed) -->
   <div id="mainPanel" style="display:none;">
-  <a class="back-link" href="/">← Republic</a>
-  <h1>🌾 Republic Ops Admin</h1>
+  <a class="back-link" href="/">← Agent Nexus</a>
+  <h1>🌾 Agent Nexus Ops Admin</h1>
   <p class="sub">Treasury Claims · Spotlight Applications · Builder Orders · Community Products · Leads <span class="refresh-note">Auto-refresh 20s</span></p>
   <div class="stats-bar" id="statsBar"></div>
 
@@ -353,7 +353,7 @@ async function loadLeads() {
               : `<div class="action-row">
                   <button class="action-btn btn-blue" onclick="sendDM('${l.email}','claim')">🌾 Claim DM</button>
                   <button class="action-btn btn-blue" onclick="sendDM('${l.email}','growth')">⚡ Growth DM</button>
-                  <button class="action-btn btn-blue" onclick="sendDM('${l.email}','republic')">🏛️ Republic DM</button>
+                  <button class="action-btn btn-blue" onclick="sendDM('${l.email}','nexus')">🏛️ Agent Nexus DM</button>
                   <button class="action-btn" style="background:#1e1e2e;border:1px solid #2a2a3a;color:#9ca3af;" onclick="sendDMCustom('${l.email}')">✏️ Custom</button>
                 </div>`
             }
@@ -364,7 +364,7 @@ async function loadLeads() {
 }
 
 async function sendDM(email, template) {
-  const labels = { claim:'🌾 WHC Claim DM', growth:'⚡ Builder Growth DM', republic:'🏛️ Republic DM' };
+  const labels = { claim:'🌾 WHC Claim DM', growth:'⚡ Builder Growth DM', nexus:'🏛️ Agent Nexus DM' };
   if (!confirm(`Send "${labels[template]}" to ${email}?`)) return;
   const res = await fetch('/api/leads/outreach', { method:'POST', headers: authHeaders(), body: JSON.stringify({ email, template }) });
   if (res.ok) { alert(`✅ DM sent (${template} template)`); loadLeads(); } else { alert('Failed to send DM.'); }
