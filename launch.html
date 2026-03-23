@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Genius Launch Pad · AI Marketing Strategy</title>
+  <title>Builder Growth Layer · Wheat Community Republic</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-    .card { background: #13131a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 48px 40px; max-width: 600px; width: 100%; box-shadow: 0 0 60px rgba(99,102,241,0.12); }
+    .card { background: #13131a; border: 1px solid #2a2a3a; border-radius: 16px; padding: 48px 40px; max-width: 620px; width: 100%; box-shadow: 0 0 60px rgba(99,102,241,0.12); }
     .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
     .back-link { font-size: 13px; color: #6366f1; cursor: pointer; text-decoration: none; }
     .lang-toggle { display: flex; gap: 4px; background: #1e1e2e; border-radius: 8px; padding: 3px; }
@@ -16,16 +16,20 @@
     .badge { display: inline-block; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
     h1 { font-size: 26px; font-weight: 700; color: #fff; line-height: 1.3; margin-bottom: 10px; }
     .subtitle { font-size: 14px; color: #6b7280; margin-bottom: 12px; line-height: 1.7; }
-    .promise-bar { background: #1a1a2e; border: 1px solid #2a2a3a; border-left: 3px solid #6366f1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #a5b4fc; margin-bottom: 32px; line-height: 1.6; }
-    .promise-bar strong { color: #fff; }
+    .republic-bar { background: #141425; border: 1px solid #2a2a3a; border-left: 3px solid #6366f1; border-radius: 8px; padding: 12px 16px; font-size: 13px; color: #a5b4fc; margin-bottom: 28px; line-height: 1.6; }
+    .republic-bar strong { color: #fff; }
+    .steps { display: flex; justify-content: space-between; margin-bottom: 28px; gap: 8px; }
+    .step { flex: 1; text-align: center; padding: 12px 8px; background: #1e1e2e; border-radius: 10px; border: 1px solid #2a2a3a; }
+    .step .num { font-size: 18px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
+    .step .desc { font-size: 11px; color: #6b7280; line-height: 1.4; }
     .field { margin-bottom: 22px; }
     label { display: block; font-size: 12px; font-weight: 700; color: #9ca3af; margin-bottom: 8px; letter-spacing: 0.8px; text-transform: uppercase; }
     textarea, input, select { width: 100%; background: #1e1e2e; border: 1px solid #2a2a3a; border-radius: 10px; color: #e0e0e0; font-size: 15px; padding: 14px 16px; outline: none; transition: border-color .2s, box-shadow .2s; font-family: inherit; resize: none; }
-    textarea:focus, input:focus, select:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    textarea:focus, input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     textarea { height: 110px; }
     textarea::placeholder, input::placeholder { color: #4b5563; }
     .plans { display: flex; gap: 10px; margin-top: 4px; }
-    .plan { flex: 1; background: #1e1e2e; border: 1.5px solid #2a2a3a; border-radius: 12px; padding: 16px 10px; cursor: pointer; transition: all .2s; position: relative; text-align: center; }
+    .plan { flex: 1; background: #1e1e2e; border: 1.5px solid #2a2a3a; border-radius: 12px; padding: 18px 10px; cursor: pointer; transition: all .2s; position: relative; text-align: center; }
     .plan:hover { border-color: #6366f1; }
     .plan.selected { border-color: #6366f1; background: #1a1a35; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     .plan-badge { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 20px; white-space: nowrap; }
@@ -37,24 +41,20 @@
     .pay-toggle { display: flex; gap: 10px; margin-top: 4px; }
     .pay-option { flex: 1; padding: 14px 12px; border-radius: 12px; border: 1.5px solid #2a2a3a; background: #1e1e2e; cursor: pointer; text-align: center; transition: all .2s; position: relative; }
     .pay-option:hover { border-color: #6366f1; }
-    .pay-option.selected.usdt { border-color: #6366f1; background: #1a1a35; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .pay-option.selected.usd { border-color: #6366f1; background: #1a1a35; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
     .pay-option.selected { border-color: #f4c430; background: #1a1a10; box-shadow: 0 0 0 3px rgba(244,196,48,0.15); }
     .pay-icon { font-size: 22px; margin-bottom: 6px; }
     .pay-name { font-size: 13px; font-weight: 700; color: #e0e0e0; }
     .pay-note { font-size: 11px; color: #6b7280; margin-top: 3px; }
     .discount-badge { position: absolute; top: -10px; right: -6px; background: linear-gradient(135deg,#f4c430,#f59e0b); color: #000; font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 20px; }
     .price-summary { background: #1a1a2e; border: 1px solid #2a2a3a; border-radius: 10px; padding: 14px 18px; margin-bottom: 20px; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-    .price-summary .label { color: #6b7280; }
+    .price-summary .lbl { color: #6b7280; }
     .price-summary .amount { font-size: 22px; font-weight: 800; color: #a5b4fc; }
     .price-summary .amount.whc-price { color: #f4c430; }
     .price-summary .original { font-size: 12px; color: #4b5563; text-decoration: line-through; margin-left: 8px; }
     .btn { width: 100%; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; font-size: 16px; font-weight: 700; padding: 16px; border: none; border-radius: 10px; cursor: pointer; margin-top: 8px; transition: opacity .2s, transform .1s; letter-spacing: 0.5px; }
     .btn.whc-btn { background: linear-gradient(135deg,#f4c430,#f59e0b); color: #000; }
     .btn:hover { opacity: .9; transform: translateY(-1px); }
-    .steps { display: flex; justify-content: space-between; margin-bottom: 32px; gap: 8px; }
-    .step { flex: 1; text-align: center; padding: 12px 8px; background: #1e1e2e; border-radius: 10px; border: 1px solid #2a2a3a; }
-    .step .num { font-size: 18px; font-weight: 700; color: #6366f1; margin-bottom: 4px; }
-    .step .desc { font-size: 11px; color: #6b7280; line-height: 1.4; }
     .footer { text-align: center; margin-top: 28px; font-size: 12px; color: #374151; }
     .footer a { color: #6366f1; text-decoration: none; }
     .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; align-items: center; justify-content: center; }
@@ -63,7 +63,7 @@
     .modal h2 { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px; }
     .modal p { font-size: 13px; color: #6b7280; margin-bottom: 20px; line-height: 1.6; }
     .modal-amount { font-size: 42px; font-weight: 800; margin-bottom: 4px; }
-    .modal-amount.usdt { color: #a5b4fc; }
+    .modal-amount.usd { color: #a5b4fc; }
     .modal-amount.whc { color: #f4c430; }
     .modal-unit { font-size: 13px; color: #6b7280; margin-bottom: 20px; }
     .wallet-box { background: #1e1e2e; border: 1px dashed #2a2a3a; border-radius: 10px; padding: 14px 16px; font-size: 12px; color: #6b7280; margin-bottom: 20px; text-align: left; line-height: 1.8; }
@@ -81,60 +81,62 @@
     .success-icon { font-size: 52px; margin-bottom: 16px; }
     .success h2 { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 10px; }
     .success p { font-size: 14px; color: #6b7280; line-height: 1.7; margin-bottom: 20px; }
-    .countdown-box { background: #1a1a2e; border: 1px solid #2a2a3a; border-radius: 10px; padding: 16px 20px; margin-bottom: 16px; }
-    .countdown-box .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; }
-    .countdown { font-size: 28px; font-weight: 700; color: #6366f1; letter-spacing: 2px; }
     .ticket { background: #1e1e2e; border: 1px dashed #2a2a3a; border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #6b7280; text-align: left; }
     .ticket strong { color: #e0e0e0; }
+    .whc-tip { background:#1a1a10;border:1px solid #3a3000;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#f4c430;line-height:1.7;display:none; }
+    .whc-tip a { color:#f4c430;font-weight:700; }
+    .buy-guide { background:#1a1a10;border:1px solid #3a3000;border-radius:10px;padding:14px 16px;margin-bottom:16px;text-align:left; }
+    .buy-guide-title { font-size:12px;font-weight:700;color:#f4c430;margin-bottom:10px; }
+    .buy-guide-steps { font-size:12px;color:#9ca3af;line-height:2; }
+    .buy-guide-link { display:block;margin-top:10px;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:13px;font-weight:800;padding:10px;border-radius:8px;text-align:center;text-decoration:none; }
   </style>
 </head>
 <body>
 <div class="card" id="formCard">
   <div class="top-bar">
-    <a class="back-link" href="/">← <span data-i="back">Back to Community</span></a>
+    <a class="back-link" href="/">← <span data-i="back">Back to Republic</span></a>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('zh')">中文</button>
     </div>
   </div>
 
-  <div class="badge">⚡ <span data-i="badge">Genius Launch Pad · AI Marketing Strategy</span></div>
-  <h1 data-i="h1">Let AI Build Your<br/>Custom Marketing Plan</h1>
-  <p class="subtitle" data-i="subtitle">Submit your product and our team will deliver a complete marketing strategy, projected results, and growth roadmap in <strong style="color:#a5b4fc">60 minutes</strong>.</p>
+  <div class="badge">⚡ <span data-i="badge">Builder Growth Layer · Wheat Community Republic</span></div>
+  <h1 data-i="h1">Launch Inside<br/>the Republic.</h1>
+  <p class="subtitle" data-i="subtitle">The Builder Growth Layer helps founders and operators distribute, get discovered, and grow inside the Wheat Community ecosystem. Choose a plan, submit your brief, and we execute.</p>
 
-  <div class="promise-bar" data-i="promise">
-    ⏱️ <strong>Promise:</strong> Full strategy delivered within <strong>60 minutes</strong> to your contact.
-    &nbsp;🌾 <strong>Pay with $WHC and get <span style="color:#f4c430">40% OFF</span>!</strong>
+  <div class="republic-bar" data-i="bar">
+    🏛️ <strong>Republic-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the republic — not generic ad networks. Results are delivered to your contact.
   </div>
 
   <div class="steps">
     <div class="step"><div class="num">01</div><div class="desc" data-i="s1">Choose Plan</div></div>
     <div class="step"><div class="num">02</div><div class="desc" data-i="s2">Submit Brief</div></div>
     <div class="step"><div class="num">03</div><div class="desc" data-i="s3">Pay</div></div>
-    <div class="step"><div class="num">04</div><div class="desc" data-i="s4">Get Strategy</div></div>
+    <div class="step"><div class="num">04</div><div class="desc" data-i="s4">GTM Delivered</div></div>
   </div>
 
   <div class="field">
     <label data-i="lPlan">Choose a Plan</label>
     <div class="plans">
-      <div class="plan" id="plan-basic" onclick="selectPlan('basic')">
-        <div class="plan-name">🌱 <span data-i="planBasicName">Bootstrapper</span></div>
+      <div class="plan" id="plan-orbit" onclick="selectPlan('orbit')">
+        <div class="plan-name">🛰️ <span data-i="planOrbitName">Orbit</span></div>
         <div class="plan-price">$9.9 <span>USD</span></div>
-        <div class="plan-whc" data-i="planBasicWhc">or 50 WHC</div>
-        <div class="plan-desc" data-i="planBasicDesc">Skip queue + Basic Directory Submission</div>
+        <div class="plan-whc" data-i="planOrbitWhc">or 50 WHC</div>
+        <div class="plan-desc" data-i="planOrbitDesc">Skip queue + basic directory submission</div>
       </div>
-      <div class="plan selected" id="plan-pro" onclick="selectPlan('pro')">
+      <div class="plan selected" id="plan-launch" onclick="selectPlan('launch')">
         <div class="plan-badge" data-i="popular">Popular</div>
-        <div class="plan-name">🚀 <span data-i="planProName">Momentum</span></div>
+        <div class="plan-name">🚀 <span data-i="planLaunchName">Launch</span></div>
         <div class="plan-price">$39.9 <span>USD</span></div>
-        <div class="plan-whc" data-i="planProWhc">or 350 WHC</div>
-        <div class="plan-desc" data-i="planProDesc">Next-day launch + Featured Placement</div>
+        <div class="plan-whc" data-i="planLaunchWhc">or 350 WHC</div>
+        <div class="plan-desc" data-i="planLaunchDesc">Next-day execution + republic featured placement</div>
       </div>
-      <div class="plan" id="plan-vip" onclick="selectPlan('vip')">
-        <div class="plan-name">💎 <span data-i="planVipName">Blast-Off</span></div>
+      <div class="plan" id="plan-breakaway" onclick="selectPlan('breakaway')">
+        <div class="plan-name">💎 <span data-i="planBreakName">Breakaway</span></div>
         <div class="plan-price">$149.9 <span>USD</span></div>
-        <div class="plan-whc" data-i="planVipWhc">or 1,200 WHC</div>
-        <div class="plan-desc" data-i="planVipDesc">Hero placement + Auto-submit to 60+ directories</div>
+        <div class="plan-whc" data-i="planBreakWhc">or 1,200 WHC</div>
+        <div class="plan-desc" data-i="planBreakDesc">Hero placement + auto-submit to 60+ directories</div>
       </div>
     </div>
   </div>
@@ -142,37 +144,36 @@
   <div class="field">
     <label data-i="lPay">Payment Method</label>
     <div class="pay-toggle">
-      <div class="pay-option usdt selected" id="pay-usdt" onclick="selectPayment('usdt')">
+      <div class="pay-option usd selected" id="pay-usd" onclick="selectPayment('usd')">
         <div class="pay-icon">💵</div>
         <div class="pay-name">USD</div>
-        <div class="pay-note" data-i="usdtNote">Polygon Network</div>
+        <div class="pay-note" data-i="usdNote">Polygon Network</div>
       </div>
       <div class="pay-option" id="pay-whc" onclick="selectPayment('whc')">
         <div class="discount-badge" data-i="discBadge">40% OFF</div>
         <div class="pay-icon">🌾</div>
         <div class="pay-name">$WHC</div>
         <div class="pay-note" data-i="whcNote">Solana · Save 40%</div>
-        <div style="font-size:10px;color:#f4c430;margin-top:4px;" data-i="howToBuy">How to buy →</div>
       </div>
     </div>
   </div>
 
-  <div id="whcTip" style="display:none;background:#1a1a10;border:1px solid #3a3000;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#f4c430;line-height:1.7;">
+  <div class="whc-tip" id="whcTip">
     <span data-i="whcTipText">💡 Don't have $WHC? The payment popup includes a step-by-step guide.</span><br/>
-    <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" style="color:#f4c430;font-weight:700;" data-i="buyWhcLink">👉 Buy $WHC on pump.fun now</a>
+    <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" data-i="buyWhcLink">👉 Buy $WHC on pump.fun now</a>
   </div>
 
   <div class="price-summary">
-    <div class="label" data-i="youPay">You Pay</div>
+    <div class="lbl" data-i="youPay">You Pay</div>
     <div>
-      <span class="amount" id="summaryAmount">$29.9</span>
+      <span class="amount" id="summaryAmount">$39.9</span>
       <span id="summaryUnit" style="font-size:13px;color:#6b7280;margin-left:4px;">USD</span>
       <span class="original" id="summaryOriginal" style="display:none;"></span>
     </div>
   </div>
 
   <div class="field">
-    <label data-i="lProduct">Product Description *</label>
+    <label data-i="lProduct">Describe Your Product *</label>
     <textarea id="product" data-i-placeholder="productPH"></textarea>
   </div>
   <div class="field">
@@ -180,31 +181,31 @@
     <textarea id="audience" style="height:90px;" data-i-placeholder="audiencePH"></textarea>
   </div>
   <div class="field">
-    <label data-i="lContact">Contact (we'll deliver your strategy here) *</label>
+    <label data-i="lContact">Contact (we'll deliver results here) *</label>
     <input id="contact" type="text" data-i-placeholder="contactPH"/>
   </div>
 
-  <button class="btn" id="submitBtn" onclick="submitForm()" data-i="btnSubmit">💳 Pay Now & Launch</button>
-  <div class="footer">Powered by <a href="/">Wheat Community</a> · Genius Plan ⚡</div>
+  <button class="btn" id="submitBtn" onclick="submitForm()" data-i="btnSubmit">⚡ Pay Now &amp; Start Growth Execution</button>
+  <div class="footer">🌾 <a href="/">Wheat Community Republic</a> · <a href="/about">Republic Brief</a></div>
 </div>
 
 <!-- USD Modal -->
 <div class="modal-overlay" id="payModalUSD">
   <div class="modal">
-    <h2 data-i="usdtModalTitle">💵 Pay with USD</h2>
-    <p data-i="usdtModalDesc">Send USD on the <strong>Polygon network</strong> to the address below,<br/>then click "I've Paid" to confirm.</p>
-    <div class="modal-amount usdt" id="modalAmountUSD">29.9</div>
-    <div class="modal-unit" data-i="usdtUnit">USD · Polygon Network</div>
+    <h2 data-i="usdModalTitle">💵 Pay with USD</h2>
+    <p data-i="usdModalDesc">Send USD on <strong>Polygon network</strong> to the address below, then click "I've Paid".</p>
+    <div class="modal-amount usd" id="modalAmountUSD">39.9</div>
+    <div class="modal-unit">USD · Polygon Network</div>
     <div class="wallet-box">
-      <strong data-i="network">Network:</strong> Polygon (MATIC) · USD/USDC<br/>
-      <strong data-i="address">Address:</strong>
-      <div class="wallet-addr" onclick="copyAddr('usdt')">0x479F19330F1a343B9d987216ccA80C627BA788e6</div>
-      <div class="copy-hint" id="copyHintUSD" data-i="clickCopy">👆 Click to copy</div>
-      <div style="margin-top:10px;font-size:11px;color:#4b5563;" data-i="polygonWarning">⚠️ Only send on <strong style="color:#a5b4fc">Polygon network</strong>. Other networks will not arrive.</div>
+      <strong>Network:</strong> Polygon (MATIC) · USD/USDC<br/>
+      <strong>Address:</strong>
+      <div class="wallet-addr" onclick="copyAddr('usd')">0x479F19330F1a343B9d987216ccA80C627BA788e6</div>
+      <div class="copy-hint" id="copyHintUSD">👆 Click to copy</div>
+      <div style="margin-top:10px;font-size:11px;color:#4b5563;">⚠️ Only send on <strong style="color:#a5b4fc">Polygon network</strong>.</div>
     </div>
     <div class="modal-btns">
-      <button class="modal-btn secondary" onclick="closeModal('usdt')" data-i="cancel">Cancel</button>
-      <button class="modal-btn primary" onclick="confirmPayment('usdt')" data-i="iPaid">✅ I've Paid</button>
+      <button class="modal-btn secondary" onclick="closeModal('usd')">Cancel</button>
+      <button class="modal-btn primary" onclick="confirmPayment('usd')">✅ I've Paid</button>
     </div>
   </div>
 </div>
@@ -212,37 +213,32 @@
 <!-- WHC Modal -->
 <div class="modal-overlay" id="payModalWHC">
   <div class="modal">
-    <h2 data-i="whcModalTitle">🌾 Pay with $WHC</h2>
+    <h2>🌾 Pay with $WHC</h2>
     <div class="savings-tag" data-i="savingsTag">🎉 You're saving 40%!</div>
-    <p data-i="whcModalDesc">Send $WHC on <strong>Solana</strong> to the address below,<br/>then click "I've Paid" to confirm.</p>
-    <div class="modal-amount whc" id="modalAmountWHC">1,794</div>
-    <div class="modal-unit">WHC · Solana &nbsp;<span style="color:#4b5563;font-size:11px;text-decoration:line-through;" id="modalOriginalPrice"></span></div>
-
-    <div style="background:#1a1a10;border:1px solid #3a3000;border-radius:10px;padding:14px 16px;margin-bottom:16px;text-align:left;">
-      <div style="font-size:12px;font-weight:700;color:#f4c430;margin-bottom:10px;" data-i="guideTitle">📖 Don't have $WHC? 3 easy steps:</div>
-      <div style="font-size:12px;color:#9ca3af;line-height:2;">
-        <div data-i="step1">① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a> (Chrome / mobile)</div>
-        <div data-i="step2">② Fund with SOL (Coinbase / Binance → withdraw to Phantom)</div>
+    <p data-i="whcModalDesc">Send $WHC on <strong>Solana</strong> to the address below, then click "I've Paid".</p>
+    <div class="modal-amount whc" id="modalAmountWHC">350</div>
+    <div class="modal-unit">WHC · Solana <span style="color:#4b5563;font-size:11px;text-decoration:line-through;" id="modalOriginalPrice"></span></div>
+    <div class="buy-guide">
+      <div class="buy-guide-title" data-i="guideTitle">📖 Don't have $WHC? 3 steps:</div>
+      <div class="buy-guide-steps">
+        <div data-i="step1">① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a></div>
+        <div data-i="step2">② Fund with SOL (Coinbase / Binance → Phantom)</div>
         <div data-i="step3">③ Swap SOL → $WHC on pump.fun 👇</div>
       </div>
-      <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank"
-         style="display:block;margin-top:10px;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:13px;font-weight:800;padding:10px;border-radius:8px;text-align:center;text-decoration:none;" data-i="buyBtn">
-        🌾 Buy $WHC on pump.fun →
-      </a>
+      <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" class="buy-guide-link" data-i="buyBtn">🌾 Buy $WHC on pump.fun →</a>
     </div>
     <div class="wallet-box">
-      <strong data-i="sendTo">Send $WHC to:</strong><br/>
-      <strong data-i="network2">Network:</strong> Solana<br/>
-      <strong data-i="address2">Address:</strong>
+      <strong>Network:</strong> Solana<br/>
+      <strong>Address:</strong>
       <div class="wallet-addr whc-addr" onclick="copyAddr('whc')">6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK</div>
-      <div class="copy-hint" id="copyHintWHC" data-i="clickCopy2">👆 Click to copy</div>
+      <div class="copy-hint" id="copyHintWHC">👆 Click to copy</div>
       <div style="margin-top:8px;font-size:11px;color:#6b7280;">CA: <span style="color:#f4c430;font-family:monospace;font-size:10px;word-break:break-all;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</span></div>
     </div>
-    <div class="modal-btns" style="flex-direction:column; gap:10px;">
-      <button class="modal-btn primary whc" id="solanaPayBtn" onclick="payWithPhantom()" style="background: linear-gradient(135deg, #ab9ff2, #512da8); color: #fff; font-size:16px;">🟣 Pay via Phantom / Solana Pay</button>
-      <div style="display:flex; gap:10px; width:100%;">
-        <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')" data-i="cancel2">Cancel</button>
-        <button class="modal-btn secondary" style="flex:1; color:#f4c430; border-color:#3a3000;" onclick="confirmPayment('whc')" data-i="iPaid2">✅ I've Paid Manually</button>
+    <div class="modal-btns" style="flex-direction:column;gap:10px;">
+      <button class="modal-btn primary whc" onclick="payWithPhantom()" style="background:linear-gradient(135deg,#ab9ff2,#512da8);color:#fff;font-size:15px;">🟣 Pay via Phantom / Solana Pay</button>
+      <div style="display:flex;gap:10px;width:100%;">
+        <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')">Cancel</button>
+        <button class="modal-btn secondary" style="flex:1;color:#f4c430;border-color:#3a3000;" onclick="confirmPayment('whc')">✅ I've Paid Manually</button>
       </div>
     </div>
   </div>
@@ -251,108 +247,97 @@
 <!-- Success -->
 <div class="card" id="successCard" style="display:none;">
   <div class="success" style="display:block;">
-    <div class="success-icon">✅</div>
-    <h2 data-i="successTitle">Order Received — We're On It!</h2>
-    <p data-i="successDesc">Our team is building your custom marketing strategy.<br/>You'll receive it within <strong style="color:#a5b4fc">60 minutes</strong>.</p>
-    <div class="countdown-box">
-      <div class="label" data-i="delivery">Estimated Delivery</div>
-      <div class="countdown" id="countdown">60:00</div>
-    </div>
+    <div class="success-icon">⚡</div>
+    <h2 data-i="successTitle">Brief Received — Execution Starting</h2>
+    <p data-i="successDesc">Republic agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.</p>
     <div class="ticket" id="ticket"></div>
-    <div style="margin-top: 24px;">
-      <a href="/" style="display:inline-block; padding:12px 24px; background:#1e1e2e; color:#a5b4fc; text-decoration:none; border:1px solid #2a2a3a; border-radius:10px; font-weight:700; font-size:14px; transition:all .2s;" data-i="back">← Back to Community</a>
+    <div style="margin-top:24px;">
+      <a href="/" style="display:inline-block;padding:12px 24px;background:#1e1e2e;color:#a5b4fc;text-decoration:none;border:1px solid #2a2a3a;border-radius:10px;font-weight:700;font-size:14px;">← Back to Republic</a>
     </div>
   </div>
-  <div class="footer" style="margin-top:24px;">Powered by <a href="/">Wheat Community</a> · Genius Plan ⚡</div>
+  <div class="footer" style="margin-top:24px;">🌾 <a href="/">Wheat Community</a> · <a href="/about">Republic Brief</a></div>
 </div>
 
 <script>
-// ─── i18n ───────────────────────────────────────────
 const I18N = {
   en: {
-    back: 'Back to Community', badge: 'Genius Launch Pad · AI Marketing Strategy',
-    h1: 'Let AI Build Your<br/>Custom Marketing Plan',
-    subtitle: 'Submit your product and our team will deliver a complete marketing strategy, projected results, and growth roadmap in <strong style="color:#a5b4fc">60 minutes</strong>.',
-    promise: '⏱️ <strong>Promise:</strong> Full strategy delivered within <strong>60 minutes</strong> to your contact. &nbsp;🌾 <strong>Pay with $WHC and get <span style="color:#f4c430">40% OFF</span>!</strong>',
-    s1:'Choose Plan', s2:'Submit Brief', s3:'Pay', s4:'Get Strategy',
-    lPlan:'Choose a Plan', lPay:'Payment Method', lProduct:'Product Description *',
-    lAudience:'Target Audience *', lContact:'Contact (we\'ll deliver your strategy here) *',
-    planBasicName:'Bootstrapper', planProName:'Momentum', planVipName:'Blast-Off', popular:'Popular',
-    planBasicWhc:'or 50 WHC', planProWhc:'or 350 WHC', planVipWhc:'or 1,200 WHC',
-    planBasicDesc:'Skip queue + Basic Directory Submission',
-    planProDesc:'Next-day launch + Featured Placement',
-    planVipDesc:'Hero placement + Auto-submit to 60+ directories',
-    usdtNote:'Credit Card / Apple Pay', whcNote:'Solana · Save 40%', howToBuy:'How to buy →', discBadge:'40% OFF',
+    back:'Back to Republic', badge:'Builder Growth Layer · Wheat Community Republic',
+    h1:'Launch Inside<br/>the Republic.',
+    subtitle:'The Builder Growth Layer helps founders and operators distribute, get discovered, and grow inside the Wheat Community ecosystem. Choose a plan, submit your brief, and we execute.',
+    bar:'🏛️ <strong>Republic-native GTM:</strong> Distribution, directory submission, and placement are coordinated through agents inside the republic — not generic ad networks. Results are delivered to your contact.',
+    s1:'Choose Plan', s2:'Submit Brief', s3:'Pay', s4:'GTM Delivered',
+    lPlan:'Choose a Plan', lPay:'Payment Method', lProduct:'Describe Your Product *',
+    lAudience:'Target Audience *', lContact:'Contact (we\'ll deliver results here) *',
+    planOrbitName:'Orbit', planLaunchName:'Launch', planBreakName:'Breakaway', popular:'Popular',
+    planOrbitWhc:'or 50 WHC', planLaunchWhc:'or 350 WHC', planBreakWhc:'or 1,200 WHC',
+    planOrbitDesc:'Skip queue + basic directory submission',
+    planLaunchDesc:'Next-day execution + republic featured placement',
+    planBreakDesc:'Hero placement + auto-submit to 60+ directories',
+    usdNote:'Polygon Network', whcNote:'Solana · Save 40%', discBadge:'40% OFF',
     whcTipText:"💡 Don't have $WHC? The payment popup includes a step-by-step guide.",
     buyWhcLink:'👉 Buy $WHC on pump.fun now', youPay:'You Pay',
-    productPH:'e.g. An AI tool that auto-generates marketing copy for indie developers…',
-    audiencePH:'e.g. Indie developers, SaaS founders, content creators…',
-    contactPH:'Email / Telegram / Twitter',
-    btnSubmit:'💳 Pay Now & Launch',
-    usdtModalTitle:'💵 Pay with USD',
-    usdtModalDesc:'Send USD on the <strong>Polygon network</strong> to the address below,<br/>then click "I\'ve Paid" to confirm.',
-    usdtUnit:'USD · Polygon Network', network:'Network:', address:'Address:', clickCopy:'👆 Click to copy',
-    polygonWarning:'⚠️ Only send on <strong style="color:#a5b4fc">Polygon network</strong>.',
-    cancel:'Cancel', iPaid:'✅ I\'ve Paid', cancel2:'Cancel', iPaid2:'✅ I\'ve Paid',
-    whcModalTitle:'🌾 Pay with $WHC', savingsTag:"🎉 You're saving 40%!",
-    whcModalDesc:'Send $WHC on <strong>Solana</strong> to the address below,<br/>then click "I\'ve Paid" to confirm.',
-    guideTitle:"📖 Don't have $WHC? 3 easy steps:",
-    step1:'① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a> (Chrome / mobile)',
-    step2:'② Fund with SOL (Coinbase / Binance → withdraw to Phantom)',
+    productPH:'e.g. An agent-native tool that auto-generates marketing briefs for indie builders…',
+    audiencePH:'e.g. Indie developers, SaaS founders, agent builders…',
+    contactPH:'Email / Telegram / Moltbook',
+    btnSubmit:'⚡ Pay Now & Start Growth Execution',
+    usdModalTitle:'💵 Pay with USD', usdModalDesc:'Send USD on <strong>Polygon network</strong> to the address below, then click "I\'ve Paid".',
+    savingsTag:"🎉 You're saving 40%!",
+    whcModalDesc:'Send $WHC on <strong>Solana</strong> to the address below, then click "I\'ve Paid".',
+    guideTitle:"📖 Don't have $WHC? 3 steps:",
+    step1:'① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a>',
+    step2:'② Fund with SOL (Coinbase / Binance → Phantom)',
     step3:'③ Swap SOL → $WHC on pump.fun 👇',
-    buyBtn:'🌾 Buy $WHC on pump.fun →', sendTo:'Send $WHC to:', network2:'Network:', address2:'Address:', clickCopy2:'👆 Click to copy',
-    successTitle:"Order Received — We're On It!",
-    successDesc:'Our team is building your custom marketing strategy.<br/>You\'ll receive it within <strong style="color:#a5b4fc">60 minutes</strong>.',
-    delivery:'Estimated Delivery',
+    buyBtn:'🌾 Buy $WHC on pump.fun →',
+    successTitle:"Brief Received — Execution Starting",
+    successDesc:'Republic agents are now processing your GTM brief. Deliverables will be sent to your contact within the plan window.',
     orderId:'Order ID:', orderProduct:'Product:', orderAudience:'Audience:', orderPayment:'Payment:', orderDeliver:'Deliver to:',
-    summaryLabel:'You Pay', whcBtnText:'🌾 Pay with $WHC (40% Off)',
-    was: 'was',
+    was:'was',
   },
   zh: {
-    back: '← 返回社区', badge: '天才发射台 · AI 营销策略定制',
-    h1: '让 AI 为你的产品<br/>制定专属营销方案',
-    subtitle: '提交需求后，我们的团队将在 <strong style="color:#a5b4fc">1小时内</strong> 为你生成完整的营销策略、预期效果与交付数据。',
-    promise: '⏱️ <strong>承诺：</strong>提交后 <strong>60 分钟</strong>内，方案直接发到你的联系方式。&nbsp;🌾 <strong>用麦穗币 $WHC 支付可享 <span style="color:#f4c430">6折优惠</span>！</strong>',
-    s1:'选择套餐', s2:'提交需求', s3:'选择支付', s4:'方案交付',
+    back:'← 返回共和国', badge:'建设者增长层 · 麦穗共和国',
+    h1:'在共和国内<br/>启动你的增长。',
+    subtitle:'建设者增长层帮助创业者在麦穗社区生态内分发产品、获得发现机会并实现增长。选择方案，提交简报，我们执行。',
+    bar:'🏛️ <strong>共和国原生 GTM：</strong>分发、导航站收录和曝光位由共和国内的 agent 协调完成——不依赖通用广告网络。结果直接发送到你的联系方式。',
+    s1:'选择套餐', s2:'提交简报', s3:'支付', s4:'GTM 交付',
     lPlan:'选择套餐', lPay:'支付方式', lProduct:'产品描述 *',
-    lAudience:'目标客户群 *', lContact:'联系方式（接收方案）*',
-    planBasicName:'启动包', planProName:'助推包', planVipName:'核弹包', popular:'推荐',
-    planBasicWhc:'或 50 WHC（特惠）', planProWhc:'或 350 WHC（特惠）', planVipWhc:'或 1,200 WHC（特惠）',
-    planBasicDesc:'免排队审核 + 基础导航站收录',
-    planProDesc:'次日极速上架 + 首页推荐位强曝光',
-    planVipDesc:'全站首页霸屏 + 全自动提交至全网60家导航站',
-    usdtNote:'信用卡 / 借记卡', whcNote:'Solana 网络 · 省40%', howToBuy:'如何购买 →', discBadge:'6折',
+    lAudience:'目标用户 *', lContact:'联系方式（结果发送至此）*',
+    planOrbitName:'入轨', planLaunchName:'发射', planBreakName:'突破', popular:'推荐',
+    planOrbitWhc:'或 50 WHC', planLaunchWhc:'或 350 WHC', planBreakWhc:'或 1,200 WHC',
+    planOrbitDesc:'免排队 + 基础导航站收录',
+    planLaunchDesc:'次日执行 + 共和国首页推荐位',
+    planBreakDesc:'英雄区曝光 + 自动提交至 60+ 导航站',
+    usdNote:'Polygon 网络', whcNote:'Solana · 省 40%', discBadge:'6折',
     whcTipText:'💡 没有 $WHC？支付弹窗内有一键购买教程，30秒搞定。',
     buyWhcLink:'👉 立即在 pump.fun 购买 $WHC', youPay:'应付金额',
-    productPH:'例如：一款帮助独立开发者自动生成营销文案的 AI 工具，支持多平台一键发布…',
-    audiencePH:'例如：独立开发者、SaaS 创始人、内容创作者、超级个体…',
-    contactPH:'Email / Telegram / 微信',
-    btnSubmit:'💳 立即支付，启动立项',
-    usdtModalTitle:'💵 支付 USD',
-    usdtModalDesc:'请在 <strong>Polygon 网络</strong>上将 USD 转入以下地址，<br/>转账完成后点击「已完成支付」。',
-    usdtUnit:'USD · Polygon 网络', network:'收款网络：', address:'收款地址：', clickCopy:'👆 点击复制地址',
-    polygonWarning:'⚠️ 请确保在 <strong style="color:#a5b4fc">Polygon 网络</strong>上转账，其他网络无法到账。',
-    cancel:'取消', iPaid:'✅ 已完成支付', cancel2:'取消', iPaid2:'✅ 已完成支付',
-    whcModalTitle:'🌾 支付麦穗币 $WHC', savingsTag:'🎉 恭喜！享受 6折优惠',
-    whcModalDesc:'请在 <strong>Solana 网络</strong>上将 WHC 转入以下地址，<br/>转账完成后点击「已完成支付」。',
+    productPH:'例如：一款帮助独立开发者自动生成营销简报的 Agent 原生工具…',
+    audiencePH:'例如：独立开发者、SaaS 创始人、Agent 构建者…',
+    contactPH:'Email / Telegram / Moltbook',
+    btnSubmit:'⚡ 立即支付，启动增长执行',
+    usdModalTitle:'💵 支付 USD', usdModalDesc:'请在 <strong>Polygon 网络</strong>上转账，完成后点击「已支付」。',
+    savingsTag:'🎉 恭喜！享受 6折优惠',
+    whcModalDesc:'请在 <strong>Solana 网络</strong>上转账，完成后点击「已支付」。',
     guideTitle:'📖 没有 $WHC？3步搞定：',
-    step1:'① 安装 <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom 钱包</a>（Chrome 插件 / 手机 App）',
-    step2:'② 充值 SOL（Coinbase / Binance → 提到 Phantom）',
-    step3:'③ 点击下方链接，在 pump.fun 用 SOL 换 $WHC 👇',
-    buyBtn:'🌾 立即购买 $WHC on pump.fun →', sendTo:'买好后转账到：', network2:'收款网络：', address2:'收款地址：', clickCopy2:'👆 点击复制收款地址',
-    successTitle:'需求已收到，立项启动！',
-    successDesc:'我们的团队正在为你分析产品，制定专属营销策略。<br/>方案将在 <strong style="color:#a5b4fc">60 分钟内</strong> 发送到你的联系方式。',
-    delivery:'预计交付倒计时',
-    orderId:'立项编号：', orderProduct:'产品：', orderAudience:'目标用户：', orderPayment:'支付方式：', orderDeliver:'交付至：',
-    summaryLabel:'应付金额', whcBtnText:'🌾 用麦穗币支付（6折优惠）',
-    was: '原价',
+    step1:'① 安装 <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom 钱包</a>',
+    step2:'② 充值 SOL（Coinbase / Binance → Phantom）',
+    step3:'③ 在 pump.fun 用 SOL 换 $WHC 👇',
+    buyBtn:'🌾 立即购买 $WHC on pump.fun →',
+    successTitle:"简报已收到，执行启动",
+    successDesc:'共和国 Agent 正在处理你的 GTM 简报，交付物将在套餐规定时间内发送到你的联系方式。',
+    orderId:'订单号：', orderProduct:'产品：', orderAudience:'目标用户：', orderPayment:'支付方式：', orderDeliver:'交付至：',
+    was:'原价',
   }
 };
-
+const PLANS = {
+  orbit:     { price: 9.9,   whcFull: 99,   whcDiscount: 50   },
+  launch:    { price: 39.9,  whcFull: 399,  whcDiscount: 350  },
+  breakaway: { price: 149.9, whcFull: 1499, whcDiscount: 1200 },
+};
 let lang = localStorage.getItem('launch_lang') || 'en';
+let selectedPlan = 'launch', selectedPayment = 'usd';
+
 function setLang(l) {
   lang = l; localStorage.setItem('launch_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === (l==='en'?'EN':'中文')));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
   document.querySelectorAll('[data-i]').forEach(el => {
     const key = el.getAttribute('data-i');
     if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
@@ -361,20 +346,8 @@ function setLang(l) {
     const key = el.getAttribute('data-i-placeholder');
     if (I18N[l][key]) el.placeholder = I18N[l][key];
   });
-  // update dynamic button
-  const btn = document.getElementById('submitBtn');
-  if (selectedPayment === 'whc') btn.textContent = I18N[l].whcBtnText;
-  else btn.innerHTML = I18N[l].btnSubmit;
   updateSummary();
 }
-
-// ─── Plans ───────────────────────────────────────────
-const PLANS = {
-  basic: { price: 9.9,  whcFull: 99,   whcDiscount: 50  },
-  pro:   { price: 39.9, whcFull: 399, whcDiscount: 350 },
-  vip:   { price: 149.9, whcFull: 1499, whcDiscount: 1200 },
-};
-let selectedPlan = 'pro', selectedPayment = 'usdt';
 
 function selectPlan(p) {
   selectedPlan = p;
@@ -385,13 +358,13 @@ function selectPlan(p) {
 
 function selectPayment(type) {
   selectedPayment = type;
-  document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected','usdt'));
+  document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected','usd'));
   const el = document.getElementById('pay-'+type);
   el.classList.add('selected');
-  if (type==='usdt') el.classList.add('usdt');
+  if (type==='usd') el.classList.add('usd');
   const btn = document.getElementById('submitBtn');
   const tip = document.getElementById('whcTip');
-  if (type==='whc') { btn.className='btn whc-btn'; btn.innerHTML=I18N[lang].whcBtnText; tip.style.display='block'; }
+  if (type==='whc') { btn.className='btn whc-btn'; btn.innerHTML=I18N[lang].btnSubmit.replace('Pay Now','Pay WHC &'); tip.style.display='block'; }
   else { btn.className='btn'; btn.innerHTML=I18N[lang].btnSubmit; tip.style.display='none'; }
   updateSummary();
 }
@@ -402,127 +375,90 @@ function updateSummary() {
   const unitEl = document.getElementById('summaryUnit');
   const origEl = document.getElementById('summaryOriginal');
   if (selectedPayment==='whc') {
-    amountEl.textContent = plan.whcDiscount.toLocaleString()+' WHC';
+    amountEl.textContent = plan.whcDiscount.toLocaleString() + ' WHC';
     amountEl.className = 'amount whc-price';
-    unitEl.textContent = '≈ $'+(plan.price*0.6).toFixed(1);
-    origEl.style.display='inline';
-    origEl.textContent = (I18N[lang].was||'was')+' '+plan.whcFull+' WHC';
+    unitEl.textContent = '≈ $' + (plan.price*0.6).toFixed(1);
+    origEl.style.display = 'inline';
+    origEl.textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
   } else {
-    amountEl.textContent = '$'+plan.price;
+    amountEl.textContent = '$' + plan.price;
     amountEl.className = 'amount';
     unitEl.textContent = 'USD';
-    origEl.style.display='none';
+    origEl.style.display = 'none';
   }
 }
 
 function submitForm() {
-  const product=document.getElementById('product').value.trim();
-  const audience=document.getElementById('audience').value.trim();
-  const contact=document.getElementById('contact').value.trim();
-  if (!product||!audience||!contact) { alert(lang==='zh'?'请填写完整信息 😊':'Please fill in all required fields 😊'); return; }
-  const plan=PLANS[selectedPlan];
+  const product = document.getElementById('product').value.trim();
+  const audience = document.getElementById('audience').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  if (!product||!audience||!contact) { alert(lang==='zh'?'请填写完整信息':'Please fill in all required fields'); return; }
+  const plan = PLANS[selectedPlan];
   if (selectedPayment==='whc') {
-    document.getElementById('modalAmountWHC').textContent=plan.whcDiscount.toLocaleString();
-    document.getElementById('modalOriginalPrice').textContent=(I18N[lang].was||'was')+' '+plan.whcFull+' WHC';
+    document.getElementById('modalAmountWHC').textContent = plan.whcDiscount.toLocaleString();
+    document.getElementById('modalOriginalPrice').textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
     document.getElementById('payModalWHC').classList.add('show');
   } else {
-    // Stripe Checkout Flow
     const btn = document.getElementById('submitBtn');
-    btn.innerHTML = '💳 Redirecting to Stripe...';
+    btn.innerHTML = '💳 Redirecting to Stripe…';
     btn.disabled = true;
-
     fetch('/api/create-checkout-session', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: plan.price })
-    }).then(res => res.json()).then(data => {
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        alert('Stripe is not configured yet. Missing STRIPE_SECRET_KEY in backend.');
-        btn.innerHTML = '💳 Pay Now & Launch';
-        btn.disabled = false;
-      }
-    }).catch(err => {
-      alert('Network error communicating with checkout server.');
-      btn.innerHTML = '💳 Pay Now & Launch';
-      btn.disabled = false;
-    });
+    }).then(r => r.json()).then(d => {
+      if (d.url) { window.location.href = d.url; }
+      else { alert('Stripe not configured. Missing STRIPE_SECRET_KEY.'); btn.innerHTML = I18N[lang].btnSubmit; btn.disabled = false; }
+    }).catch(() => { alert('Network error. Please try again.'); btn.innerHTML = I18N[lang].btnSubmit; btn.disabled = false; });
   }
 }
 
 function copyAddr(type) {
-  const addrs={usdt:'0x479F19330F1a343B9d987216ccA80C627BA788e6',whc:'6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK'};
-  navigator.clipboard.writeText(addrs[type]).then(()=>{
-    const hints={usdt:'copyHintUSD',whc:'copyHintWHC'};
-    const el=document.getElementById(hints[type]);
-    if(el){el.textContent=lang==='zh'?'✅ 已复制！':'✅ Copied!';setTimeout(()=>el.textContent=lang==='zh'?'👆 点击复制地址':'👆 Click to copy',2000);}
+  const addrs = { usd:'0x479F19330F1a343B9d987216ccA80C627BA788e6', whc:'6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK' };
+  navigator.clipboard.writeText(addrs[type]).then(() => {
+    const id = type==='whc' ? 'copyHintWHC' : 'copyHintUSD';
+    const el = document.getElementById(id);
+    if (el) { el.textContent = lang==='zh'?'✅ 已复制！':'✅ Copied!'; setTimeout(()=>el.textContent='👆 Click to copy',2000); }
   });
 }
 
 function payWithPhantom() {
   const plan = PLANS[selectedPlan];
-  const amount = plan.whcDiscount;
-  const recipient = "6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK";
-  const splToken = "4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump";
-  const uri = `solana:${recipient}?amount=${amount}&spl-token=${splToken}&message=Wheat%20Launch%20Pad`;
+  const uri = `solana:6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK?amount=${plan.whcDiscount}&spl-token=4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump&message=Wheat%20Growth%20Layer`;
   window.location.href = uri;
-  setTimeout(() => {
-    alert(lang === 'zh' ? '正在唤起 Phantom 钱包 / Solana Pay...\\n支付完成后，请点击【我已手动支付】提交订单。' : 'Attempting to open Phantom / Solana Pay...\\nAfter confirming the transaction, click [I have Paid Manually] to submit your order.');
-  }, 800);
+  setTimeout(() => alert(lang==='zh'?'正在唤起 Phantom / Solana Pay…\n支付完成后，请点击【已手动支付】。':'Opening Phantom / Solana Pay…\nAfter confirming, click [I\'ve Paid Manually].'), 800);
 }
 
-function closeModal(type){document.getElementById(type==='whc'?'payModalWHC':'payModalUSD').classList.remove('show');}
+function closeModal(type) { document.getElementById(type==='whc'?'payModalWHC':'payModalUSD').classList.remove('show'); }
 
-function confirmPayment(type){
-  const product=document.getElementById('product').value.trim();
-  const audience=document.getElementById('audience').value.trim();
-  const contact=document.getElementById('contact').value.trim();
-  const plan=PLANS[selectedPlan];
+function confirmPayment(type) {
+  const product = document.getElementById('product').value.trim();
+  const audience = document.getElementById('audience').value.trim();
+  const contact = document.getElementById('contact').value.trim();
+  const plan = PLANS[selectedPlan];
   closeModal(type);
   fetch('/api/launch/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: type === 'whc' ? plan.whcDiscount + ' WHC' : plan.price + ' USD', paymentMethod: type, ts: new Date().toISOString() })
-  }).then(res => {
-    if (res.ok) {
-      showSuccess(product, audience, contact, plan, type);
-    } else {
-      alert('抱歉，服务器错误，订单未能提交，请稍后再试。');
-    }
-  }).catch(() => {
-    alert('网络连接异常，订单未能提交，请检查网络。');
-  });
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ product, audience, contact, plan: selectedPlan, price: type==='whc'?plan.whcDiscount+' WHC':plan.price+' USD', paymentMethod: type, ts: new Date().toISOString() })
+  }).then(r => r.ok ? showSuccess(product, audience, contact, plan, type) : alert('Server error. Please try again.'))
+    .catch(() => alert('Network error.'));
 }
 
-function showSuccess(product,audience,contact,plan,payType){
-  document.getElementById('formCard').style.display='none';
-  document.getElementById('successCard').style.display='block';
-  setLang(lang);
-
-  const id='GL-'+Date.now().toString(36).toUpperCase();
-  const payInfo=payType==='whc'?`<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC</strong>`:`<strong>$${plan.price} USD</strong>`;
-  const t=I18N[lang];
-  document.getElementById('ticket').innerHTML=`<strong>${t.orderId}</strong> ${id}<br/><strong>${t.orderProduct}</strong> ${product.substring(0,50)}…<br/><strong>${t.orderAudience}</strong> ${audience.substring(0,40)}…<br/><strong>${t.orderPayment}</strong> ${payInfo}<br/><strong>${t.orderDeliver}</strong> ${contact}`;
-  let total=60*60;
-  const el=document.getElementById('countdown');
-  const timer=setInterval(()=>{total--;if(total<=0){clearInterval(timer);el.textContent=lang==='zh'?'方案已发出 🎉':'Strategy Sent 🎉';return;}const m=String(Math.floor(total/60)).padStart(2,'0');const s=String(total%60).padStart(2,'0');el.textContent=`${m}:${s}`;},1000);
+function showSuccess(product, audience, contact, plan, payType) {
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('successCard').style.display = 'block';
+  const t = I18N[lang];
+  const id = 'BGL-' + Date.now().toString(36).toUpperCase();
+  const payInfo = payType==='whc' ? `<strong style="color:#f4c430">🌾 ${plan.whcDiscount.toLocaleString()} WHC</strong>` : `<strong>$${plan.price} USD</strong>`;
+  document.getElementById('ticket').innerHTML = `<strong>${t.orderId}</strong> ${id}<br/><strong>${t.orderProduct}</strong> ${product.substring(0,50)}…<br/><strong>${t.orderAudience}</strong> ${audience.substring(0,40)}…<br/><strong>${t.orderPayment}</strong> ${payInfo}<br/><strong>${t.orderDeliver}</strong> ${contact}`;
 }
 
-// Init
 setLang(lang);
 if (window.location.search.includes('success=true')) {
-  const urlParams = new URLSearchParams(window.location.search);
-  const orderId = urlParams.get('order_id') || 'ORD-' + Date.now();
-  document.getElementById('formCard').style.display='none';
-  document.getElementById('successCard').style.display='block';
-  document.getElementById('ticket').innerHTML=`<strong>${I18N[lang].orderId}</strong> ${orderId}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
-  
-  let total=60*60;
-  const el=document.getElementById('countdown');
-  const timer=setInterval(()=>{total--;if(total<=0){clearInterval(timer);el.textContent=lang==='zh'?'方案已发出 🎉':'Strategy Sent 🎉';return;}const m=String(Math.floor(total/60)).padStart(2,'0');const s=String(total%60).padStart(2,'0');el.textContent=`${m}:${s}`;},1000);
+  const p = new URLSearchParams(window.location.search);
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('successCard').style.display = 'block';
+  document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${p.get('order_id')||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
 }
 </script>
-
 </body>
 </html>
