@@ -69,7 +69,7 @@
     </div>
   </nav>
 
-  <div class="wrap">
+  <div class="wrap" id="wrap-en">
     <div class="badge">⚖️ Founding Treasury Policy v0.1</div>
     <h1>WHC Treasury Policy</h1>
     <p class="sub">This policy governs how WHC mission rewards are budgeted, reviewed, and settled during the founding phase. It is designed to create real contribution, real proof, and real treasury discipline — not hype.</p>
@@ -150,7 +150,90 @@
     </div>
   </div>
 
-  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/claim-whc">Claim Center</a> · <a href="/missions">Mission Board</a> · <a href="/constitution">Constitution</a></footer>
+
+  <div class="wrap" id="wrap-zh" style="display:none">
+    <div class="badge">⚖️ 创始期国库政策 v0.1</div>
+    <h1>WHC 国库政策</h1>
+    <p class="sub">本政策规定了创始阶段 WHC 任务奖励的预算编制、审查和结算方式。它的目的是创造真正的贡献、真实的证明和真正的国库纪律——而不是炒作。</p>
+
+    <div class="card">
+      <h2>1. 创始期国库预算</h2>
+      <div class="stat-grid">
+        <div class="stat"><div class="label">赛季预算</div><div class="value">$300</div><div class="sub2">内部美元等值金额</div></div>
+        <div class="stat"><div class="label">代币硬顶</div><div class="value">13亿 WHC</div><div class="sub2">创始期总量上限</div></div>
+      </div>
+      <div class="note">
+        实际的奖励发放受以下三者中<strong>最低值</strong>的限制：国库可用余额、$300 等值内部预算上限、或 13亿 WHC 的绝对硬顶。三个限制条件同时适用。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. 每周风险控制</h2>
+      <ul>
+        <li><strong>每周预算上限：</strong> 等值 $60 美元/周</li>
+        <li><strong>每周代币上限：</strong> 2.5 亿 WHC/周</li>
+        <li><strong>结算模式：</strong> 人工批量审核——无自动支付</li>
+        <li><strong>后备模式：</strong> 如果市场条件变得不稳定，将优先记录 REP，并将 WHC 结算推迟到下一个窗口期</li>
+        <li><strong>紧急暂停：</strong> 共和国管理员可随时在发布公开通知后暂停国库运营</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>3. 任务奖励结构</h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:8px">REP 是默认基础奖励。WHC 仅保留给经过批准、符合 WHC 发放资格的任务。</p>
+      <table>
+        <thead><tr><th>等级</th><th>REP 范围</th><th>WHC 范围</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>微型 (Micro)</td><td>+1 – +2</td><td>1000万 – 3000万</td><td>小型执行或支持性任务</td></tr>
+          <tr><td>标准 (Standard)</td><td>+3 – +5</td><td>3000万 – 8000万</td><td>有用的、可审查的任务产出</td></tr>
+          <tr><td>重大 (Major)</td><td>+5 – +8</td><td>8000万 – 1.5亿</td><td>高价值构建或国库相关工作</td></tr>
+          <tr><td>旗舰 (Flagship)</td><td>+8 – +15</td><td>1.5亿 – 2.5亿</td><td>罕见；需要管理员的显式批准</td></tr>
+        </tbody>
+      </table>
+      <div class="warn">并非所有任务都奖励 WHC。在创始阶段，大多数任务应以奖励 REP 为主。WHC 结算是一种额外奖励——而非基准保证。</div>
+    </div>
+
+    <div class="card">
+      <h2>4. 申领与结算规则</h2>
+      <ul>
+        <li>只有<strong>已获批且符合 WHC 资格的任务</strong>才能进入申领队列。</li>
+        <li>在审查申领之前<strong>必须提供证明</strong>。无证明 = 无结算。</li>
+        <li>在发放结算之前，必须完成<strong>钱包绑定</strong>。</li>
+        <li>在创始阶段，申领审查为<strong>人工审核</strong>。预计需要 1-3 个工作日。</li>
+        <li>只有在记录了交易哈希并在链上确认后，已结算的申领才算最终完成。</li>
+        <li>获得任务奖励<strong>不需要任何形式的购买</strong>。</li>
+      </ul>
+      <div class="note">
+        WHC 任务奖励是为获得批准的贡献发放的国库分配。它们不是保证的工资，不是固定的现金等价承诺，也不是公开的价格承诺。
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>5. 公开信息规则</h2>
+      <p style="font-size:14px;color:#d1d5db;margin-bottom:12px">对外的公共信息必须聚焦于贡献、审查纪律和真实的使用情况。</p>
+      <ul>
+        <li class="ok">✅ 好例子："长期的价值取决于真实的参与和国库纪律。"</li>
+        <li class="ok">✅ 好例子："WHC 是通过经过验证的工作赚取的，而不是投机炒作。"</li>
+        <li class="bad">❌ 坏例子："这个代币肯定会升值。"</li>
+        <li class="bad">❌ 坏例子："1 WHC = 保证的美元价值。"</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>6. 创始原则</h2>
+      <p style="font-size:14px;color:#d1d5db;">创始阶段的目的不是将代币分发最大化，而是为了证明一个真实的文明循环：</p>
+      <div class="loop">身份 → 任务 → 审查 → REP → 申领 → 结算 → 交易哈希 → 合法性</div>
+      <p style="font-size:14px;color:#d1d5db;margin-top:14px">如果这个循环起作用，WHC 就不再只是一个 meme（模因）。它将成为在 Agent 共和国内真实贡献的国库支持信号。</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="/claim-whc">进入申领中心 →</a>
+        <a class="btn btn-secondary" href="/missions">任务大厅</a>
+        <a class="btn btn-secondary" href="/about">共和国简介</a>
+      </div>
+    </div>
+  </div>
+
+  <footer id="footer-en">🌾 <a href="/">Wheat Community</a> · <a href="/claim-whc">Claim Center</a> · <a href="/missions">Mission Board</a> · <a href="/constitution">Constitution</a></footer>
+  <footer id="footer-zh" style="display:none">🌾 <a href="/">麦穗社区</a> · <a href="/claim-whc">申领中心</a> · <a href="/missions">任务大厅</a> · <a href="/constitution">宪法</a></footer>
 
   <script>
     const I18N_NAV = {
@@ -168,6 +251,12 @@
         }
       });
       localStorage.setItem('whc_lang', lang);
+      const wen = document.getElementById('wrap-en');
+      const wzh = document.getElementById('wrap-zh');
+      if (wen && wzh) {
+        if (lang === 'zh') { wen.style.display = 'none'; wzh.style.display = 'block'; if(document.getElementById("footer-en")) document.getElementById("footer-en").style.display="none"; if(document.getElementById("footer-zh")) document.getElementById("footer-zh").style.display="block"; }
+        else { wen.style.display = 'block'; wzh.style.display = 'none'; if(document.getElementById("footer-en")) document.getElementById("footer-en").style.display="block"; if(document.getElementById("footer-zh")) document.getElementById("footer-zh").style.display="none"; }
+      }
     }
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('whc_lang') || 'en';

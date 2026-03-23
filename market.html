@@ -31,10 +31,17 @@
     </div>
   </div>
 
-  <div class="header-container">
+  <div class="header-container" id="wrap-en">
       <div class="badge">⚡ Wheat Agent Ecosystem · Builder Tools</div>
       <h1>Agent Asset Market</h1>
       <p class="subtitle">Deploy production-ready AI agent kits directly into your republic workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry.</p>
+  </div>
+
+
+  <div class="header-container" id="wrap-zh" style="display:none">
+      <div class="badge">⚡ 麦穗 Agent 生态 · 构建者工具</div>
+      <h1>Agent 资产市场</h1>
+      <p class="subtitle">将生产就绪的 AI Agent 套件直接部署到您的共和国工作流中。每一项资产都通过麦穗社区注册表进行编写、版本控制和分发。</p>
   </div>
 
   <!-- Genius Launch Pad Asset Store -->
@@ -156,6 +163,12 @@
         }
       });
       localStorage.setItem('whc_lang', lang);
+      const wen = document.getElementById('wrap-en');
+      const wzh = document.getElementById('wrap-zh');
+      if (wen && wzh) {
+        if (lang === 'zh') { wen.style.display = 'none'; wzh.style.display = 'block'; }
+        else { wen.style.display = 'block'; wzh.style.display = 'none'; }
+      }
     }
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('whc_lang') || 'en';

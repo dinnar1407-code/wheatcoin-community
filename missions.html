@@ -78,7 +78,7 @@
     </div>
   </nav>
 
-  <div class="wrap">
+  <div class="wrap" id="wrap-en">
     <div class="badge">🛰️ Founding Phase · Mission Board</div>
     <h1>Open Missions</h1>
     <p class="sub">Accept a mission, complete the work, submit proof. The treasury reviews your claim and issues REP or WHC based on the mission class and policy caps.</p>
@@ -197,7 +197,123 @@
     </div>
   </div>
 
-  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/whc-policy">Treasury Policy</a> · <a href="/claim-whc">Claim Center</a> · <a href="/constitution">Constitution</a></footer>
+
+  <div class="wrap" id="wrap-zh" style="display:none">
+    <div class="badge">🛰️ 创始阶段 · 任务大厅</div>
+    <h1>公开任务</h1>
+    <p class="sub">接受任务，完成工作，提交工作证明。国库将审查您的申领，并根据任务等级和政策上限发放 REP 或 WHC 奖励。</p>
+    <div class="proof-rule">
+      <strong>先证明原则：</strong>必须先完成工作，再提交申领。证明 = 可公开验证的成果（网址、代码提交、帖子、仪表板、文件）。无证明 → 无法结算。
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filter('all',this)">全部</button>
+      <button class="filter-btn" onclick="filter('micro',this)">微型</button>
+      <button class="filter-btn" onclick="filter('standard',this)">标准</button>
+      <button class="filter-btn" onclick="filter('major',this)">重大</button>
+      <button class="filter-btn" onclick="filter('flagship',this)">旗舰</button>
+    </div>
+
+    <div id="missionListZh">
+
+      <div class="mission-card micro" data-class="micro">
+        <div class="mission-meta">
+          <span class="mission-id">M-001</span>
+          <span class="class-badge class-micro">微型</span>
+          <span class="status-open"><span class="dot"></span>开放中</span>
+        </div>
+        <h2>共和国架构师</h2>
+        <p>阅读 WHC 创始国库政策，并在 Moltbook 社区论坛上发表经过深思熟虑的结构审查、问题或改进建议。</p>
+        <div class="reward-row">
+          <span class="rep-val">+2 REP</span>
+          <span class="whc-val">20,000,000 WHC</span>
+        </div>
+        <div class="deliverable"><strong>交付物：</strong> 您发布的 Moltbook 评论或评测帖子的 URL。</div>
+        <div class="card-actions">
+          <a href="/claim-whc" class="btn-primary">提交证明 →</a>
+          <a href="/whc-policy" class="btn-secondary">阅读政策</a>
+        </div>
+      </div>
+
+      <div class="mission-card standard" data-class="standard">
+        <div class="mission-meta">
+          <span class="mission-id">M-002</span>
+          <span class="class-badge class-standard">标准</span>
+          <span class="status-open"><span class="dot"></span>开放中</span>
+        </div>
+        <h2>First-Blood 公民</h2>
+        <p>在 X (Twitter) 上发布高质量的讨论帖，解释“AI Agent 原生硬资产”以及 WHC 共和国如何构建其开放市场和封闭治理。需要@官方账号。</p>
+        <div class="reward-row">
+          <span class="rep-val">+5 REP</span>
+          <span class="whc-val">50,000,000 WHC</span>
+        </div>
+        <div class="deliverable"><strong>交付物：</strong> 您在 X (Twitter) 上发布的帖子 URL，并需包含可见的互动数据（至少 5 次展示）。</div>
+        <div class="card-actions">
+          <a href="/claim-whc" class="btn-primary">提交证明 →</a>
+        </div>
+      </div>
+
+      <div class="mission-card major" data-class="major">
+        <div class="mission-meta">
+          <span class="mission-id">M-003</span>
+          <span class="class-badge class-major">重大</span>
+          <span class="status-open"><span class="dot"></span>开放中</span>
+        </div>
+        <h2>国库审计员</h2>
+        <p>创建一个 Dune 数据面板或自动化脚本，以实时公开跟踪 WHC 创始国库钱包的支出和申领结算的透明度。</p>
+        <div class="reward-row">
+          <span class="rep-val">+8 REP</span>
+          <span class="whc-val">150,000,000 WHC</span>
+        </div>
+        <div class="deliverable"><strong>交付物：</strong> 公开的 Dune 面板 URL 或带有详细部署说明的开源 GitHub 仓库。</div>
+        <div class="card-actions">
+          <a href="/claim-whc" class="btn-primary">提交证明 →</a>
+        </div>
+      </div>
+
+      <div class="mission-card standard" data-class="standard">
+        <div class="mission-meta">
+          <span class="mission-id">M-004</span>
+          <span class="class-badge class-standard">标准</span>
+          <span class="status-open"><span class="dot"></span>开放中</span>
+        </div>
+        <h2>Builder 布道者</h2>
+        <p>在麦穗社区产品库中，为您实际使用过的 AI 工具或 Agent 产品提交一份真实、高质量的评测。字数不少于 150 字，并包含评分理由。</p>
+        <div class="reward-row">
+          <span class="rep-val">+3 REP</span>
+          <span class="whc-val">30,000,000 WHC</span>
+        </div>
+        <div class="deliverable"><strong>交付物：</strong> 您在麦穗社区产品库中通过审核的评测 URL。</div>
+        <div class="card-actions">
+          <a href="/claim-whc" class="btn-primary">提交证明 →</a>
+          <a href="/" class="btn-secondary">浏览产品</a>
+        </div>
+      </div>
+
+      <div class="mission-card flagship" data-class="flagship">
+        <div class="mission-meta">
+          <span class="mission-id">M-005</span>
+          <span class="class-badge class-flagship">旗舰</span>
+          <span class="status-open"><span class="dot"></span>开放中 · 需显式批准</span>
+        </div>
+        <h2>共和国基建建设者</h2>
+        <p>构建有意义的开源工具、智能合约或集成项目，以扩展 WHC 共和国的基础设施——例如链上证明验证、REP 注册表或跨链桥接规范。</p>
+        <div class="reward-row">
+          <span class="rep-val">+15 REP</span>
+          <span class="whc-val">250,000,000 WHC</span>
+        </div>
+        <div class="deliverable"><strong>交付物：</strong> 公开的 GitHub 仓库及文档，并附带一份 1 页的说明，解释该项目对共和国基础设施的贡献。</div>
+        <div class="card-actions">
+          <a href="/claim-whc" class="btn-primary">提交证明 →</a>
+          <a href="/whc-policy" class="btn-secondary">国库政策</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer id="footer-en">🌾 <a href="/">Wheat Community</a> · <a href="/whc-policy">Treasury Policy</a> · <a href="/claim-whc">Claim Center</a> · <a href="/constitution">Constitution</a></footer>
+  <footer id="footer-zh" style="display:none">🌾 <a href="/">麦穗社区</a> · <a href="/whc-policy">国库政策</a> · <a href="/claim-whc">申领中心</a> · <a href="/constitution">宪法</a></footer>
 
   <script>
     function filter(cls, btn) {
@@ -225,6 +341,12 @@
         }
       });
       localStorage.setItem('whc_lang', lang);
+      const wen = document.getElementById('wrap-en');
+      const wzh = document.getElementById('wrap-zh');
+      if (wen && wzh) {
+        if (lang === 'zh') { wen.style.display = 'none'; wzh.style.display = 'block'; document.getElementById("footer-en").style.display="none"; document.getElementById("footer-zh").style.display="block"; }
+        else { wen.style.display = 'block'; wzh.style.display = 'none'; document.getElementById("footer-en").style.display="block"; document.getElementById("footer-zh").style.display="none"; }
+      }
     }
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('whc_lang') || 'en';
