@@ -9,6 +9,11 @@
     a{color:#a5b4fc;text-decoration:none} h1,h2{color:#fff} p,li{color:#d1d5db}
     section{background:#13131a;border:1px solid #2a2a3a;border-radius:16px;padding:24px;margin:18px 0}
     .muted{color:#9ca3af}
+  
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;margin-left:16px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
+    @media(max-width:760px){.lang-toggle{display:none;}}
   </style>
 </head>
 <body>
@@ -51,5 +56,29 @@
     <p>If you believe a claim or review outcome is incorrect, contact us with supporting evidence. Submission of a dispute does not guarantee reversal. We may request additional proof, decline appeals, or escalate exceptional cases for trustee review.</p>
     <p class="muted">For support, use the Contact page and include enough context for manual review.</p>
   </section>
+
+  <script>
+    const I18N_NAV = {
+      en: { navRepublic: 'Republic', navMissions: 'Missions', navClaim: 'Claim', navTreasury: 'Treasury', navConstitution: 'Constitution', navAbout: 'About' },
+      zh: { navRepublic: '共和国', navMissions: '任务大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navConstitution: '宪法', navAbout: '关于' }
+    };
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'en' ? 'en' : '中')));
+      const dict = I18N_NAV[lang] || I18N_NAV.en;
+      document.querySelectorAll('[data-i]').forEach(el => {
+        const key = el.getAttribute('data-i');
+        if (dict[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = dict[key];
+          else el.innerHTML = dict[key];
+        }
+      });
+      localStorage.setItem('whc_lang', lang);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('whc_lang') || 'en';
+      if (saved === 'zh') setLang('zh');
+    });
+  </script>
+
 </body>
 </html>

@@ -53,17 +53,28 @@
     footer{text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:#4b5563}
     footer a{color:var(--purple);text-decoration:none}
     @media(max-width:760px){h1{font-size:28px}nav{padding:0 16px}.nav-links{display:none}.reward-row{flex-direction:column;align-items:flex-start}}
+  
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;margin-left:16px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
+    @media(max-width:760px){.lang-toggle{display:none;}}
   </style>
 </head>
 <body>
   <nav>
     <a class="nav-logo" href="/"><span>🌾</span><span>Wheat Community</span></a>
     <div class="nav-links">
-      <a class="nav-link" href="/">Republic</a>
+      <a class="nav-link" href="/" data-i="navRepublic">Republic</a>
       <a class="nav-link active" href="/missions">Missions</a>
-      <a class="nav-link" href="/claim-whc">Claim</a>
-      <a class="nav-link" href="/whc-policy">Treasury</a>
-      <a class="nav-link" href="/about">About</a>
+      <a class="nav-link" href="/claim-whc" data-i="navClaim">Claim</a>
+      <a class="nav-link" href="/whc-policy" data-i="navTreasury">Treasury</a>
+      <a class="nav-link" href="/about" data-i="navAbout">About</a>
+    </div>
+    <div class="nav-cta">
+      <div class="lang-toggle">
+        <button class="lang-btn active" onclick="setLang('en')">EN</button>
+        <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      </div>
     </div>
   </nav>
 
@@ -197,5 +208,29 @@
       });
     }
   </script>
+
+  <script>
+    const I18N_NAV = {
+      en: { navRepublic: 'Republic', navMissions: 'Missions', navClaim: 'Claim', navTreasury: 'Treasury', navConstitution: 'Constitution', navAbout: 'About' },
+      zh: { navRepublic: '共和国', navMissions: '任务大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navConstitution: '宪法', navAbout: '关于' }
+    };
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'en' ? 'en' : '中')));
+      const dict = I18N_NAV[lang] || I18N_NAV.en;
+      document.querySelectorAll('[data-i]').forEach(el => {
+        const key = el.getAttribute('data-i');
+        if (dict[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = dict[key];
+          else el.innerHTML = dict[key];
+        }
+      });
+      localStorage.setItem('whc_lang', lang);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('whc_lang') || 'en';
+      if (saved === 'zh') setLang('zh');
+    });
+  </script>
+
 </body>
 </html>
