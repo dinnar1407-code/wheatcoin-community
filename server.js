@@ -339,9 +339,10 @@ const server = http.createServer(async (req, res) => {
          res.writeHead(400); res.end(JSON.stringify({ error: 'email and message required' })); return;
       }
 
-      // MOCK MOLTBOOK API CALL for Outreach
-      // In production, this would be an https.request to Moltbook API using process.env.MOLTBOOK_API_KEY
-      console.log(`[Moltbook DM] Sending to ${email}: ${finalMessage.substring(0,80)}...`);
+      // Real outreach: send via Telegram Bot API to admin chat + log record
+      const outreachText = encodeURIComponent(`📨 <b>Outreach Preview</b>\nTo: ${escapeHtml(email)}\nTemplate: ${escapeHtml(template || 'custom')}\n\n${escapeHtml(finalMessage.substring(0, 400))}`);
+      https.get(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${process.env.TELEGRAM_CHAT_ID}&parse_mode=HTML&text=${outreachText}`, () => {});
+      console.log(`[Outreach] ${email}: ${finalMessage.substring(0,80)}`);
       
       try { db.prepare("UPDATE leads SET source = source || ? WHERE email = ?").run(` (Contacted:${template || 'custom'})`, email); } catch(e) {}
       sendToTelegramMessage('📨 Lead Outreach Sent', {

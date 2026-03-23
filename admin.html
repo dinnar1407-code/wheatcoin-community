@@ -144,7 +144,7 @@ async function loadClaims() {
   const wrap = document.getElementById('tableWrap');
   wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/claims');
+    const res = await fetch('/api/claims', { headers: { 'x-admin-token': adminToken } });
     const rows = await res.json();
     const pending = rows.filter(r => r.status === 'submitted').length;
     const badge = document.getElementById('claimsBadge');
@@ -187,14 +187,14 @@ async function loadClaims() {
 async function reviewClaim(id, status) {
   const noteEl = document.getElementById('note-'+id);
   const note = noteEl ? noteEl.value.trim() : '';
-  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status, reviewer_note: note}) });
+  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json','x-admin-token':adminToken}, body: JSON.stringify({id, status, reviewer_note: note}) });
   loadClaims();
 }
 
 async function settleClam(id) {
   const txEl = document.getElementById('txhash-'+id);
   const tx = txEl ? txEl.value.trim() : '';
-  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status:'settled', tx_hash: tx}) });
+  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json','x-admin-token':adminToken}, body: JSON.stringify({id, status:'settled', tx_hash: tx}) });
   loadClaims();
 }
 
@@ -203,7 +203,7 @@ async function loadSpotlight() {
   const wrap = document.getElementById('tableWrap');
   wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/spotlight');
+    const res = await fetch('/api/spotlight', { headers: { 'x-admin-token': adminToken } });
     const rows = await res.json();
     const pending = rows.filter(r => r.status === 'pending').length;
     const badge = document.getElementById('spotlightBadge');
@@ -240,7 +240,7 @@ async function reviewSpotlight(id, status) {
   const noteEl = document.getElementById('snote-'+id);
   const note = noteEl ? noteEl.value.trim() : '';
   const activated_at = status === 'active' ? new Date().toISOString() : '';
-  await fetch('/api/spotlight/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status, reviewer_note: note, activated_at}) });
+  await fetch('/api/spotlight/review', { method:'POST', headers:{'Content-Type':'application/json','x-admin-token':adminToken}, body: JSON.stringify({id, status, reviewer_note: note, activated_at}) });
   loadSpotlight();
 }
 
