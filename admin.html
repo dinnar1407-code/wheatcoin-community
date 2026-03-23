@@ -7,6 +7,18 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:32px 24px;}
+  .login-wrap{max-width:400px;margin:100px auto;background:#13131a;border:1px solid #2a2a3a;border-radius:16px;padding:40px;text-align:center;}
+  .login-wrap h2{font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;}
+  .login-wrap p{font-size:13px;color:#6b7280;margin-bottom:24px;}
+  .login-input{width:100%;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:8px;color:#e0e0e0;font-size:14px;padding:12px 14px;outline:none;margin-bottom:12px;font-family:monospace;}
+  .login-input:focus{border-color:#6366f1;}
+  .login-btn{width:100%;background:#6366f1;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;padding:12px;cursor:pointer;transition:opacity .2s;}
+  .login-btn:hover{opacity:.9;}
+  .login-err{font-size:12px;color:#ef4444;margin-top:8px;display:none;}
+  .stats-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px;}
+  .stat-pill{background:#13131a;border:1px solid #2a2a3a;border-radius:10px;padding:10px 16px;font-size:13px;}
+  .stat-pill .n{font-size:22px;font-weight:800;color:#fff;margin-right:4px;}
+  .stat-pill .l{color:#6b7280;}
     h1{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;}
     .sub{font-size:13px;color:#6b7280;margin-bottom:24px;}
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
@@ -48,9 +60,22 @@
   </style>
 </head>
 <body>
+  <!-- Login Gate -->
+  <div id="loginGate" class="login-wrap">
+    <div style="font-size:40px;margin-bottom:12px;">🏛️</div>
+    <h2>Republic Ops Admin</h2>
+    <p>Enter your admin token to continue.</p>
+    <input class="login-input" id="tokenInput" type="password" placeholder="ADMIN_TOKEN" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="login-btn" onclick="login()">Enter →</button>
+    <div class="login-err" id="loginErr">Invalid token. Please try again.</div>
+  </div>
+
+  <!-- Main Panel (hidden until authed) -->
+  <div id="mainPanel" style="display:none;">
   <a class="back-link" href="/">← Republic</a>
   <h1>🌾 Republic Ops Admin</h1>
   <p class="sub">Treasury Claims · Spotlight Applications · Builder Orders · Community Products · Leads <span class="refresh-note">Auto-refresh 20s</span></p>
+  <div class="stats-bar" id="statsBar"></div>
 
   <div class="tabs">
     <div class="tab active" id="tab-claims" onclick="switchTab('claims',this)">Treasury Claims <span class="count-badge" id="claimsBadge" style="display:none">0</span></div>
@@ -62,8 +87,45 @@
 
   <div id="tableWrap"></div>
 
+</div><!-- end mainPanel -->
+
 <script>
+let adminToken = '';
 let currentTab = 'claims';
+
+async function login() {
+  const t = document.getElementById('tokenInput').value.trim();
+  const res = await fetch('/api/admin/auth', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ token: t }) });
+  if (res.ok) {
+    adminToken = t;
+    document.getElementById('loginGate').style.display = 'none';
+    document.getElementById('mainPanel').style.display = 'block';
+    loadStats();
+    loadClaims();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+  }
+}
+
+async function loadStats() {
+  try {
+    const res = await fetch('/api/admin/stats', { headers: { 'x-admin-token': adminToken } });
+    if (!res.ok) return;
+    const s = await res.json();
+    document.getElementById('statsBar').innerHTML = [
+      ['Claims (pending)', s.claims_pending],
+      ['Spotlight (pending)', s.spotlight_pending],
+      ['Orders (pending)', s.orders_pending],
+      ['Products (pending)', s.products_pending],
+      ['Contributors', s.contributors],
+      ['Leads', s.leads],
+    ].map(([l, n]) => `<div class="stat-pill"><span class="n">${n}</span><span class="l">${l}</span></div>`).join('');
+  } catch {}
+}
+
+function authHeaders() {
+  return { 'Content-Type': 'application/json', 'x-admin-token': adminToken };
+}
 
 function switchTab(name, el) {
   currentTab = name;
@@ -187,8 +249,8 @@ async function loadOrders() {
   const wrap = document.getElementById('tableWrap');
   wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/orders');
-    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized — set ADMIN_TOKEN.</div>'; return; }
+    const res = await fetch('/api/orders', { headers: { 'x-admin-token': adminToken } });
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Session expired. Reload page.</div>'; return; }
     const rows = await res.json();
     const pending = rows.filter(r => r.status === 'pending').length;
     const badge = document.getElementById('ordersBadge');
@@ -215,7 +277,7 @@ async function loadOrders() {
 }
 
 async function updateOrder(id, status) {
-  await fetch('/api/orders/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status}) });
+  await fetch('/api/orders/update', { method:'POST', headers: authHeaders(), body: JSON.stringify({id, status}) });
   loadOrders();
 }
 
@@ -226,8 +288,8 @@ async function loadProducts() {
   const wrap = document.getElementById('tableWrap');
   wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/products/all');
-    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized.</div>'; return; }
+    const res = await fetch('/api/products/all', { headers: { 'x-admin-token': adminToken } });
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Session expired. Reload page.</div>'; return; }
     allProducts = await res.json();
     const pending = allProducts.filter(p => p.status === 'pending').length;
     const badge = document.getElementById('productsBadge');
@@ -264,7 +326,7 @@ function renderProducts(status) {
 }
 
 async function reviewProduct(id, status) {
-  await fetch('/api/products/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status}) });
+  await fetch('/api/products/review', { method:'POST', headers: authHeaders(), body: JSON.stringify({id, status}) });
   await loadProducts();
   renderProducts('pending');
 }
@@ -274,8 +336,8 @@ async function loadLeads() {
   const wrap = document.getElementById('tableWrap');
   wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/leads');
-    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized.</div>'; return; }
+    const res = await fetch('/api/leads', { headers: { 'x-admin-token': adminToken } });
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Session expired. Reload page.</div>'; return; }
     const rows = await res.json();
     if (!rows.length) { wrap.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
     wrap.innerHTML = '<table><thead><tr><th>Contact</th><th>Source</th><th>Date</th><th>Action</th></tr></thead><tbody>' +

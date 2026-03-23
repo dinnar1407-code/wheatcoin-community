@@ -130,13 +130,25 @@ try { db.exec("ALTER TABLE whc_claims ADD COLUMN proof_desc TEXT"); } catch(e) {
 try { db.exec("ALTER TABLE whc_claims ADD COLUMN contact TEXT"); } catch(e) {}
 try { db.exec("ALTER TABLE whc_claims ADD COLUMN reviewer_note TEXT"); } catch(e) {}
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function sendToTelegramMessage(title, fields = {}) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
   if (!token || !chatId) return;
 
-  const pairs = Object.entries(fields).map(([k,v]) => `<b>${k}:</b> ${v}`);
-  const text = encodeURIComponent(`🚨 <b>${title}</b>\n\n` + pairs.join("\n"));
+  const safeTitle = escapeHtml(title);
+  const pairs = Object.entries(fields)
+    .filter(([, v]) => v !== undefined && v !== null && v !== '')
+    .map(([k, v]) => `<b>${escapeHtml(k)}:</b> ${escapeHtml(String(v))}`);
+  const text = encodeURIComponent(`🚨 <b>${safeTitle}</b>\n\n` + pairs.join("\n"));
 
   https.get(`https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&parse_mode=HTML&text=${text}`, (res) => {
     res.on('error', (e) => console.error('Telegram 通知失败:', e.message));
@@ -198,6 +210,8 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/claim-whc' || url === '/claim-whc.html')) { serveFile(res, path.join(__dirname, 'claim-whc.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/whc-policy' || url === '/whc-policy.html')) { serveFile(res, path.join(__dirname, 'whc-policy.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/constitution' || url === '/constitution.html')) { serveFile(res, path.join(__dirname, 'constitution.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/featured' || url === '/featured.html')) { serveFile(res, path.join(__dirname, 'featured.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/privacy' || url === '/privacy.html')) { serveFile(res, path.join(__dirname, 'privacy.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/terms' || url === '/terms.html')) { serveFile(res, path.join(__dirname, 'terms.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/refund' || url === '/refund.html')) { serveFile(res, path.join(__dirname, 'refund.html'), 'text/html'); return; }
@@ -237,6 +251,57 @@ const server = http.createServer(async (req, res) => {
     const rows = db.prepare("SELECT * FROM contributors ORDER BY points DESC").all();
     res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
     res.end(JSON.stringify(rows)); return;
+  }
+
+  // ── REP Public Query ──────────────────────────────────────────────────
+  if (req.method === 'GET' && url.startsWith('/api/rep/lookup')) {
+    const qs = new URLSearchParams(req.url.split('?')[1] || '');
+    const username = (qs.get('username') || '').trim().toLowerCase();
+    const wallet = (qs.get('wallet') || '').trim();
+    if (!username && !wallet) {
+      res.writeHead(400); res.end(JSON.stringify({ error: 'username or wallet required' })); return;
+    }
+    let row = null;
+    if (username) row = db.prepare("SELECT username, wallet, points, whc FROM contributors WHERE lower(username) = ?").get(username);
+    if (!row && wallet) row = db.prepare("SELECT username, wallet, points, whc FROM contributors WHERE wallet = ?").get(wallet);
+    if (!row) { res.writeHead(404); res.end(JSON.stringify({ error: 'Citizen not found' })); return; }
+    // rank
+    const rank = db.prepare("SELECT COUNT(*)+1 AS rank FROM contributors WHERE points > ?").get(row.points).rank;
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ ...row, rank, found: true })); return;
+  }
+
+  // ── Admin token verify ────────────────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/admin/auth') {
+    try {
+      const { token } = await parseBody(req);
+      const adminToken = process.env.ADMIN_TOKEN;
+      if (!adminToken) { res.writeHead(500); res.end(JSON.stringify({ error: 'ADMIN_TOKEN not configured' })); return; }
+      if (token === adminToken) {
+        res.writeHead(200); res.end(JSON.stringify({ ok: true, token }));
+      } else {
+        res.writeHead(401); res.end(JSON.stringify({ ok: false, error: 'Invalid token' }));
+      }
+    } catch(e) {
+      res.writeHead(400); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // ── Admin stats summary ───────────────────────────────────────────────
+  if (req.method === 'GET' && url === '/api/admin/stats') {
+    if (!checkAdminAuth(req)) { res.writeHead(401); res.end(JSON.stringify({ error: 'Unauthorized' })); return; }
+    const stats = {
+      claims_pending: db.prepare("SELECT COUNT(*) AS c FROM whc_claims WHERE status='submitted'").get().c,
+      claims_total: db.prepare("SELECT COUNT(*) AS c FROM whc_claims").get().c,
+      spotlight_pending: db.prepare("SELECT COUNT(*) AS c FROM spotlight_applications WHERE status='pending'").get().c,
+      orders_pending: db.prepare("SELECT COUNT(*) AS c FROM orders WHERE status='pending'").get().c,
+      products_pending: db.prepare("SELECT COUNT(*) AS c FROM products WHERE status='pending'").get().c,
+      contributors: db.prepare("SELECT COUNT(*) AS c FROM contributors").get().c,
+      leads: db.prepare("SELECT COUNT(*) AS c FROM leads").get().c,
+    };
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(stats)); return;
   }
 
   if (req.method === 'GET' && url === '/api/products') {
@@ -368,6 +433,17 @@ const server = http.createServer(async (req, res) => {
       const { id, status, reviewer_note, tx_hash } = await parseBody(req);
       db.prepare("UPDATE whc_claims SET status = ?, reviewer_note = ?, tx_hash = ? WHERE claim_id = ?")
         .run(status, reviewer_note || '', tx_hash || '', id);
+      // Telegram notification on status change
+      const claimRow = db.prepare("SELECT * FROM whc_claims WHERE claim_id = ?").get(id);
+      const emoji = status === 'approved' ? '✅' : status === 'settled' ? '💰' : status === 'rejected' ? '❌' : '🔄';
+      sendToTelegramMessage(`${emoji} Claim ${status.toUpperCase()}`, {
+        claim_id: id,
+        contact: claimRow ? (claimRow.contact || claimRow.telegram_handle || '—') : '—',
+        mission: claimRow ? (claimRow.mission_ref || claimRow.mission_id || '—') : '—',
+        status,
+        note: reviewer_note || '—',
+        tx: tx_hash || '—',
+      });
       console.log(`[WHC审核] Claim ${id} → ${status}`);
       res.writeHead(200); res.end(JSON.stringify({ ok: true }));
     } catch(e) {
@@ -416,6 +492,12 @@ const server = http.createServer(async (req, res) => {
       const { id, status, reviewer_note, activated_at, expires_at } = await parseBody(req);
       db.prepare("UPDATE spotlight_applications SET status = ?, reviewer_note = ?, activated_at = ?, expires_at = ? WHERE app_id = ?")
         .run(status, reviewer_note || '', activated_at || '', expires_at || '', id);
+      const row = db.prepare("SELECT * FROM spotlight_applications WHERE app_id = ?").get(id);
+      const emoji = status === 'active' ? '🔦' : status === 'rejected' ? '❌' : '🔄';
+      sendToTelegramMessage(`${emoji} Spotlight ${status.toUpperCase()}`, {
+        id, product: row ? row.product : '—', contact: row ? row.contact : '—',
+        tier: row ? row.tier : '—', note: reviewer_note || '—'
+      });
       res.writeHead(200); res.end(JSON.stringify({ ok: true }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
@@ -474,6 +556,11 @@ const server = http.createServer(async (req, res) => {
     try {
       const { id, status } = await parseBody(req);
       db.prepare("UPDATE orders SET status = ? WHERE id = ?").run(status, id);
+      const row = db.prepare("SELECT * FROM orders WHERE id = ?").get(id);
+      const emoji = status === 'delivered' ? '📦' : '🔄';
+      sendToTelegramMessage(`${emoji} Order ${status.toUpperCase()}`, {
+        id, plan: row ? row.plan : '—', contact: row ? row.contact : '—', status
+      });
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ ok: true }));
     } catch(e) {

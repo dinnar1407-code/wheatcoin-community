@@ -70,6 +70,13 @@
       <div class="rule-card"><div class="pts">+100</div><div class="desc" data-i="r4">Get Featured</div></div>
     </div>
 
+    <!-- REP Lookup -->
+    <div style="background:#13131a;border:1px solid #2a2a3a;border-radius:14px;padding:20px 24px;margin-bottom:24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <input id="lookupInput" style="flex:1;min-width:200px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:8px;color:#e0e0e0;font-size:13px;padding:9px 14px;outline:none;" placeholder="Search by username or wallet address…"/>
+      <button onclick="lookupRep()" style="padding:9px 18px;border-radius:8px;background:#6366f1;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;">Look up →</button>
+    </div>
+    <div id="lookupResult" style="margin-bottom:20px;display:none;background:#13131a;border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:20px 24px;"></div>
+
     <div class="lb">
       <div class="lb-header">
         <span data-i="thRank">Rank</span>
@@ -83,7 +90,7 @@
     </div>
   </div>
 
-  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/missions">Mission Board</a> · <a href="/claim-whc">Claim Center</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC</a></footer>
+  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/missions">Mission Board</a> · <a href="/claim-whc">Claim Center</a> · <a href="/constitution">Constitution</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC</a></footer>
 
   <script>
     const I18N = {
@@ -123,6 +130,36 @@
       } catch { document.getElementById('lbBody').innerHTML = '<div class="empty" style="color:#ef4444">Failed to load data.</div>'; }
     }
     setLang(lang);
+
+    async function lookupRep() {
+      const q = document.getElementById('lookupInput').value.trim();
+      const box = document.getElementById('lookupResult');
+      if (!q) return;
+      box.style.display = 'block';
+      box.innerHTML = '<div style="color:#6b7280;font-size:13px;">Looking up…</div>';
+      try {
+        const isWallet = q.length > 32;
+        const param = isWallet ? 'wallet=' + encodeURIComponent(q) : 'username=' + encodeURIComponent(q);
+        const res = await fetch('/api/rep/lookup?' + param);
+        if (res.status === 404) { box.innerHTML = '<div style="color:#ef4444;font-size:13px;">Citizen not found.</div>'; return; }
+        const d = await res.json();
+        box.innerHTML = `
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;">${(d.username||'?').charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-size:16px;font-weight:800;color:#fff;">${d.username||'—'}</div>
+              ${d.wallet ? `<div style="font-family:monospace;font-size:11px;color:#6b7280;">${d.wallet.slice(0,8)}…${d.wallet.slice(-6)}</div>` : ''}
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div style="font-size:26px;font-weight:800;color:#fff;">${(d.points||0).toLocaleString()} <span style="font-size:13px;color:#9ca3af;">REP</span></div>
+              <div style="font-size:13px;color:#f4c430;">${(d.whc||0).toLocaleString()} WHC</div>
+            </div>
+            <div style="background:#1a1a35;border:1px solid #2a2a3a;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#a5b4fc;">Rank #${d.rank}</div>
+          </div>`;
+      } catch { box.innerHTML = '<div style="color:#ef4444;font-size:13px;">Error. Try again.</div>'; }
+    }
+
+    document.getElementById('lookupInput').addEventListener('keydown', e => { if (e.key === 'Enter') lookupRep(); });
   </script>
 </body>
 </html>
