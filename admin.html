@@ -2,200 +2,306 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Wheat Community · Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Republic Ops · Admin</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:32px;}
-    h1{font-size:22px;font-weight:800;color:#fff;margin-bottom:6px;}
-    .sub{font-size:13px;color:#6b7280;margin-bottom:28px;}
-    .tabs{display:flex;gap:8px;margin-bottom:24px;}
-    .tab{padding:8px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #2a2a3a;background:#1e1e2e;color:#6b7280;transition:all .2s;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e0e0e0;min-height:100vh;padding:32px 24px;}
+    h1{font-size:20px;font-weight:800;color:#fff;margin-bottom:4px;}
+    .sub{font-size:13px;color:#6b7280;margin-bottom:24px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px;}
+    .tab{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:1px solid #2a2a3a;background:#1e1e2e;color:#6b7280;transition:all .2s;}
     .tab.active{background:#6366f1;border-color:#6366f1;color:#fff;}
     .count-badge{display:inline-block;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;}
     table{width:100%;border-collapse:collapse;font-size:13px;}
     th{text-align:left;padding:10px 14px;font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.8px;border-bottom:1px solid #2a2a3a;}
-    td{padding:14px;border-bottom:1px solid #1e1e2e;vertical-align:top;}
-    tr:hover td{background:#13131a;}
-    .name{font-weight:700;color:#fff;margin-bottom:3px;}
-    .tagline{font-size:12px;color:#9ca3af;}
-    .tag{display:inline-block;padding:2px 8px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:10px;font-size:11px;color:#9ca3af;margin-right:4px;}
-    .source-badge{display:inline-block;padding:2px 8px;background:#1a1a35;border:1px solid #6366f1;border-radius:10px;font-size:10px;color:#a5b4fc;margin-left:4px;}
-    .status-pending{color:#f59e0b;font-weight:700;}
-    .status-approved{color:#10b981;font-weight:700;}
-    .status-rejected{color:#ef4444;font-weight:700;}
-    .action-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;margin-right:4px;transition:all .2s;}
-    .approve-btn{background:#10b981;color:#fff;}
-    .reject-btn{background:#1e1e2e;color:#ef4444;border:1px solid #ef4444;}
-    .approve-btn:hover{opacity:.85;}
-    .reject-btn:hover{background:#ef4444;color:#fff;}
-    .empty{text-align:center;padding:60px;color:#6b7280;}
-    .back-link{display:inline-block;margin-bottom:20px;font-size:13px;color:#6366f1;cursor:pointer;text-decoration:none;}
+    td{padding:13px 14px;border-bottom:1px solid #1a1a24;vertical-align:top;}
+    tr:hover td{background:#111118;}
+    .bold{font-weight:700;color:#fff;margin-bottom:2px;}
+    .muted{font-size:12px;color:#6b7280;margin-top:2px;}
+    .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700;}
+    .badge-pending{background:#1a1400;color:#f59e0b;border:1px solid #3a2e00;}
+    .badge-approved,.badge-active,.badge-delivered,.badge-paid{background:#001a10;color:#10b981;border:1px solid #003320;}
+    .badge-rejected{background:#1a0000;color:#ef4444;border:1px solid #3a0000;}
+    .badge-submitted{background:#1a1a2e;color:#a5b4fc;border:1px solid #2a2a3a;}
+    .badge-settled{background:#1a1000;color:#f4c430;border:1px solid #3a2800;}
+    .tag{display:inline-block;padding:2px 8px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:6px;font-size:11px;color:#9ca3af;margin-right:4px;}
+    .action-btn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;margin-right:4px;transition:all .2s;margin-top:3px;}
+    .btn-green{background:#10b981;color:#fff;}
+    .btn-green:hover{background:#059669;}
+    .btn-red{background:#1e1e2e;color:#ef4444;border:1px solid #ef4444;}
+    .btn-red:hover{background:#ef4444;color:#fff;}
+    .btn-blue{background:#6366f1;color:#fff;}
+    .btn-blue:hover{background:#4f46e5;}
+    .btn-gold{background:#f4c430;color:#000;}
+    .btn-gold:hover{background:#f59e0b;}
+    .btn-gray{background:#1e1e2e;color:#9ca3af;border:1px solid #2a2a3a;}
+    .empty{text-align:center;padding:60px;color:#4b5563;font-size:14px;}
+    .back-link{display:inline-block;margin-bottom:20px;font-size:13px;color:#6366f1;text-decoration:none;}
     .refresh-note{font-size:11px;color:#4b5563;margin-left:12px;}
+    .proof-link{color:#a5b4fc;font-size:12px;word-break:break-all;}
+    .mono{font-family:monospace;font-size:11px;color:#a5b4fc;}
+    .mono.gold{color:#f4c430;}
+    .input-sm{background:#1e1e2e;border:1px solid #2a2a3a;border-radius:6px;color:#e0e0e0;font-size:12px;padding:5px 9px;outline:none;width:220px;}
+    .input-sm:focus{border-color:#6366f1;}
+    .action-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px;}
   </style>
 </head>
 <body>
-  <a class="back-link" href="/">← Back to Community</a>
-  <h1>🌾 Wheat Community · Admin Panel</h1>
-  <p class="sub">Review submitted products and publish them to the community. <span class="refresh-note">Auto-refreshes every 15s</span></p>
+  <a class="back-link" href="/">← Republic</a>
+  <h1>🌾 Republic Ops Admin</h1>
+  <p class="sub">Treasury Claims · Spotlight Applications · Builder Orders · Community Products · Leads <span class="refresh-note">Auto-refresh 20s</span></p>
 
   <div class="tabs">
-    <div class="tab active" onclick="loadTab('pending',this)">Pending <span class="count-badge" id="pendingCount" style="display:none">0</span></div>
-    <div class="tab" onclick="loadTab('approved',this)">Published <span id="approvedCount" style="font-size:11px;color:#6b7280;margin-left:4px;"></span></div>
-    <div class="tab" onclick="loadTab('rejected',this)">Rejected</div>
-    <div class="tab" style="margin-left:auto; background:linear-gradient(135deg,#f4c430,#f59e0b); color:#000; border:none;" onclick="loadOrders(this)">💰 Launchpad Orders</div>
-    <div class="tab" style="background:#1e1e2e; color:#a5b4fc; border:1px solid #6366f1;" onclick="loadLeads(this)">📧 Leads</div>
+    <div class="tab active" id="tab-claims" onclick="switchTab('claims',this)">Treasury Claims <span class="count-badge" id="claimsBadge" style="display:none">0</span></div>
+    <div class="tab" id="tab-spotlight" onclick="switchTab('spotlight',this)">Spotlight Apps <span class="count-badge" id="spotlightBadge" style="display:none">0</span></div>
+    <div class="tab" id="tab-orders" onclick="switchTab('orders',this)">Growth Orders <span class="count-badge" id="ordersBadge" style="display:none">0</span></div>
+    <div class="tab" id="tab-products" onclick="switchTab('products',this)">Products <span class="count-badge" id="productsBadge" style="display:none">0</span></div>
+    <div class="tab" id="tab-leads" onclick="switchTab('leads',this)">Leads</div>
   </div>
 
   <div id="tableWrap"></div>
 
 <script>
-let adminToken = localStorage.getItem('wheat_admin_token') || '';
-let currentTab='pending';
-let allProducts=[];
+let currentTab = 'claims';
 
-async function loadAll(){
-  if (!adminToken) {
-    adminToken = prompt("Enter Admin Password:");
-    if (!adminToken) return;
-    localStorage.setItem('wheat_admin_token', adminToken);
-  }
-  try{
-    const res=await fetch('/api/products/all', {
-      headers: { 'Authorization': 'Bearer ' + adminToken }
-    });
-    if (res.status === 401) {
-      alert("Unauthorized! Incorrect password.");
-      localStorage.removeItem('wheat_admin_token');
-      adminToken = '';
-      return;
-    }
-    allProducts=await res.json();
-  }catch(e){allProducts=[];}
-  updateCounts();renderTable(currentTab);
+function switchTab(name, el) {
+  currentTab = name;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  load[name]();
 }
 
-function updateCounts(){
-  const pending=allProducts.filter(p=>p.status==='pending').length;
-  const el=document.getElementById('pendingCount');
-  el.textContent=pending;el.style.display=pending?'inline-block':'none';
-  const approved=allProducts.filter(p=>p.status==='approved').length;
-  document.getElementById('approvedCount').textContent=approved?`(${approved})`:'';
+function statusBadge(s) {
+  const cls = { pending:'badge-pending', submitted:'badge-submitted', approved:'badge-approved', active:'badge-active', rejected:'badge-rejected', settled:'badge-settled', delivered:'badge-delivered', paid:'badge-paid' };
+  return `<span class="badge ${cls[s]||'badge-submitted'}">${(s||'unknown').toUpperCase()}</span>`;
 }
 
-function loadTab(status,el){
-  currentTab=status;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el.classList.add('active');renderTable(status);
-}
-
-function renderTable(status){
-  const list=allProducts.filter(p=>p.status===status);
-  const wrap=document.getElementById('tableWrap');
-  if(!list.length){wrap.innerHTML=`<div class="empty">No ${status} submissions.</div>`;return;}
-  wrap.innerHTML=`<table>
-    <thead><tr>
-      <th>Product</th><th>Category</th><th>Website</th><th>Contact</th><th>Submitted</th><th>Action</th>
-    </tr></thead>
-    <tbody>
-      ${list.map(p=>`
-        <tr>
-          <td>
-            <div class="name">${p.icon||'🤖'} ${p.name}
-              ${p.source==='genius_plan'?'<span class="source-badge">⚡ Genius Plan</span>':''}
-            </div>
-            <div class="tagline">${p.tagline||''}</div>
-          </td>
-          <td><span class="tag">${p.tag||'—'}</span></td>
-          <td style="font-size:12px;max-width:140px;word-break:break-all;">
-            ${p.url?`<a href="${p.url}" target="_blank" style="color:#6366f1;">${p.url.substring(0,40)}…</a>`:'—'}
-          </td>
-          <td style="font-size:12px;color:#9ca3af;">${p.contact||'—'}</td>
-          <td style="font-size:12px;color:#6b7280;white-space:nowrap;">${(p.receivedAt||'').substring(0,10)||'—'}</td>
-          <td>
-            ${status==='pending'?`
-              <button class="action-btn approve-btn" onclick="review(${p.id},'approved')">✅ Approve</button>
-              <button class="action-btn reject-btn" onclick="review(${p.id},'rejected')">✗ Reject</button>
-            `:`<span class="status-${status}">${status==='approved'?'✅ Published':'✗ Rejected'}</span>`}
-          </td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>`;
-}
-
-
-async function loadOrders(el) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(el) el.classList.add('active');
+// ── Treasury Claims ────────────────────────────────────────────────────
+async function loadClaims() {
   const wrap = document.getElementById('tableWrap');
-  wrap.innerHTML = '<div class="empty">Loading orders...</div>';
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/orders', { headers: { 'Authorization': 'Bearer ' + adminToken } });
-    if(res.status === 401) { alert("Unauthorized"); return; }
-    const orders = await res.json();
-    if(!orders.length) { wrap.innerHTML = '<div class="empty">No orders yet.</div>'; return; }
-    wrap.innerHTML = '<table><thead><tr><th>Order ID</th><th>Product</th><th>Plan & Price</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>' + 
-      orders.map(o => `
-        <tr>
-          <td style="font-family:monospace; font-size:11px; color:#a5b4fc;">${o.id}</td>
-          <td><div class="name">${o.product}</div><div class="tagline">${o.audience}</div></td>
-          <td><strong style="color:#f4c430">${o.plan.toUpperCase()}</strong><br><span style="font-size:11px;color:#9ca3af">${o.price} (${o.paymentMethod})</span></td>
-          <td style="font-size:12px;">${o.contact}</td>
-          <td><span style="font-weight:bold; color:${o.status==='delivered'?'#10b981':(o.status==='paid'?'#3b82f6':'#f59e0b')}">${(o.status||'pending').toUpperCase()}</span></td>
-          <td>
-            ${o.status !== 'delivered' ? `<button class="action-btn approve-btn" onclick="updateOrder('${o.id}', 'delivered')">Mark Delivered</button>` : '✅ Done'}
-          </td>
-        </tr>
-      `).join('') + '</tbody></table>';
-  } catch(e) { wrap.innerHTML = '<div class="empty">Error loading orders.</div>'; }
+    const res = await fetch('/api/claims');
+    const rows = await res.json();
+    const pending = rows.filter(r => r.status === 'submitted').length;
+    const badge = document.getElementById('claimsBadge');
+    badge.textContent = pending; badge.style.display = pending ? 'inline-block' : 'none';
+    if (!rows.length) { wrap.innerHTML = '<div class="empty">No treasury claims yet.</div>'; return; }
+    wrap.innerHTML = '<table><thead><tr><th>Claim ID</th><th>Mission</th><th>Proof</th><th>Wallet</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+      rows.map(c => `<tr>
+        <td><div class="mono">${c.claim_id}</div><div class="muted">${(c.receivedAt||'').slice(0,10)}</div></td>
+        <td><div class="bold">${c.mission_ref || c.mission_id || '—'}</div></td>
+        <td>
+          ${c.proof_url ? `<a href="${c.proof_url}" target="_blank" class="proof-link">${(c.proof_url).slice(0,40)}…</a>` : '<span class="muted">—</span>'}
+          ${c.proof_desc ? `<div class="muted" style="max-width:180px;">${c.proof_desc.slice(0,80)}…</div>` : ''}
+        </td>
+        <td><div class="mono">${(c.wallet_address||'').slice(0,16)}…</div></td>
+        <td><div style="font-size:12px;">${c.contact||c.telegram_handle||'—'}</div></td>
+        <td>${statusBadge(c.status)}${c.tx_hash ? `<div class="mono gold" style="margin-top:4px;">tx: ${c.tx_hash.slice(0,12)}…</div>` : ''}</td>
+        <td>
+          ${c.status === 'submitted' ? `
+            <div class="action-row">
+              <input class="input-sm" id="note-${c.claim_id}" placeholder="Reviewer note…" />
+            </div>
+            <div class="action-row">
+              <button class="action-btn btn-green" onclick="reviewClaim('${c.claim_id}','approved')">✅ Approve</button>
+              <button class="action-btn btn-red" onclick="reviewClaim('${c.claim_id}','rejected')">✗ Reject</button>
+            </div>
+          ` : c.status === 'approved' ? `
+            <div class="action-row">
+              <input class="input-sm" id="txhash-${c.claim_id}" placeholder="tx hash…" />
+            </div>
+            <div class="action-row">
+              <button class="action-btn btn-gold" onclick="settleClam('${c.claim_id}')">💰 Mark Settled</button>
+            </div>
+            ${c.reviewer_note ? `<div class="muted" style="margin-top:4px;">${c.reviewer_note}</div>` : ''}
+          ` : `<span style="font-size:12px;color:#4b5563;">Done${c.reviewer_note ? ' · '+c.reviewer_note.slice(0,30) : ''}</span>`}
+        </td>
+      </tr>`).join('') + '</tbody></table>';
+  } catch { wrap.innerHTML = '<div class="empty">Error loading claims.</div>'; }
+}
+
+async function reviewClaim(id, status) {
+  const noteEl = document.getElementById('note-'+id);
+  const note = noteEl ? noteEl.value.trim() : '';
+  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status, reviewer_note: note}) });
+  loadClaims();
+}
+
+async function settleClam(id) {
+  const txEl = document.getElementById('txhash-'+id);
+  const tx = txEl ? txEl.value.trim() : '';
+  await fetch('/api/claims/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status:'settled', tx_hash: tx}) });
+  loadClaims();
+}
+
+// ── Spotlight Applications ─────────────────────────────────────────────
+async function loadSpotlight() {
+  const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const res = await fetch('/api/spotlight');
+    const rows = await res.json();
+    const pending = rows.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('spotlightBadge');
+    badge.textContent = pending; badge.style.display = pending ? 'inline-block' : 'none';
+    if (!rows.length) { wrap.innerHTML = '<div class="empty">No spotlight applications yet.</div>'; return; }
+    wrap.innerHTML = '<table><thead><tr><th>App ID</th><th>Product</th><th>Tier / Amount</th><th>Contact</th><th>Mission Alignment</th><th>Status</th><th>Actions</th></tr></thead><tbody>' +
+      rows.map(r => `<tr>
+        <td><div class="mono">${r.app_id}</div><div class="muted">${(r.receivedAt||'').slice(0,10)}</div></td>
+        <td>
+          <div class="bold">${r.product}</div>
+          ${r.product_url ? `<a href="${r.product_url}" target="_blank" class="proof-link">${r.product_url.slice(0,30)}…</a>` : ''}
+          ${r.tagline ? `<div class="muted">${r.tagline.slice(0,60)}</div>` : ''}
+        </td>
+        <td><span class="tag">${r.tier}</span><div class="muted">${r.amount||''} · ${r.payment_method||''}</div></td>
+        <td style="font-size:12px;">${r.contact||'—'}</td>
+        <td><div class="muted" style="max-width:160px;">${(r.mission_alignment||'—').slice(0,80)}</div></td>
+        <td>${statusBadge(r.status)}${r.activated_at ? `<div class="muted" style="margin-top:3px;">Live: ${r.activated_at.slice(0,10)}</div>` : ''}</td>
+        <td>
+          ${r.status === 'pending' ? `
+            <div class="action-row">
+              <input class="input-sm" id="snote-${r.app_id}" placeholder="Reviewer note…" />
+            </div>
+            <div class="action-row">
+              <button class="action-btn btn-green" onclick="reviewSpotlight('${r.app_id}','active')">✅ Activate</button>
+              <button class="action-btn btn-red" onclick="reviewSpotlight('${r.app_id}','rejected')">✗ Reject</button>
+            </div>
+          ` : `<span style="font-size:12px;color:#4b5563;">${r.reviewer_note||'—'}</span>`}
+        </td>
+      </tr>`).join('') + '</tbody></table>';
+  } catch { wrap.innerHTML = '<div class="empty">Error loading spotlight applications.</div>'; }
+}
+
+async function reviewSpotlight(id, status) {
+  const noteEl = document.getElementById('snote-'+id);
+  const note = noteEl ? noteEl.value.trim() : '';
+  const activated_at = status === 'active' ? new Date().toISOString() : '';
+  await fetch('/api/spotlight/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status, reviewer_note: note, activated_at}) });
+  loadSpotlight();
+}
+
+// ── Builder Growth Orders ──────────────────────────────────────────────
+async function loadOrders() {
+  const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const res = await fetch('/api/orders');
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized — set ADMIN_TOKEN.</div>'; return; }
+    const rows = await res.json();
+    const pending = rows.filter(r => r.status === 'pending').length;
+    const badge = document.getElementById('ordersBadge');
+    badge.textContent = pending; badge.style.display = pending ? 'inline-block' : 'none';
+    if (!rows.length) { wrap.innerHTML = '<div class="empty">No orders yet.</div>'; return; }
+    wrap.innerHTML = '<table><thead><tr><th>ID</th><th>Product / Brief</th><th>Plan & Price</th><th>Contact</th><th>Status</th><th>Action</th></tr></thead><tbody>' +
+      rows.map(o => `<tr>
+        <td><div class="mono">#${o.id}</div><div class="muted">${(o.receivedAt||'').slice(0,10)}</div></td>
+        <td>
+          <div class="bold">${(o.product||'').slice(0,50)}</div>
+          <div class="muted">${(o.audience||'').slice(0,60)}</div>
+        </td>
+        <td><span class="tag">${(o.plan||'').toUpperCase()}</span><div class="muted">${o.price||''} · ${o.paymentMethod||''}</div></td>
+        <td style="font-size:12px;">${o.contact||'—'}</td>
+        <td>${statusBadge(o.status||'pending')}</td>
+        <td>
+          ${o.status !== 'delivered' ? `
+            <button class="action-btn btn-blue" onclick="updateOrder(${o.id},'in_progress')">🔄 In Progress</button>
+            <button class="action-btn btn-green" onclick="updateOrder(${o.id},'delivered')">✅ Delivered</button>
+          ` : '<span style="color:#10b981;font-size:12px;">✅ Done</span>'}
+        </td>
+      </tr>`).join('') + '</tbody></table>';
+  } catch { wrap.innerHTML = '<div class="empty">Error loading orders.</div>'; }
 }
 
 async function updateOrder(id, status) {
-  await fetch('/api/orders/update', {
-    method: 'POST', headers: { 'Content-Type':'application/json', 'Authorization': 'Bearer '+adminToken },
-    body: JSON.stringify({id, status})
-  });
+  await fetch('/api/orders/update', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status}) });
   loadOrders();
 }
 
-async function loadLeads(el) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(el) el.classList.add('active');
+// ── Community Products ─────────────────────────────────────────────────
+let allProducts = [];
+
+async function loadProducts() {
   const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
   try {
-    const res = await fetch('/api/leads', { headers: { 'Authorization': 'Bearer ' + adminToken } });
-    if(res.status === 401) { alert("Unauthorized"); return; }
-    const leads = await res.json();
-    if(!leads.length) { wrap.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
-    wrap.innerHTML = '<table><thead><tr><th>Email</th><th>Source</th><th>Date</th></tr></thead><tbody>' + 
-      leads.map(l => `<tr><td style="font-weight:bold;color:#fff;">${l.email}</td><td><span class="source-badge">${l.source}</span></td><td style="font-size:12px;color:#9ca3af;">${l.receivedAt.substring(0,10)}</td></tr>`).join('') + 
-      '</tbody></table>';
-  } catch(e) {}
+    const res = await fetch('/api/products/all');
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized.</div>'; return; }
+    allProducts = await res.json();
+    const pending = allProducts.filter(p => p.status === 'pending').length;
+    const badge = document.getElementById('productsBadge');
+    badge.textContent = pending; badge.style.display = pending ? 'inline-block' : 'none';
+    renderProducts('pending');
+  } catch { wrap.innerHTML = '<div class="empty">Error loading products.</div>'; }
 }
 
-async function review(id,status){
-  try{
-    const res = await fetch('/api/products/review',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization': 'Bearer ' + adminToken
-      },
-      body:JSON.stringify({id,status})
-    });
-    if (res.status === 401) {
-      alert("Unauthorized! Incorrect password.");
-      return;
-    }
-    const idx=allProducts.findIndex(p=>p.id==id);
-    if(idx>=0)allProducts[idx].status=status;
-    updateCounts();renderTable(currentTab);
-  }catch(e){alert('Action failed. Please check server.');}
+function renderProducts(status) {
+  const list = allProducts.filter(p => p.status === status);
+  const wrap = document.getElementById('tableWrap');
+  if (!list.length) { wrap.innerHTML = `<div class="empty">No ${status} products.</div>`; return; }
+  const filterBar = `<div style="display:flex;gap:6px;margin-bottom:16px;">
+    ${['pending','approved','rejected'].map(s => `<button class="tab${status===s?' active':''}" style="padding:5px 12px;" onclick="renderProducts('${s}')">${s} (${allProducts.filter(p=>p.status===s).length})</button>`).join('')}
+  </div>`;
+  wrap.innerHTML = filterBar + '<table><thead><tr><th>Product</th><th>Category</th><th>URL</th><th>Contact</th><th>Date</th><th>Action</th></tr></thead><tbody>' +
+    list.map(p => `<tr>
+      <td>
+        <div class="bold">${p.icon||'🤖'} ${p.name}</div>
+        <div class="muted">${p.tagline||''}</div>
+        ${p.source==='genius_plan' ? '<span class="tag" style="color:#a5b4fc;border-color:#6366f1;">⚡ Growth</span>' : ''}
+      </td>
+      <td><span class="tag">${p.tag||'—'}</span></td>
+      <td style="font-size:12px;max-width:130px;word-break:break-all;">${p.url ? `<a href="${p.url}" target="_blank" style="color:#6366f1;">${p.url.slice(0,35)}…</a>` : '—'}</td>
+      <td style="font-size:12px;">${p.contact||'—'}</td>
+      <td style="font-size:12px;color:#4b5563;">${(p.receivedAt||'').slice(0,10)}</td>
+      <td>
+        ${status==='pending' ? `
+          <button class="action-btn btn-green" onclick="reviewProduct(${p.id},'approved')">✅ Approve</button>
+          <button class="action-btn btn-red" onclick="reviewProduct(${p.id},'rejected')">✗ Reject</button>
+        ` : `${statusBadge(status)}`}
+      </td>
+    </tr>`).join('') + '</tbody></table>';
 }
 
-loadAll();
-setInterval(loadAll,15000);
+async function reviewProduct(id, status) {
+  await fetch('/api/products/review', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id, status}) });
+  await loadProducts();
+  renderProducts('pending');
+}
+
+// ── Leads ──────────────────────────────────────────────────────────────
+async function loadLeads() {
+  const wrap = document.getElementById('tableWrap');
+  wrap.innerHTML = '<div class="empty">Loading…</div>';
+  try {
+    const res = await fetch('/api/leads');
+    if (res.status === 401) { wrap.innerHTML = '<div class="empty">Unauthorized.</div>'; return; }
+    const rows = await res.json();
+    if (!rows.length) { wrap.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
+    wrap.innerHTML = '<table><thead><tr><th>Contact</th><th>Source</th><th>Date</th><th>Action</th></tr></thead><tbody>' +
+      rows.map(l => `<tr>
+        <td class="bold">${l.email}</td>
+        <td><span class="tag">${l.source||'—'}</span></td>
+        <td class="muted">${(l.receivedAt||'').slice(0,10)}</td>
+        <td>
+          ${(l.source||'').includes('Contacted') ? '<span style="color:#4b5563;font-size:12px;">✅ Contacted</span>' :
+            `<button class="action-btn btn-blue" onclick="sendDM('${l.email}')">📨 Send DM</button>`}
+        </td>
+      </tr>`).join('') + '</tbody></table>';
+  } catch { wrap.innerHTML = '<div class="empty">Error loading leads.</div>'; }
+}
+
+async function sendDM(email) {
+  const msg = prompt(`Send DM to ${email}:`, `Hey — you showed interest in Wheat Community. We're running a founders-only WHC airdrop. Here's your claim link:\nhttps://wheatcoin-community-production.up.railway.app/claim-whc`);
+  if (!msg) return;
+  const res = await fetch('/api/leads/outreach', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, message: msg}) });
+  if (res.ok) { alert('DM sent!'); loadLeads(); } else { alert('Failed to send DM.'); }
+}
+
+const load = { claims: loadClaims, spotlight: loadSpotlight, orders: loadOrders, products: loadProducts, leads: loadLeads };
+
+load.claims();
+setInterval(() => load[currentTab](), 20000);
 </script>
 </body>
 </html>

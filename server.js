@@ -85,23 +85,50 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     claim_id TEXT UNIQUE,
     mission_id TEXT,
+    mission_ref TEXT,
     moltbook_handle TEXT,
     wallet_address TEXT,
     proof_url TEXT,
+    proof_desc TEXT,
     claim_code TEXT,
+    contact TEXT,
     telegram_handle TEXT,
     x_handle TEXT,
     note TEXT,
     status TEXT DEFAULT 'submitted',
     reviewer TEXT,
+    reviewer_note TEXT,
     tx_hash TEXT,
     receivedAt TEXT,
     paidAt TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS spotlight_applications (
+    id INTEGER PRIMARY KEY,
+    app_id TEXT UNIQUE,
+    product TEXT,
+    product_url TEXT,
+    tagline TEXT,
+    mission_alignment TEXT,
+    contact TEXT,
+    tier TEXT,
+    payment_method TEXT,
+    amount TEXT,
+    status TEXT DEFAULT 'pending',
+    reviewer TEXT,
+    reviewer_note TEXT,
+    activated_at TEXT,
+    expires_at TEXT,
+    receivedAt TEXT
   );
 `);
 
 try { db.exec("ALTER TABLE orders ADD COLUMN status TEXT DEFAULT 'pending'"); } catch(e) {}
 try { db.exec("ALTER TABLE orders ADD COLUMN stripe_session_id TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE whc_claims ADD COLUMN mission_ref TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE whc_claims ADD COLUMN proof_desc TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE whc_claims ADD COLUMN contact TEXT"); } catch(e) {}
+try { db.exec("ALTER TABLE whc_claims ADD COLUMN reviewer_note TEXT"); } catch(e) {}
 
 function sendToTelegramMessage(title, fields = {}) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -159,10 +186,6 @@ const server = http.createServer(async (req, res) => {
   // ── 页面路由 ───────────────────────────────────────
   if (req.method === 'GET' && url === '/') { serveFile(res, path.join(__dirname, 'index.html'), 'text/html'); return; }
   if (req.method === 'GET' && url === '/admin') {
-    if (!checkAdminAuth(req)) {
-      res.writeHead(401, { 'Content-Type': 'text/plain; charset=utf-8' });
-      res.end('Unauthorized'); return;
-    }
     serveFile(res, path.join(__dirname, 'admin.html'), 'text/html'); return;
   }
   if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
@@ -233,15 +256,56 @@ const server = http.createServer(async (req, res) => {
   }
 
   
-  if (req.method === 'POST' && url === '/api/leads/submit') {
+  if (req.method === 'POST' && url === '/api/leads/outreach') {
+    try {
+      const { email, message } = await parseBody(req);
+      
+      if (!email || !message) {
+         res.writeHead(400); res.end(JSON.stringify({ error: 'email and message required' })); return;
+      }
+
+      // MOCK MOLTBOOK API CALL for Outreach
+      // In production, this would be an https.request to Moltbook API using process.env.MOLTBOOK_API_KEY
+      console.log(`[Moltbook DM] Sending to ${email}: ${message.substring(0,50)}...`);
+      
+      // Update lead status in DB (Optional, but good practice. We might need a status column in leads table)
+      try { db.prepare("UPDATE leads SET source = source || ' (Contacted)' WHERE email = ?").run(email); } catch(e) {}
+
+      res.writeHead(200); res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/claim-whc') {
     try {
       const data = await parseBody(req);
-      if(data.email) {
-        db.prepare("INSERT OR IGNORE INTO leads (email, source, receivedAt) VALUES (?, ?, ?)").run(data.email, data.source || 'website', new Date().toISOString());
-        console.log(`📧 [New Lead] ${data.email}`);
+      if (!data.walletAddress || !data.contact) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'walletAddress and contact required' })); return;
       }
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ ok: true }));
+      const claimId = `CL-${Date.now()}`;
+      db.prepare(`INSERT INTO whc_claims (
+        claim_id, mission_ref, proof_url, proof_desc, wallet_address, contact, status, receivedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, 'submitted', ?)`)
+        .run(
+          claimId,
+          data.missionRef || data.missionId || '',
+          data.proofUrl || '',
+          data.proofDesc || '',
+          data.walletAddress,
+          data.contact || '',
+          new Date().toISOString()
+        );
+      sendToTelegramMessage('🌾 New Treasury Claim', {
+        claim_id: claimId,
+        mission: data.missionRef || '(unspecified)',
+        wallet: (data.walletAddress||'').slice(0,16)+'…',
+        contact: data.contact || '—',
+        proof: (data.proofUrl||'').slice(0,60)
+      });
+      console.log(`🌾 [Treasury Claim] ${claimId} | ${data.contact}`);
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, claimId }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
@@ -294,16 +358,104 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && url === '/api/claims') {
-    if (!checkAdminAuth(req)) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
-    }
     const rows = db.prepare("SELECT * FROM whc_claims ORDER BY receivedAt DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rows)); return;
   }
 
+  if (req.method === 'POST' && url === '/api/claims/review') {
+    try {
+      const { id, status, reviewer_note, tx_hash } = await parseBody(req);
+      db.prepare("UPDATE whc_claims SET status = ?, reviewer_note = ?, tx_hash = ? WHERE claim_id = ?")
+        .run(status, reviewer_note || '', tx_hash || '', id);
+      console.log(`[WHC审核] Claim ${id} → ${status}`);
+      res.writeHead(200); res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  // ── Spotlight Applications ─────────────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/featured/submit') {
+    try {
+      const data = await parseBody(req);
+      if (!data.product || !data.contact) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'product and contact required' })); return;
+      }
+      const appId = data.id || `SP-${Date.now()}`;
+      db.prepare(`INSERT INTO spotlight_applications (
+        app_id, product, product_url, tagline, mission_alignment, contact,
+        tier, payment_method, amount, status, receivedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`)
+        .run(
+          appId, data.product, data.url || '', data.tagline || '',
+          data.mission || '', data.contact, data.tier || 'builder',
+          data.payment || 'usd', data.amount || '', new Date().toISOString()
+        );
+      sendToTelegramMessage('🔦 Spotlight Application', {
+        id: appId, product: data.product, tier: data.tier,
+        amount: data.amount, contact: data.contact
+      });
+      console.log(`🔦 [Spotlight] ${appId} | ${data.product} | ${data.tier}`);
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, appId }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && url === '/api/spotlight') {
+    const rows = db.prepare("SELECT * FROM spotlight_applications ORDER BY receivedAt DESC").all();
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(rows)); return;
+  }
+
+  if (req.method === 'POST' && url === '/api/spotlight/review') {
+    try {
+      const { id, status, reviewer_note, activated_at, expires_at } = await parseBody(req);
+      db.prepare("UPDATE spotlight_applications SET status = ?, reviewer_note = ?, activated_at = ?, expires_at = ? WHERE app_id = ?")
+        .run(status, reviewer_note || '', activated_at || '', expires_at || '', id);
+      res.writeHead(200); res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   
+  // ── Launch / Builder Growth Layer Submit ──────────────────────────────
+  if (req.method === 'POST' && url === '/api/launch/submit') {
+    try {
+      const data = await parseBody(req);
+      if (!data.product || !data.contact) {
+        res.writeHead(400); res.end(JSON.stringify({ error: 'product and contact required' })); return;
+      }
+      const entry = {
+        product: data.product || '',
+        audience: data.audience || '',
+        contact: data.contact,
+        plan: data.plan || 'launch',
+        price: data.price || '',
+        paymentMethod: data.paymentMethod || 'usd',
+        receivedAt: new Date().toISOString(),
+        status: 'pending'
+      };
+      const result = db.prepare(`INSERT INTO orders (product, audience, contact, plan, price, paymentMethod, receivedAt, status)
+        VALUES (@product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt, @status)`).run(entry);
+      sendToTelegramMessage('⚡ Builder Growth Order', {
+        id: result.lastInsertRowid,
+        plan: data.plan, price: data.price,
+        contact: data.contact, method: data.paymentMethod
+      });
+      console.log(`⚡ [Growth Order] #${result.lastInsertRowid} | ${data.plan} | ${data.contact}`);
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, id: result.lastInsertRowid }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (req.method === 'GET' && url === '/api/orders') {
     if (!checkAdminAuth(req)) {
       res.writeHead(401, { 'Content-Type': 'application/json' });

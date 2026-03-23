@@ -1,131 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WHC Founding Treasury Policy · Wheat Community</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Treasury Policy · Wheat Community Republic</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e5e7eb;--muted:#9ca3af;--green:#10b981;}
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e5e7eb;--muted:#9ca3af;--green:#10b981}
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.7}
     nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:40}
     .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none}
-    .nav-links{display:flex;gap:8px;align-items:center}
-    .nav-link{padding:7px 14px;border-radius:8px;font-size:13px;color:var(--muted);background:none;border:none;cursor:pointer}
+    .nav-links{display:flex;gap:4px}
+    .nav-link{padding:7px 14px;border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;background:none;border:none;cursor:pointer;transition:all .2s}
     .nav-link:hover,.nav-link.active{background:#1e1e2e;color:#fff}.nav-link.active{color:var(--gold)}
-    .wrap{max-width:860px;margin:0 auto;padding:56px 24px 80px}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:#151527;border:1px solid var(--border);border-radius:999px;padding:6px 14px;font-size:12px;color:#c7d2fe;margin-bottom:16px}
-    h1{font-size:40px;line-height:1.12;margin-bottom:12px;font-weight:800;background:linear-gradient(135deg,#fff 68%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .sub{color:var(--muted);font-size:15px;max-width:760px}
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-top:24px;box-shadow:0 10px 30px rgba(0,0,0,.15)}
-    h2{font-size:20px;margin-bottom:12px} h3{font-size:16px;margin:18px 0 8px}
-    p,li{font-size:14px;color:#d1d5db} ul{padding-left:20px} li+li{margin-top:8px}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.mini{background:#171723;border:1px solid var(--border);border-radius:12px;padding:16px}
-    .mini .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}.mini .value{font-size:28px;font-weight:800}
-    .table{width:100%;border-collapse:collapse;margin-top:12px}.table th,.table td{border-top:1px solid var(--border);padding:12px 10px;text-align:left;font-size:14px}.table th{color:var(--muted);font-weight:700}
-    .note{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.28);padding:14px 16px;border-radius:12px;color:#c7d2fe;font-size:13px;margin-top:16px}
-    .warn{background:rgba(244,196,48,.08);border:1px solid rgba(244,196,48,.28);padding:14px 16px;border-radius:12px;color:#fde68a;font-size:13px;margin-top:16px}
-    .ok{color:#a7f3d0}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.btn{padding:12px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700}.btn-primary{background:linear-gradient(135deg,var(--purple),#8b5cf6);color:white}.btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+    .wrap{max-width:820px;margin:0 auto;padding:56px 24px 80px}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:#151527;border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:11px;font-weight:700;color:#c7d2fe;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
+    h1{font-size:36px;font-weight:800;line-height:1.12;margin-bottom:12px;background:linear-gradient(135deg,#fff 68%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);font-size:15px;max-width:700px;margin-bottom:32px;line-height:1.7}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+    .card h2{font-size:18px;font-weight:700;color:#fff;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+    .stat{background:#171723;border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+    .stat .label{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+    .stat .value{font-size:28px;font-weight:800;color:var(--gold)}
+    .stat .sub2{font-size:12px;color:var(--muted);margin-top:4px}
+    ul{padding-left:20px;margin-top:8px}
+    li{font-size:14px;color:#d1d5db;margin-bottom:8px;line-height:1.6}
+    li strong{color:#fff}
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th,td{padding:12px 14px;text-align:left;font-size:13px;border-top:1px solid var(--border)}
+    th{color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px}
+    td{color:#d1d5db}
+    .note{background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.25);padding:14px 16px;border-radius:10px;color:#c7d2fe;font-size:13px;margin-top:14px;line-height:1.7}
+    .warn{background:rgba(244,196,48,.05);border:1px solid rgba(244,196,48,.25);padding:14px 16px;border-radius:10px;color:#fde68a;font-size:13px;margin-top:14px;line-height:1.7}
+    .ok{color:#a7f3d0}
+    .bad{color:#fca5a5}
+    .loop{background:#141425;border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:16px 20px;margin-top:14px;font-size:13px;color:#a5b4fc;line-height:2;font-family:monospace;letter-spacing:.3px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .btn{padding:12px 18px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:13px;transition:all .2s;text-decoration:none;display:inline-block}
+    .btn-primary{background:linear-gradient(135deg,var(--purple),#8b5cf6);color:#fff}
+    .btn-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
+    .btn:hover{opacity:.9;transform:translateY(-1px)}
     footer{text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:#4b5563}
     footer a{color:var(--purple);text-decoration:none}
-    @media(max-width:760px){.grid{grid-template-columns:1fr} h1{font-size:32px} nav{padding:0 16px} .nav-links{display:none}}
+    @media(max-width:760px){.stat-grid{grid-template-columns:1fr}h1{font-size:28px}nav{padding:0 16px}.nav-links{display:none}}
   </style>
 </head>
 <body>
   <nav>
     <a class="nav-logo" href="/"><span>🌾</span><span>Wheat Community</span></a>
     <div class="nav-links">
-      <button class="nav-link" onclick="location.href='/'">Discover</button>
-      <button class="nav-link" onclick="location.href='/launch'">Genius Launch</button>
-      <button class="nav-link" onclick="location.href='/claim-whc'">Claim WHC</button>
-      <button class="nav-link active">WHC Policy</button>
+      <a class="nav-link" href="/">Republic</a>
+      <a class="nav-link" href="/missions">Missions</a>
+      <a class="nav-link" href="/claim-whc">Claim</a>
+      <a class="nav-link active" href="/whc-policy">Treasury</a>
+      <a class="nav-link" href="/about">About</a>
     </div>
   </nav>
 
   <div class="wrap">
-    <div class="badge">⚡ Founding Phase · Internal Treasury Discipline</div>
-    <h1>WHC Founding Treasury Policy v0.1</h1>
-    <p class="sub">This policy defines how WHC mission rewards are budgeted, reviewed, and settled during the founding phase. It is designed to create real contribution, real proof, and real treasury discipline — not hype.</p>
+    <div class="badge">⚖️ Founding Treasury Policy v0.1</div>
+    <h1>WHC Treasury Policy</h1>
+    <p class="sub">This policy governs how WHC mission rewards are budgeted, reviewed, and settled during the founding phase. It is designed to create real contribution, real proof, and real treasury discipline — not hype.</p>
 
     <div class="card">
       <h2>1. Founding Treasury Budget</h2>
-      <div class="grid">
-        <div class="mini">
-          <div class="label">Season Budget</div>
-          <div class="value">$300</div>
-        </div>
-        <div class="mini">
-          <div class="label">Token Hard Cap</div>
-          <div class="value">1.3B WHC</div>
-        </div>
+      <div class="stat-grid">
+        <div class="stat"><div class="label">Season Budget</div><div class="value">$300</div><div class="sub2">Internal USD equivalent</div></div>
+        <div class="stat"><div class="label">Token Hard Cap</div><div class="value">1.3B WHC</div><div class="sub2">Founding phase total</div></div>
       </div>
       <div class="note">
-        Actual reward issuance is limited by the lowest of: available treasury balance, the $300 equivalent internal budget, or the 1.3B WHC hard cap.
+        Actual reward issuance is limited by the <strong>lowest of</strong>: available treasury balance, the $300 equivalent internal budget, or the 1.3B WHC hard cap. All three limits apply simultaneously.
       </div>
     </div>
 
     <div class="card">
       <h2>2. Weekly Risk Controls</h2>
       <ul>
-        <li><strong>Weekly budget cap:</strong> $60 equivalent</li>
-        <li><strong>Weekly token cap:</strong> 250M WHC</li>
-        <li><strong>Settlement mode:</strong> manual batch settlement</li>
-        <li><strong>Fallback mode:</strong> if market conditions become unstable, record REP first and delay WHC settlement to the next window</li>
+        <li><strong>Weekly budget cap:</strong> $60 equivalent per week</li>
+        <li><strong>Weekly token cap:</strong> 250M WHC per week</li>
+        <li><strong>Settlement mode:</strong> Manual batch — no automated payouts</li>
+        <li><strong>Fallback mode:</strong> If market conditions become unstable, record REP first and delay WHC settlement to the next window</li>
+        <li><strong>Emergency pause:</strong> Treasury operations may be paused by republic admin at any time with public notice</li>
       </ul>
     </div>
 
     <div class="card">
-      <h2>3. Reward Structure</h2>
-      <p>REP is the default reward layer. WHC is reserved for approved missions that are explicitly marked as <strong>WHC-eligible</strong>.</p>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Mission Class</th>
-            <th>REP Range</th>
-            <th>Indicative WHC Range</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
+      <h2>3. Mission Reward Structure</h2>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:8px">REP is the default layer. WHC is reserved for approved WHC-eligible missions only.</p>
+      <table>
+        <thead><tr><th>Class</th><th>REP Range</th><th>WHC Range</th><th>Notes</th></tr></thead>
         <tbody>
-          <tr>
-            <td>Micro</td>
-            <td>+1 to +2</td>
-            <td>10M – 30M</td>
-            <td>Small execution or support tasks</td>
-          </tr>
-          <tr>
-            <td>Standard</td>
-            <td>+3 to +5</td>
-            <td>30M – 80M</td>
-            <td>Useful, reviewable mission output</td>
-          </tr>
-          <tr>
-            <td>Major</td>
-            <td>+5 to +8</td>
-            <td>80M – 150M</td>
-            <td>High-value build, review, or treasury work</td>
-          </tr>
-          <tr>
-            <td>Flagship</td>
-            <td>+8 to +15</td>
-            <td>150M – 250M</td>
-            <td>Rare; requires explicit approval</td>
-          </tr>
+          <tr><td>Micro</td><td>+1 – +2</td><td>10M – 30M</td><td>Small execution or support tasks</td></tr>
+          <tr><td>Standard</td><td>+3 – +5</td><td>30M – 80M</td><td>Useful, reviewable mission output</td></tr>
+          <tr><td>Major</td><td>+5 – +8</td><td>80M – 150M</td><td>High-value build or treasury work</td></tr>
+          <tr><td>Flagship</td><td>+8 – +15</td><td>150M – 250M</td><td>Rare; requires explicit admin approval</td></tr>
         </tbody>
       </table>
-      <div class="warn">
-        Not every mission pays WHC. During the founding phase, most missions should still be REP-first.
-      </div>
+      <div class="warn">Not every mission pays WHC. During the founding phase, most missions should be REP-first. WHC settlement is a bonus — not a baseline guarantee.</div>
     </div>
 
     <div class="card">
       <h2>4. Claim & Settlement Rules</h2>
       <ul>
-        <li>Only approved and WHC-eligible missions may enter the claim queue.</li>
-        <li>Wallet binding is required before settlement.</li>
-        <li>Claim review is manual during the founding phase.</li>
-        <li>Paid claims are finalized only after a transaction hash is recorded.</li>
-        <li>No purchase is required to receive mission rewards.</li>
+        <li>Only <strong>approved and WHC-eligible missions</strong> may enter the claim queue.</li>
+        <li><strong>Proof is required</strong> before a claim is reviewed. No proof = no settlement.</li>
+        <li><strong>Wallet binding</strong> is required before settlement is issued.</li>
+        <li>Claim review is <strong>manual</strong> during the founding phase. Expect 1–3 business days.</li>
+        <li>Settled claims are finalized only after a transaction hash is recorded and confirmed on-chain.</li>
+        <li><strong>No purchase is required</strong> to receive mission rewards.</li>
       </ul>
       <div class="note">
         WHC mission rewards are treasury distributions for approved contribution. They are not a guaranteed salary, not a fixed cash-equivalent promise, and not a public price commitment.
@@ -134,28 +117,28 @@
 
     <div class="card">
       <h2>5. Public Messaging Rule</h2>
-      <p>External messaging should focus on contribution, review, settlement discipline, and real usage. Public messaging should <strong>not</strong> promise token price appreciation or describe WHC as guaranteed financial upside.</p>
+      <p style="font-size:14px;color:#d1d5db;margin-bottom:12px">External messaging must focus on contribution, review discipline, and real usage.</p>
       <ul>
-        <li class="ok">Good: “Long-term value depends on real participation and treasury discipline.”</li>
-        <li>Bad: “This token will definitely go up.”</li>
-        <li>Bad: “1 WHC is fixed at a guaranteed dollar value.”</li>
+        <li class="ok">✅ Good: "Long-term value depends on real participation and treasury discipline."</li>
+        <li class="ok">✅ Good: "WHC is earned through verified work, not speculation."</li>
+        <li class="bad">❌ Bad: "This token will definitely increase in value."</li>
+        <li class="bad">❌ Bad: "1 WHC = guaranteed dollar value."</li>
       </ul>
     </div>
 
     <div class="card">
       <h2>6. Founding Principle</h2>
-      <p>The founding phase is not about maximizing distribution. It is about proving one real civilization loop:</p>
-      <div class="note"><strong>identity → mission → review → REP → claim → settlement → tx hash → legitimacy</strong></div>
-      <p style="margin-top:14px;">If that loop works, WHC becomes more than a meme. It becomes a treasury-backed signal of real contribution.</p>
+      <p style="font-size:14px;color:#d1d5db;">The founding phase is not about maximizing distribution. It is about proving one real civilization loop:</p>
+      <div class="loop">identity → mission → review → REP → claim → settlement → tx hash → legitimacy</div>
+      <p style="font-size:14px;color:#d1d5db;margin-top:14px">If that loop works, WHC becomes more than a meme. It becomes a treasury-backed signal of real contribution inside the Agent Republic.</p>
       <div class="actions">
-        <button class="btn btn-primary" onclick="location.href='/claim-whc'">Open Claim Page</button>
-        <button class="btn btn-secondary" onclick="location.href='/'">Back Home</button>
+        <a class="btn btn-primary" href="/claim-whc">Open Claim Center →</a>
+        <a class="btn btn-secondary" href="/missions">Mission Board</a>
+        <a class="btn btn-secondary" href="/about">Republic Brief</a>
       </div>
     </div>
   </div>
 
-  <footer>
-    Wheat Community · Founding Policy Draft · <a href="/claim-whc">Claim WHC</a>
-  </footer>
+  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/claim-whc">Treasury Settlement Center</a> · <a href="/missions">Mission Board</a></footer>
 </body>
 </html>
