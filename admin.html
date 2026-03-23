@@ -340,24 +340,41 @@ async function loadLeads() {
     if (res.status === 401) { wrap.innerHTML = '<div class="empty">Session expired. Reload page.</div>'; return; }
     const rows = await res.json();
     if (!rows.length) { wrap.innerHTML = '<div class="empty">No leads yet.</div>'; return; }
-    wrap.innerHTML = '<table><thead><tr><th>Contact</th><th>Source</th><th>Date</th><th>Action</th></tr></thead><tbody>' +
-      rows.map(l => `<tr>
-        <td class="bold">${l.email}</td>
-        <td><span class="tag">${l.source||'—'}</span></td>
-        <td class="muted">${(l.receivedAt||'').slice(0,10)}</td>
-        <td>
-          ${(l.source||'').includes('Contacted') ? '<span style="color:#4b5563;font-size:12px;">✅ Contacted</span>' :
-            `<button class="action-btn btn-blue" onclick="sendDM('${l.email}')">📨 Send DM</button>`}
-        </td>
-      </tr>`).join('') + '</tbody></table>';
+    wrap.innerHTML = '<table><thead><tr><th>Contact</th><th>Source</th><th>Date</th><th>Outreach</th></tr></thead><tbody>' +
+      rows.map(l => {
+        const contacted = (l.source||'').includes('Contacted');
+        return `<tr>
+          <td class="bold">${l.email}</td>
+          <td><span class="tag">${(l.source||'—').replace(/\s*\(Contacted:[^)]+\)/g,'')}</span></td>
+          <td class="muted">${(l.receivedAt||'').slice(0,10)}</td>
+          <td>
+            ${contacted
+              ? '<span style="color:#10b981;font-size:12px;font-weight:700;">✅ Contacted</span>'
+              : `<div class="action-row">
+                  <button class="action-btn btn-blue" onclick="sendDM('${l.email}','claim')">🌾 Claim DM</button>
+                  <button class="action-btn btn-blue" onclick="sendDM('${l.email}','growth')">⚡ Growth DM</button>
+                  <button class="action-btn btn-blue" onclick="sendDM('${l.email}','republic')">🏛️ Republic DM</button>
+                  <button class="action-btn" style="background:#1e1e2e;border:1px solid #2a2a3a;color:#9ca3af;" onclick="sendDMCustom('${l.email}')">✏️ Custom</button>
+                </div>`
+            }
+          </td>
+        </tr>`;
+      }).join('') + '</tbody></table>';
   } catch { wrap.innerHTML = '<div class="empty">Error loading leads.</div>'; }
 }
 
-async function sendDM(email) {
-  const msg = prompt(`Send DM to ${email}:`, `Hey — you showed interest in Wheat Community. We're running a founders-only WHC airdrop. Here's your claim link:\nhttps://wheatcoin-community-production.up.railway.app/claim-whc`);
+async function sendDM(email, template) {
+  const labels = { claim:'🌾 WHC Claim DM', growth:'⚡ Builder Growth DM', republic:'🏛️ Republic DM' };
+  if (!confirm(`Send "${labels[template]}" to ${email}?`)) return;
+  const res = await fetch('/api/leads/outreach', { method:'POST', headers: authHeaders(), body: JSON.stringify({ email, template }) });
+  if (res.ok) { alert(`✅ DM sent (${template} template)`); loadLeads(); } else { alert('Failed to send DM.'); }
+}
+
+async function sendDMCustom(email) {
+  const msg = prompt(`Custom DM to ${email}:`, 'Hey — thanks for checking out Wheat Community. Here\'s something that might interest you:');
   if (!msg) return;
-  const res = await fetch('/api/leads/outreach', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({email, message: msg}) });
-  if (res.ok) { alert('DM sent!'); loadLeads(); } else { alert('Failed to send DM.'); }
+  const res = await fetch('/api/leads/outreach', { method:'POST', headers: authHeaders(), body: JSON.stringify({ email, message: msg }) });
+  if (res.ok) { alert('✅ Custom DM sent'); loadLeads(); } else { alert('Failed to send DM.'); }
 }
 
 const load = { claims: loadClaims, spotlight: loadSpotlight, orders: loadOrders, products: loadProducts, leads: loadLeads };

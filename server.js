@@ -322,21 +322,35 @@ const server = http.createServer(async (req, res) => {
 
   
   if (req.method === 'POST' && url === '/api/leads/outreach') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     try {
-      const { email, message } = await parseBody(req);
+      const { email, message, template } = await parseBody(req);
+      const templates = {
+        claim: "Hey — you showed interest in Wheat Community. We're running a proof-first WHC contribution system. If you've completed a mission or want to join, here's the claim / treasury page:\nhttps://wheatcoin-community-production.up.railway.app/claim-whc",
+        growth: "Hey — thanks for checking out Wheat Community. If you want distribution / launch support for your product, here's the Builder Growth Layer:\nhttps://wheatcoin-community-production.up.railway.app/launch",
+        republic: "Hey — quick follow-up from Wheat Community. If you want the full picture, start here: the Republic Constitution + Mission Board.\nhttps://wheatcoin-community-production.up.railway.app/constitution\nhttps://wheatcoin-community-production.up.railway.app/missions"
+      };
+      const finalMessage = (message || templates[template] || '').trim();
       
-      if (!email || !message) {
+      if (!email || !finalMessage) {
          res.writeHead(400); res.end(JSON.stringify({ error: 'email and message required' })); return;
       }
 
       // MOCK MOLTBOOK API CALL for Outreach
       // In production, this would be an https.request to Moltbook API using process.env.MOLTBOOK_API_KEY
-      console.log(`[Moltbook DM] Sending to ${email}: ${message.substring(0,50)}...`);
+      console.log(`[Moltbook DM] Sending to ${email}: ${finalMessage.substring(0,80)}...`);
       
-      // Update lead status in DB (Optional, but good practice. We might need a status column in leads table)
-      try { db.prepare("UPDATE leads SET source = source || ' (Contacted)' WHERE email = ?").run(email); } catch(e) {}
+      try { db.prepare("UPDATE leads SET source = source || ? WHERE email = ?").run(` (Contacted:${template || 'custom'})`, email); } catch(e) {}
+      sendToTelegramMessage('📨 Lead Outreach Sent', {
+        lead: email,
+        template: template || 'custom',
+        preview: finalMessage.substring(0, 120)
+      });
 
-      res.writeHead(200); res.end(JSON.stringify({ ok: true }));
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, template: template || 'custom' }));
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }
@@ -423,12 +437,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && url === '/api/claims') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     const rows = db.prepare("SELECT * FROM whc_claims ORDER BY receivedAt DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rows)); return;
   }
 
   if (req.method === 'POST' && url === '/api/claims/review') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     try {
       const { id, status, reviewer_note, tx_hash } = await parseBody(req);
       db.prepare("UPDATE whc_claims SET status = ?, reviewer_note = ?, tx_hash = ? WHERE claim_id = ?")
@@ -482,12 +504,20 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (req.method === 'GET' && url === '/api/spotlight') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     const rows = db.prepare("SELECT * FROM spotlight_applications ORDER BY receivedAt DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rows)); return;
   }
 
   if (req.method === 'POST' && url === '/api/spotlight/review') {
+    if (!checkAdminAuth(req)) {
+      res.writeHead(401, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Unauthorized' })); return;
+    }
     try {
       const { id, status, reviewer_note, activated_at, expires_at } = await parseBody(req);
       db.prepare("UPDATE spotlight_applications SET status = ?, reviewer_note = ?, activated_at = ?, expires_at = ? WHERE app_id = ?")
@@ -546,6 +576,30 @@ const server = http.createServer(async (req, res) => {
     const rows = db.prepare("SELECT * FROM orders ORDER BY receivedAt DESC").all();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify(rows)); return;
+  }
+
+  if (req.method === 'GET' && url.startsWith('/api/orders/lookup')) {
+    try {
+      const qs = new URLSearchParams(req.url.split('?')[1] || '');
+      const id = (qs.get('id') || '').trim();
+      const contact = (qs.get('contact') || '').trim().toLowerCase();
+      if (!id && !contact) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'id or contact required' })); return;
+      }
+      let rows = [];
+      if (id) {
+        const row = db.prepare("SELECT id, product, plan, price, paymentMethod, status, receivedAt FROM orders WHERE id = ?").get(id);
+        rows = row ? [row] : [];
+      } else {
+        rows = db.prepare("SELECT id, product, plan, price, paymentMethod, status, receivedAt FROM orders WHERE lower(contact) = ? ORDER BY receivedAt DESC LIMIT 10").all(contact);
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, rows })); return;
+    } catch (e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message })); return;
+    }
   }
 
   if (req.method === 'POST' && url === '/api/orders/update') {
