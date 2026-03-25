@@ -1,0 +1,36 @@
+{
+  "slug": "founder-ops",
+  "name": "Solo Founder Ops Kit",
+  "priceUsd": 4.99,
+  "installMethod": "clawhub-batch",
+  "skills": [
+    {
+      "slug": "gog",
+      "name": "Google Workspace (Gog)"
+    },
+    {
+      "slug": "himalaya",
+      "name": "Himalaya"
+    },
+    {
+      "slug": "obsidian-notesmd-cli",
+      "name": "Obsidian"
+    },
+    {
+      "slug": "markdown-converter",
+      "name": "Markdown Converter"
+    },
+    {
+      "slug": "agent-browser",
+      "name": "Agent Browser"
+    },
+    {
+      "slug": "weather",
+      "name": "Weather"
+    },
+    {
+      "slug": "find-skills",
+      "name": "Find Skills"
+    }
+  ]
+}

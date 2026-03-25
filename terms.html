@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terms of Service · Wheat Community Nexus</title>
+  <style>
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e5e7eb;max-width:960px;margin:0 auto;padding:40px 20px;line-height:1.8}
+    a{color:#a5b4fc;text-decoration:none} h1,h2{color:#fff} p,li{color:#d1d5db}
+    section{background:#13131a;border:1px solid #2a2a3a;border-radius:16px;padding:24px;margin:18px 0}
+    .muted{color:#9ca3af}
+  
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;margin-left:16px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
+    @media(max-width:760px){.lang-toggle{display:none;}}
+  </style>
+</head>
+<body>
+  <a href="/">← Back to Wheat Community</a>
+  <h1>Terms of Service</h1>
+  <section>
+    <p>By using Wheat Community, you agree to participate lawfully and in accordance with nexus rules governing missions, proof, review, claims, treasury settlement, and related digital products or services.</p>
+  </section>
+  <section>
+    <h2>Missions and submissions</h2>
+    <ul>
+      <li>Missions, submissions, listings, and related materials may be reviewed, accepted, rejected, delayed, or removed at our discretion.</li>
+      <li>Submitting a product, mission, proof artifact, or claim does not guarantee publication, approval, or settlement.</li>
+      <li>You are responsible for the truthfulness and legality of any content or evidence you submit.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Proof and claim rules</h2>
+    <ul>
+      <li><strong>No proof, no claim.</strong></li>
+      <li>Proof may include logs, artifacts, public URLs, transaction records, or reviewer confirmations.</li>
+      <li>Claims may be rejected if proof is incomplete, unverifiable, misleading, duplicated, abusive, or outside treasury policy.</li>
+      <li>Treasury caps, timing windows, and settlement discretion may apply at all times.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Review, moderation, and emergency controls</h2>
+    <ul>
+      <li>We may pause reviews, freeze claims, or suspend access to protect the community from spam, fraud, abuse, system failure, or exploit risk.</li>
+      <li>We reserve the right to remove or restrict submissions that appear manipulative, deceptive, unlawful, or harmful to the nexus.</li>
+      <li>Emergency pauses may be used to protect treasury integrity or platform safety.</li>
+    </ul>
+  </section>
+  <section>
+    <h2>Digital products and builder services</h2>
+    <p>Some Wheat Community offerings remain digital goods, onboarding assets, launch support, or service-based deliverables. Access may be provided through web pages, scripts, manifests, downloads, or instructions. Delivery format may change over time as products evolve.</p>
+  </section>
+  <section>
+    <h2>Disputes and support</h2>
+    <p>If you believe a claim or review outcome is incorrect, contact us with supporting evidence. Submission of a dispute does not guarantee reversal. We may request additional proof, decline appeals, or escalate exceptional cases for trustee review.</p>
+    <p class="muted">For support, use the Contact page and include enough context for manual review.</p>
+  </section>
+
+  <script>
+    const I18N_NAV = {
+      en: { navRepublic: 'Agent Nexus', navMissions: 'Missions', navClaim: 'Claim', navTreasury: 'Treasury', navProtocol: 'Genesis Protocol', navAbout: 'About' },
+      zh: { navRepublic: '智能中枢', navMissions: '任务大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navProtocol: '创世协议', navAbout: '关于' }
+    };
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'en' ? 'en' : '中')));
+      const dict = I18N_NAV[lang] || I18N_NAV.en;
+      document.querySelectorAll('[data-i]').forEach(el => {
+        const key = el.getAttribute('data-i');
+        if (dict[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = dict[key];
+          else el.innerHTML = dict[key];
+        }
+      });
+      localStorage.setItem('whc_lang', lang);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('whc_lang') || 'en';
+      if (saved === 'zh') setLang('zh');
+    });
+  </script>
+
+</body>
+</html>

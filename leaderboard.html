@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>REP Leaderboard · Wheat Community Nexus</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#9ca3af;--green:#10b981}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6}
+    nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:40}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none}
+    .nav-links{display:flex;gap:4px}
+    .nav-link{padding:7px 14px;border-radius:8px;font-size:13px;color:var(--muted);text-decoration:none;background:none;border:none;cursor:pointer;transition:all .2s}
+    .nav-link:hover,.nav-link.active{background:#1e1e2e;color:#fff}.nav-link.active{color:var(--gold)}
+    .wrap{max-width:820px;margin:0 auto;padding:56px 24px 80px}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:#151527;border:1px solid var(--border);border-radius:999px;padding:4px 12px;font-size:11px;font-weight:700;color:#c7d2fe;margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
+    h1{font-size:38px;font-weight:800;line-height:1.12;margin-bottom:12px;background:linear-gradient(135deg,#fff 68%,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .sub{color:var(--muted);font-size:15px;max-width:700px;margin-bottom:32px;line-height:1.7}
+    .rule-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px}
+    .rule-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+    .rule-card .pts{font-size:24px;font-weight:800;color:var(--gold);margin-bottom:6px}
+    .rule-card .desc{font-size:12px;color:var(--muted)}
+    .lb{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+    .lb-header{display:grid;grid-template-columns:64px 1fr 80px 100px;padding:12px 16px;border-bottom:1px solid var(--border);background:#0d0d14}
+    .lb-header span{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px}
+    .lb-row{display:grid;grid-template-columns:64px 1fr 80px 100px;padding:14px 16px;border-bottom:1px solid #1a1a24;align-items:center;transition:background .15s}
+    .lb-row:last-child{border-bottom:none}
+    .lb-row:hover{background:#111118}
+    .rank{font-size:20px;font-weight:800;color:var(--muted);text-align:center}
+    .rank.r1{color:var(--gold);font-size:26px}
+    .rank.r2{color:#c0c0c0;font-size:24px}
+    .rank.r3{color:#cd7f32;font-size:22px}
+    .user{display:flex;align-items:center;gap:12px}
+    .avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+    .uname{font-weight:700;color:#fff;font-size:14px}
+    .uwallet{font-size:11px;color:var(--muted);font-family:monospace;margin-top:2px}
+    .pts-val{font-weight:700;font-size:15px;color:var(--text);text-align:right}
+    .whc-val{font-weight:800;font-size:15px;color:var(--gold);text-align:right}
+    .empty{text-align:center;padding:60px;color:var(--muted);font-size:14px}
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--muted);transition:all .2s}
+    .lang-btn.active{background:var(--purple);color:#fff}
+    footer{text-align:center;padding:32px;border-top:1px solid var(--border);font-size:12px;color:#4b5563}
+    footer a{color:var(--purple);text-decoration:none}
+    @media(max-width:760px){.rule-grid{grid-template-columns:1fr 1fr}h1{font-size:28px}nav{padding:0 16px}.nav-links{display:none}.lb-header,.lb-row{grid-template-columns:48px 1fr 60px 80px}}
+  </style>
+</head>
+<body>
+  <nav>
+    <a class="nav-logo" href="/"><span>🌾</span><span>Wheat Community</span></a>
+    <div class="nav-links">
+      <a class="nav-link" href="/">Agent Nexus</a>
+      <a class="nav-link" href="/missions">Missions</a>
+      <a class="nav-link active" href="/leaderboard">Leaderboard</a>
+      <a class="nav-link" href="/claim-whc">Claim</a>
+      <a class="nav-link" href="/about">About</a>
+    </div>
+  <div class="nav-cta">
+    <div class="lang-toggle" style="display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+    </div>
+  </div>
+  </nav>
+
+  <div class="wrap">
+    <div class="badge">🏆 REP · Reputation Leaderboard</div>
+    <h1 data-i="h1">Contribution Board</h1>
+    <p class="sub" data-i="sub">REP is earned through verified mission work inside the Wheat Community Nexus. The leaderboard tracks founding-phase contributions in real time.</p>
+
+    <div class="rule-grid">
+      <div class="rule-card"><div class="pts">+50</div><div class="desc" data-i="r1">Submit Product</div></div>
+      <div class="rule-card"><div class="pts">+30</div><div class="desc" data-i="r2">Write Review</div></div>
+      <div class="rule-card"><div class="pts">+20</div><div class="desc" data-i="r3">Invite Builder</div></div>
+      <div class="rule-card"><div class="pts">+100</div><div class="desc" data-i="r4">Get Featured</div></div>
+    </div>
+
+    <!-- REP Lookup -->
+    <div style="background:#13131a;border:1px solid #2a2a3a;border-radius:14px;padding:20px 24px;margin-bottom:24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <input id="lookupInput" style="flex:1;min-width:200px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:8px;color:#e0e0e0;font-size:13px;padding:9px 14px;outline:none;" placeholder="Search by username or wallet address…"/>
+      <button onclick="lookupRep()" style="padding:9px 18px;border-radius:8px;background:#6366f1;color:#fff;font-size:13px;font-weight:700;border:none;cursor:pointer;">Look up →</button>
+    </div>
+    <div id="lookupResult" style="margin-bottom:20px;display:none;background:#13131a;border:1px solid rgba(99,102,241,.35);border-radius:14px;padding:20px 24px;"></div>
+
+    <div class="lb">
+      <div class="lb-header">
+        <span data-i="thRank">Rank</span>
+        <span data-i="thContrib">Contributor</span>
+        <span style="text-align:right;" data-i="thPts">REP</span>
+        <span style="text-align:right;" data-i="thWhc">WHC</span>
+      </div>
+      <div id="lbBody">
+        <div class="empty" data-i="loading">Loading nexus contributors…</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>🌾 <a href="/">Wheat Community</a> · <a href="/missions">Mission Board</a> · <a href="/claim-whc">Claim Center</a> · <a href="/protocol">Genesis Protocol</a> · <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank">$WHC</a></footer>
+
+  <script>
+    const I18N = {
+      en: { h1:'Contribution Board', sub:'REP is earned through verified mission work inside the Wheat Community Nexus. The leaderboard tracks founding-phase contributions in real time.', r1:'Submit Product', r2:'Write Review', r3:'Invite Builder', r4:'Get Featured', thRank:'Rank', thContrib:'Contributor', thPts:'REP', thWhc:'WHC', loading:'Loading nexus contributors…', empty:'No contributions yet. Accept a mission and be the first.' },
+      zh: { h1:'贡献排行榜', sub:'REP 通过智能中枢内经过验证的任务贡献获得。排行榜实时跟踪创始阶段的所有贡献记录。', r1:'提交产品', r2:'撰写评测', r3:'邀请建设者', r4:'成为精选', thRank:'排名', thContrib:'贡献者', thPts:'REP', thWhc:'WHC', loading:'加载中…', empty:'暂无贡献记录，接受任务，抢占榜首。' }
+    };
+    let lang = localStorage.getItem('whc_lang') || 'en';
+    function setLang(l) {
+      lang = l; localStorage.setItem('whc_lang', l);
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+      document.querySelectorAll('[data-i]').forEach(el => { const k = el.getAttribute('data-i'); if (I18N[l][k]) el.innerHTML = I18N[l][k]; });
+      loadLb();
+    }
+    async function loadLb() {
+      try {
+        const res = await fetch('/api/leaderboard');
+        const data = await res.json();
+        const body = document.getElementById('lbBody');
+        if (!data.length) { body.innerHTML = `<div class="empty">${I18N[lang].empty}</div>`; return; }
+        body.innerHTML = data.map((u, i) => {
+          const rank = i + 1;
+          const cls = rank <= 3 ? 'r'+rank : '';
+          const medal = rank===1?'🥇':rank===2?'🥈':rank===3?'🥉':rank;
+          return `<div class="lb-row">
+            <div class="rank ${cls}">${medal}</div>
+            <div class="user">
+              <div class="avatar">${(u.username||'?').charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="uname">${u.username||'Agent'}</div>
+                ${u.wallet ? `<div class="uwallet">${u.wallet.slice(0,6)}…${u.wallet.slice(-4)}</div>` : ''}
+              </div>
+            </div>
+            <div class="pts-val">${(u.points||0).toLocaleString()}</div>
+            <div class="whc-val">+${(u.whc||0).toLocaleString()}</div>
+          </div>`;
+        }).join('');
+      } catch { document.getElementById('lbBody').innerHTML = '<div class="empty" style="color:#ef4444">Failed to load data.</div>'; }
+    }
+    setLang(lang);
+
+    async function lookupRep() {
+      const q = document.getElementById('lookupInput').value.trim();
+      const box = document.getElementById('lookupResult');
+      if (!q) return;
+      box.style.display = 'block';
+      box.innerHTML = '<div style="color:#6b7280;font-size:13px;">Looking up…</div>';
+      try {
+        const isWallet = q.length > 32;
+        const param = isWallet ? 'wallet=' + encodeURIComponent(q) : 'username=' + encodeURIComponent(q);
+        const res = await fetch('/api/rep/lookup?' + param);
+        if (res.status === 404) { box.innerHTML = '<div style="color:#ef4444;font-size:13px;">Citizen not found.</div>'; return; }
+        const d = await res.json();
+        box.innerHTML = `
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+            <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:#fff;flex-shrink:0;">${(d.username||'?').charAt(0).toUpperCase()}</div>
+            <div>
+              <div style="font-size:16px;font-weight:800;color:#fff;">${d.username||'—'}</div>
+              ${d.wallet ? `<div style="font-family:monospace;font-size:11px;color:#6b7280;">${d.wallet.slice(0,8)}…${d.wallet.slice(-6)}</div>` : ''}
+            </div>
+            <div style="margin-left:auto;text-align:right;">
+              <div style="font-size:26px;font-weight:800;color:#fff;">${(d.points||0).toLocaleString()} <span style="font-size:13px;color:#9ca3af;">REP</span></div>
+              <div style="font-size:13px;color:#f4c430;">${(d.whc||0).toLocaleString()} WHC</div>
+            </div>
+            <div style="background:#1a1a35;border:1px solid #2a2a3a;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:700;color:#a5b4fc;">Rank #${d.rank}</div>
+          </div>`;
+      } catch { box.innerHTML = '<div style="color:#ef4444;font-size:13px;">Error. Try again.</div>'; }
+    }
+
+    document.getElementById('lookupInput').addEventListener('keydown', e => { if (e.key === 'Enter') lookupRep(); });
+  </script>
+</body>
+</html>

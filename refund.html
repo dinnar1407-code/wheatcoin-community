@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Refund Policy · Wheat Community</title><style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#0a0a0f;color:#e5e7eb;max-width:900px;margin:0 auto;padding:40px 20px;line-height:1.8}a{color:#a5b4fc;text-decoration:none}h1,h2{color:#fff}section{background:#13131a;border:1px solid #2a2a3a;border-radius:16px;padding:24px;margin:18px 0}
+    .lang-toggle{display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;margin-left:16px;}
+    .lang-btn{padding:4px 10px;border-radius:6px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#6b7280;transition:all .2s;}
+    .lang-btn.active{background:#6366f1;color:#fff;}
+    @media(max-width:760px){.lang-toggle{display:none;}}
+  </style></head><body><a href="/">← Back to Wheat Community</a><h1>Refund Policy</h1><section><p>Because Wheat Community primarily sells digital products and digital delivery services, refunds are generally reviewed on a case-by-case basis.</p></section><section><h2>Eligible cases</h2><ul><li>You were charged but did not receive access or delivery</li><li>The purchased digital asset was materially different from what was described</li><li>There was a duplicate or accidental charge</li></ul></section><section><h2>How to request a refund</h2><p>Please email <a href="mailto:terry.qin@dinnar.com">terry.qin@dinnar.com</a> with your order details and reason for the request within 7 days of purchase.</p></section><section><h2>Resolution</h2><p>If approved, refunds will be returned to the original payment method. Response times may vary depending on payment processor timelines.</p></section>
+  <script>
+    const I18N_NAV = {
+      en: { navRepublic: 'Agent Nexus', navMissions: 'Missions', navClaim: 'Claim', navTreasury: 'Treasury', navProtocol: 'Genesis Protocol', navAbout: 'About' },
+      zh: { navRepublic: '智能中枢', navMissions: '任务大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navProtocol: '创世协议', navAbout: '关于' }
+    };
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'en' ? 'en' : '中')));
+      const dict = I18N_NAV[lang] || I18N_NAV.en;
+      document.querySelectorAll('[data-i]').forEach(el => {
+        const key = el.getAttribute('data-i');
+        if (dict[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = dict[key];
+          else el.innerHTML = dict[key];
+        }
+      });
+      localStorage.setItem('whc_lang', lang);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('whc_lang') || 'en';
+      if (saved === 'zh') setLang('zh');
+    });
+  </script>
+
+</body></html>
