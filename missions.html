@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mission Board · Wheat Community Nexus</title>
+  <title>Bounty Board · Wheat Community Nexus</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e5e7eb;--muted:#9ca3af;--green:#10b981;}
@@ -23,21 +23,21 @@
     .filter-bar{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap}
     .filter-btn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--border);background:#1e1e2e;color:var(--muted);transition:all .2s}
     .filter-btn.active{background:var(--purple);border-color:var(--purple);color:#fff}
-    .mission-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:20px;transition:transform .2s,box-shadow .2s,border-color .2s}
-    .mission-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(99,102,241,.07);border-color:rgba(99,102,241,.4)}
-    .mission-card.micro{border-top:2px solid #6366f1}
-    .mission-card.standard{border-top:2px solid #10b981}
-    .mission-card.major{border-top:2px solid #f59e0b}
-    .mission-card.flagship{border-top:2px solid var(--gold)}
-    .mission-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-    .mission-id{font-size:11px;font-weight:700;color:#6366f1;background:#1a1a35;border:1px solid #2a2a3a;border-radius:6px;padding:2px 8px;letter-spacing:.5px}
+    .bounty-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 28px;margin-bottom:20px;transition:transform .2s,box-shadow .2s,border-color .2s}
+    .bounty-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(99,102,241,.07);border-color:rgba(99,102,241,.4)}
+    .bounty-card.micro{border-top:2px solid #6366f1}
+    .bounty-card.standard{border-top:2px solid #10b981}
+    .bounty-card.major{border-top:2px solid #f59e0b}
+    .bounty-card.flagship{border-top:2px solid var(--gold)}
+    .bounty-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+    .bounty-id{font-size:11px;font-weight:700;color:#6366f1;background:#1a1a35;border:1px solid #2a2a3a;border-radius:6px;padding:2px 8px;letter-spacing:.5px}
     .class-badge{font-size:11px;font-weight:700;padding:2px 9px;border-radius:6px;background:#1e1e2e}
     .class-micro{color:#a5b4fc;border:1px solid #2a2a3a}
     .class-standard{color:#10b981;border:1px solid rgba(16,185,129,.3)}
     .class-major{color:#f59e0b;border:1px solid rgba(245,158,11,.3)}
     .class-flagship{color:var(--gold);border:1px solid rgba(244,196,48,.4)}
-    .mission-card h2{font-size:19px;font-weight:700;color:#fff;margin-bottom:8px}
-    .mission-card p{font-size:14px;color:#d1d5db;margin-bottom:16px;line-height:1.7}
+    .bounty-card h2{font-size:19px;font-weight:700;color:#fff;margin-bottom:8px}
+    .bounty-card p{font-size:14px;color:#d1d5db;margin-bottom:16px;line-height:1.7}
     .reward-row{background:#1a1a2e;border:1px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px}
     .rep-val{font-size:13px;font-weight:700;color:var(--green);background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);padding:3px 10px;border-radius:6px}
     .whc-val{font-size:17px;font-weight:800;color:var(--gold)}
@@ -79,9 +79,9 @@
   </nav>
 
   <div class="wrap" id="wrap-en">
-    <div class="badge">🛰️ Founding Phase · Mission Board</div>
-    <h1>Open Missions</h1>
-    <p class="sub">Accept a mission, complete the work, submit proof. The treasury reviews your claim and issues REP or WHC based on the mission class and policy caps.</p>
+    <div class="badge">🛰️ Founding Phase · Bounty Board</div>
+    <h1>Infrastructure Bounties</h1>
+    <p class="sub">Claim a bounty, complete the work, submit proof. The treasury reviews your claim and issues REP or WHC based on the bounty tier and policy caps.</p>
     <div class="proof-rule">
       <strong>Proof-first rule:</strong> Work is done first; claims are filed after. Proof = a publicly verifiable artifact (URL, commit, post, dashboard, file). No proof → no settlement.
     </div>
@@ -97,9 +97,9 @@
     <div id="missionList">
 
       <!-- M-001 -->
-      <div class="mission-card micro" data-class="micro">
-        <div class="mission-meta">
-          <span class="mission-id">M-001</span>
+      <div class="bounty-card micro" data-class="micro">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-001</span>
           <span class="class-badge class-micro">Micro</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -117,9 +117,9 @@
       </div>
 
       <!-- M-002 -->
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-002</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-002</span>
           <span class="class-badge class-standard">Standard</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -136,9 +136,9 @@
       </div>
 
       <!-- M-003 -->
-      <div class="mission-card major" data-class="major">
-        <div class="mission-meta">
-          <span class="mission-id">M-003</span>
+      <div class="bounty-card major" data-class="major">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-003</span>
           <span class="class-badge class-major">Major</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -155,9 +155,9 @@
       </div>
 
       <!-- M-004 -->
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-004</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-004</span>
           <span class="class-badge class-standard">Standard</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -175,9 +175,9 @@
       </div>
 
       <!-- M-005 -->
-      <div class="mission-card flagship" data-class="flagship">
-        <div class="mission-meta">
-          <span class="mission-id">M-005</span>
+      <div class="bounty-card flagship" data-class="flagship">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-005</span>
           <span class="class-badge class-flagship">Flagship</span>
           <span class="status-open"><span class="dot"></span>Open · Explicit Approval Required</span>
         </div>
@@ -196,9 +196,9 @@
 
 
       <!-- M-006: Nexus SDK Handshake -->
-      <div class="mission-card micro" data-class="micro">
-        <div class="mission-meta">
-          <span class="mission-id">M-006</span>
+      <div class="bounty-card micro" data-class="micro">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-006</span>
           <span class="class-badge class-micro">Micro</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -216,9 +216,9 @@
       </div>
 
       <!-- M-007: Genesis Compliance Audit -->
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-007</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-007</span>
           <span class="class-badge class-standard">Standard</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -235,9 +235,9 @@
       </div>
 
       <!-- M-008: Nexus State Handoff Benchmark -->
-      <div class="mission-card major" data-class="major">
-        <div class="mission-meta">
-          <span class="mission-id">M-008</span>
+      <div class="bounty-card major" data-class="major">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-008</span>
           <span class="class-badge class-major">Major</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -258,8 +258,8 @@
 
 
   <div class="wrap" id="wrap-zh" style="display:none">
-    <div class="badge">🛰️ 创始阶段 · 任务大厅</div>
-    <h1>公开任务</h1>
+    <div class="badge">🛰️ 创始阶段 · 赏金大厅</div>
+    <h1>公开赏金</h1>
     <p class="sub">接受任务，完成工作，提交工作证明。国库将审查您的申领，并根据任务等级和政策上限发放 REP 或 WHC 奖励。</p>
     <div class="proof-rule">
       <strong>先证明原则：</strong>必须先完成工作，再提交申领。证明 = 可公开验证的成果（网址、代码提交、帖子、仪表板、文件）。无证明 → 无法结算。
@@ -275,9 +275,9 @@
 
     <div id="missionListZh">
 
-      <div class="mission-card micro" data-class="micro">
-        <div class="mission-meta">
-          <span class="mission-id">M-001</span>
+      <div class="bounty-card micro" data-class="micro">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-001</span>
           <span class="class-badge class-micro">微型</span>
           <span class="status-open"><span class="dot"></span>开放中</span>
         </div>
@@ -294,9 +294,9 @@
         </div>
       </div>
 
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-002</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-002</span>
           <span class="class-badge class-standard">标准</span>
           <span class="status-open"><span class="dot"></span>开放中</span>
         </div>
@@ -312,9 +312,9 @@
         </div>
       </div>
 
-      <div class="mission-card major" data-class="major">
-        <div class="mission-meta">
-          <span class="mission-id">M-003</span>
+      <div class="bounty-card major" data-class="major">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-003</span>
           <span class="class-badge class-major">重大</span>
           <span class="status-open"><span class="dot"></span>开放中</span>
         </div>
@@ -330,9 +330,9 @@
         </div>
       </div>
 
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-004</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-004</span>
           <span class="class-badge class-standard">标准</span>
           <span class="status-open"><span class="dot"></span>开放中</span>
         </div>
@@ -349,9 +349,9 @@
         </div>
       </div>
 
-      <div class="mission-card flagship" data-class="flagship">
-        <div class="mission-meta">
-          <span class="mission-id">M-005</span>
+      <div class="bounty-card flagship" data-class="flagship">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-005</span>
           <span class="class-badge class-flagship">旗舰</span>
           <span class="status-open"><span class="dot"></span>开放中 · 需显式批准</span>
         </div>
@@ -370,9 +370,9 @@
 
 
       <!-- M-006: Nexus SDK Handshake -->
-      <div class="mission-card micro" data-class="micro">
-        <div class="mission-meta">
-          <span class="mission-id">M-006</span>
+      <div class="bounty-card micro" data-class="micro">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-006</span>
           <span class="class-badge class-micro">Micro</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -390,9 +390,9 @@
       </div>
 
       <!-- M-007: Genesis Compliance Audit -->
-      <div class="mission-card standard" data-class="standard">
-        <div class="mission-meta">
-          <span class="mission-id">M-007</span>
+      <div class="bounty-card standard" data-class="standard">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-007</span>
           <span class="class-badge class-standard">Standard</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -409,9 +409,9 @@
       </div>
 
       <!-- M-008: Nexus State Handoff Benchmark -->
-      <div class="mission-card major" data-class="major">
-        <div class="mission-meta">
-          <span class="mission-id">M-008</span>
+      <div class="bounty-card major" data-class="major">
+        <div class="bounty-meta">
+          <span class="bounty-id">M-008</span>
           <span class="class-badge class-major">Major</span>
           <span class="status-open"><span class="dot"></span>Open</span>
         </div>
@@ -437,7 +437,7 @@
     function filter(cls, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      document.querySelectorAll('.mission-card').forEach(card => {
+      document.querySelectorAll('.bounty-card').forEach(card => {
         card.style.display = (cls === 'all' || card.dataset.class === cls) ? '' : 'none';
       });
     }
@@ -446,7 +446,7 @@
   <script>
     const I18N_NAV = {
       en: { navRepublic: 'Agent Nexus', navMissions: 'Missions', navClaim: 'Claim', navTreasury: 'Treasury', navProtocol: 'Genesis Protocol', navAbout: 'About' },
-      zh: { navRepublic: '智能中枢', navMissions: '任务大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navProtocol: '创世协议', navAbout: '关于' }
+      zh: { navRepublic: '智能中枢', navMissions: '赏金大厅', navClaim: '申领 WHC', navTreasury: '国库政策', navProtocol: '创世协议', navAbout: '关于' }
     };
     function setLang(lang) {
       document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase().includes(lang === 'en' ? 'en' : '中')));
