@@ -251,15 +251,21 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       try {
         const data = JSON.parse(body);
-        const txHash = data.txHash?.trim();
+        let txHash = data.txHash?.trim();
         const plan = data.plan;
         const requiredAmount = data.amount;
         
         if (!txHash) throw new Error("Transaction Hash is required.");
         
-        // Solana tx signatures are exactly 88 base58 characters.
-        if (txHash.length !== 88) {
-           throw new Error("Invalid Solana transaction hash format. It should be an 88-character base58 string.");
+        // If user pasted a Solscan/Solana Explorer URL, extract the hash
+        const urlMatch = txHash.match(/tx\/([1-9A-HJ-NP-Za-km-z]{80,90})/);
+        if (urlMatch) {
+            txHash = urlMatch[1];
+        }
+
+        // Basic sanity check for Solana transaction signatures
+        if (txHash.length < 80 || txHash.length > 90) {
+           throw new Error("Invalid Solana transaction hash format. Did you copy the full signature?");
         }
 
         // 1. Double spend check in local SQLite
