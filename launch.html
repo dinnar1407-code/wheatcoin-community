@@ -415,7 +415,8 @@ function submitForm() {
   const plan = PLANS[selectedPlan];
   if (selectedPayment==='whc') {
     document.getElementById('modalAmountWHC').textContent = plan.whcDiscount.toLocaleString();
-    document.getElementById('modalOriginalPrice').textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
+    const origPriceEl = document.getElementById('modalOriginalPrice');
+    if (origPriceEl) origPriceEl.textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
     document.getElementById('payModalWHC').classList.add('show');
   } else {
     const btn = document.getElementById('submitBtn');
@@ -538,11 +539,13 @@ window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPay
     const desc = document.getElementById('product') ? document.getElementById('product').value : '';
     const audience = document.getElementById('audience') ? document.getElementById('audience').value : '';
     const contact = document.getElementById('contact') ? document.getElementById('contact').value : '';
+    
+    const plan = PLANS[selectedPlan];
 
     const payload = {
       txHash: txHash,
-      plan: currentPlan,
-      amount: whcPrice,
+      plan: selectedPlan,
+      amount: plan.whcDiscount,
       productDesc: desc,
       targetAudience: audience,
       contact: contact
@@ -561,8 +564,8 @@ window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPay
         btn.style.background = "#10b981";
         btn.style.borderColor = "#10b981";
         setTimeout(() => {
-          closeCryptoModal();
-          alert("Success! Your order is in the Agent Queue. You will receive an execution report via email shortly.");
+          closeModal('whc');
+          window.location.href = `/launch?success=true&order_id=WHC-${data.orderId}`;
         }, 2000);
       } else {
         alert("Verification Failed: " + data.error);
