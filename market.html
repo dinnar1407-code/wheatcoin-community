@@ -44,8 +44,8 @@
 
   <div class="header-container" id="wrap-en">
       <div class="badge">⚡ Wheat Agent Ecosystem · Builder Tools</div>
-      <h1>Agent Asset Market</h1>
-      <p class="subtitle">Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry.</p>
+      <h1 id="market-title">Agent Asset Market</h1>
+      <p class="subtitle" id="market-subtitle">Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry.</p>
   </div>
 
 
@@ -91,6 +91,18 @@
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-cold-outreach-pro.wheat.yaml"
   ];
 
+
+    // Basic i18n for static parts of market.html
+    const MARKET_I18N = {
+        en: {
+            title: "Agent Asset Market",
+            subtitle: "Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry."
+        },
+        zh: {
+            title: "Agent 资产市场",
+            subtitle: "将生产级 AI 智能体直接部署到你的工作流中。每一个数字资产均由 Wheat Community 注册中心完成认证、版本控制与分发。"
+        }
+    };
   async function loadWheatMarket() {
       const container = document.getElementById('wheat-market-container');
       if(!container) return;
@@ -109,6 +121,10 @@
               const response = await fetch(url);
               const yamlText = await response.text();
               const asset = jsyaml.load(yamlText);
+              
+              // Handle optional translation mappings inside YAML or fallback
+              const desc = (asset.description && typeof asset.description === 'object') ? (asset.description[lang] || asset.description.en || asset.description.zh) : asset.description;
+              const name = (asset.name && typeof asset.name === 'object') ? (asset.name[lang] || asset.name.en || asset.name.zh) : asset.name;
 
               const card = `
                   <div style="border: 1px solid #2a2a3a; border-radius: 16px; padding: 28px; background: #13131a; color: #fff; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#6366f1'; this.style.boxShadow='0 10px 40px rgba(99,102,241,0.1)'" onmouseout="this.style.transform='none'; this.style.borderColor='#2a2a3a'; this.style.boxShadow='none'">
@@ -204,6 +220,11 @@
     if(typeof render === 'function') render();
     if(typeof loadProducts === 'function') loadProducts();
     if(typeof loadFeatured === 'function') loadFeatured();
+    if(typeof loadWheatMarket === 'function') loadWheatMarket();
+    if(MARKET_I18N) {
+       document.getElementById('market-title').innerText = MARKET_I18N[lang].title;
+       document.getElementById('market-subtitle').innerText = MARKET_I18N[lang].subtitle;
+    }
   }
   setTimeout(() => {
     let initLang = localStorage.getItem('whc_lang') || 'en';
