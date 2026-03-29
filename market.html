@@ -91,63 +91,53 @@
       "https://raw.githubusercontent.com/dinnar1407-code/wheat-market-registry/main/assets/wheat-cold-outreach-pro.wheat.yaml"
   ];
 
+  const MARKET_I18N = {
+      en: {
+          title: "Agent Asset Market",
+          subtitle: "Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry."
+      },
+      zh: {
+          title: "Agent 资产市场",
+          subtitle: "将生产级 AI 智能体直接部署到你的工作流中。每一个数字资产均由 Wheat Community 注册中心完成认证、版本控制与分发。"
+      }
+  };
+  
+  const ASSET_DICT = {
+     "Chronos Memory OS": {
+         en: "Upgrade your OpenClaw / Agent workspace into a sustainable three-tier memory operating system. Built-in daily logs, long-term memory, project cards, and cross-model constraints to solve context loss during multi-project execution.",
+         zh: "把 OpenClaw / Agent 工作区升级成可持续的三层记忆操作系统。内置 daily logs、长期记忆、project cards、跨模型约束与项目索引，专门解决多项目推进时的上下文丢失问题。"
+     },
+     "Wheat Deep Researcher": {
+         en: "In-depth industry research Agent. Combines AI-optimized web search with full-format document parsing to rapidly generate industry reports and competitive analysis.",
+         zh: "深度行业调研 Agent。结合 AI 优化的 web 搜索与全格式文档解析，用于快速生成行业报告与竞品分析。"
+     },
+     "Wheat Web Navigator": {
+         en: "Automated web inspection and interaction Agent. Supports headless browser control, page element scraping, automated clicks, and screenshot archiving.",
+         zh: "自动化网页巡检与交互 Agent。支持无头浏览器控制、页面元素抓取、自动化点击与截图归档。"
+     },
+     "Wheat DevOps Assistant": {
+         en: "Open-source project maintenance and code management Agent. Automatically handles GitHub Issues, code reviews, and CI/CD monitoring to reduce human maintainer burden.",
+         zh: "开源项目维护与代码管家 Agent。自动处理 GitHub Issue、代码审查、CI/CD 监控，减轻人类维护者负担。"
+     },
+     "Wheat On-Chain Sentinel": {
+         en: "24/7 monitoring of on-chain whale wallets and prediction market anomalies (e.g. Polymarket). Automatically filters noise and pushes high-value trading signals and arbitrage opportunities to designated channels.",
+         zh: "全天候监控链上巨鲸钱包与预测市场（如 Polymarket）异动，自动过滤噪音并向指定频道推送高价值交易信号与套利机会。"
+     },
+     "Wheat Social Growth Engine": {
+         en: "Social media automation Agent designed for solo-companies and Indie Hackers. Automatically unearths precise audiences, generates high-converting interactive replies, and drives automated traffic.",
+         zh: "专为一人公司与 Indie Hacker 设计的社交媒体自动运营 Agent。自动发掘精准受众、生成高转化互动回复并进行自动化引流。"
+     },
+     "Wheat Cold Outreach Pro": {
+         en: "High-conversion cold email automated Sales Development Rep (SDR). Intelligently searches prospect backgrounds and drafts highly personalized, high-response-rate B2B sales emails.",
+         zh: "高转化率冷邮件自动化销售代表 (SDR)。智能搜索潜在客户背景，撰写高度定制化、高回复率的 B2B 推销邮件。"
+     }
+  };
 
-
-    const MARKET_I18N = {
-        en: {
-            title: "Agent Asset Market",
-            subtitle: "Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry."
-        },
-        zh: {
-            title: "Agent 资产市场",
-            subtitle: "将生产级 AI 智能体直接部署到你的工作流中。每一个数字资产均由 Wheat Community 注册中心完成认证、版本控制与分发。"
-        }
-    };
-    
-    // Ad-hoc dictionary for dynamically loaded YAML items
-    const ASSET_DICT = {
-       "Chronos Memory OS": {
-           en: "Upgrade your OpenClaw / Agent workspace into a sustainable three-tier memory operating system. Built-in daily logs, long-term memory, project cards, and cross-model constraints to solve context loss during multi-project execution.",
-           zh: "把 OpenClaw / Agent 工作区升级成可持续的三层记忆操作系统。内置 daily logs、长期记忆、project cards、跨模型约束与项目索引，专门解决多项目推进时的上下文丢失问题。"
-       },
-       "Wheat Deep Researcher": {
-           en: "In-depth industry research Agent. Combines AI-optimized web search with full-format document parsing to rapidly generate industry reports and competitive analysis.",
-           zh: "深度行业调研 Agent。结合 AI 优化的 web 搜索与全格式文档解析，用于快速生成行业报告与竞品分析。"
-       },
-       "Wheat Web Navigator": {
-           en: "Automated web inspection and interaction Agent. Supports headless browser control, page element scraping, automated clicks, and screenshot archiving.",
-           zh: "自动化网页巡检与交互 Agent。支持无头浏览器控制、页面元素抓取、自动化点击与截图归档。"
-       },
-       "Wheat DevOps Assistant": {
-           en: "Open-source project maintenance and code management Agent. Automatically handles GitHub Issues, code reviews, and CI/CD monitoring to reduce human maintainer burden.",
-           zh: "开源项目维护与代码管家 Agent。自动处理 GitHub Issue、代码审查、CI/CD 监控，减轻人类维护者负担。"
-       },
-       "Wheat On-Chain Sentinel": {
-           en: "24/7 monitoring of on-chain whale wallets and prediction market anomalies (e.g. Polymarket). Automatically filters noise and pushes high-value trading signals and arbitrage opportunities to designated channels.",
-           zh: "全天候监控链上巨鲸钱包与预测市场（如 Polymarket）异动，自动过滤噪音并向指定频道推送高价值交易信号与套利机会。"
-       },
-       "Wheat Social Growth Engine": {
-           en: "Social media automation Agent designed for solo-companies and Indie Hackers. Automatically unearths precise audiences, generates high-converting interactive replies, and drives automated traffic.",
-           zh: "专为一人公司与 Indie Hacker 设计的社交媒体自动运营 Agent。自动发掘精准受众、生成高转化互动回复并进行自动化引流。"
-       },
-       "Wheat Cold Outreach Pro": {
-           en: "High-conversion cold email automated Sales Development Rep (SDR). Intelligently searches prospect backgrounds and drafts highly personalized, high-response-rate B2B sales emails.",
-           zh: "高转化率冷邮件自动化销售代表 (SDR)。智能搜索潜在客户背景，撰写高度定制化、高回复率的 B2B 推销邮件。"
-       }
-    };
-
-        en: {
-            title: "Agent Asset Market",
-            subtitle: "Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry."
-        },
-        zh: {
-            title: "Agent 资产市场",
-            subtitle: "将生产级 AI 智能体直接部署到你的工作流中。每一个数字资产均由 Wheat Community 注册中心完成认证、版本控制与分发。"
-        }
-    };
   async function loadWheatMarket() {
       const container = document.getElementById('wheat-market-container');
       if(!container) return;
+      
+      const lang = localStorage.getItem('whc_lang') || 'en';
       
       container.innerHTML = `
       <div style="background: transparent;">
@@ -196,7 +186,8 @@
           }
           grid.innerHTML = cardsHTML.join('');
       } catch (error) {
-          grid.innerHTML = '<p style="color: #ef4444; text-align:center; width:100%;">从 Registry 同步资产失败，请检查网络。</p>';
+          grid.innerHTML = '<p style="color: #ef4444; text-align:center; width:100%;">从 Registry 同步资产失败: ' + error.message + '</p>';
+          console.error(error);
       }
   }
   
