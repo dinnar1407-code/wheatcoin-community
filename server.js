@@ -274,13 +274,44 @@ const server = http.createServer(async (req, res) => {
         );
         const orderId = orderInfo.lastInsertRowid;
 
-        // 3. Simulated RPC Call (In production, replace with actual Helius/Alchemy Solana RPC)
-        // Verify destination == Treasury AND amount >= requiredAmount
-        const TREASURY_ADDRESS = '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump';
-        const isTxValid = true; // Simulating valid transaction for prototype
+        // 3. Real Solana RPC Call for On-Chain Verification
+        const TREASURY_ADDRESS = '6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK';
+        const WHC_TOKEN_MINT = '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump';
         
-        if (!isTxValid) {
-           throw new Error("Transaction not found or invalid amount on Solana blockchain.");
+        const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
+        
+        const rpcRes = await fetch(rpcUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0',
+                id: 1,
+                method: 'getTransaction',
+                params: [txHash, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }]
+            })
+        });
+        const rpcData = await rpcRes.json();
+        
+        if (!rpcData.result) {
+            throw new Error(`Transaction not found on Solana. It might still be confirming or the hash is invalid. RPC Response: ${JSON.stringify(rpcData)}`);
+        }
+        if (rpcData.result.meta?.err) {
+            throw new Error("Transaction failed on-chain.");
+        }
+
+        const meta = rpcData.result.meta;
+        let preBal = 0, postBal = 0;
+        
+        const preToken = meta.preTokenBalances.find(b => b.owner === TREASURY_ADDRESS && b.mint === WHC_TOKEN_MINT);
+        if (preToken) preBal = parseFloat(preToken.uiTokenAmount.uiAmountString);
+        
+        const postToken = meta.postTokenBalances.find(b => b.owner === TREASURY_ADDRESS && b.mint === WHC_TOKEN_MINT);
+        if (postToken) postBal = parseFloat(postToken.uiTokenAmount.uiAmountString);
+        
+        const actualAmountReceived = postBal - preBal;
+        
+        if (actualAmountReceived < requiredAmount * 0.99) { // 1% slippage/rounding tolerance
+           throw new Error(`Insufficient payment detected. Expected ${requiredAmount} WHC, but Treasury received ${actualAmountReceived.toFixed(2)} WHC. Double check the transaction details.`);
         }
 
         // 4. Mark as verified & paid
