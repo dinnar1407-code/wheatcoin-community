@@ -348,7 +348,7 @@ let selectedPlan = 'launch', selectedPayment = 'usd';
 
 function setLang(l) {
   lang = l; localStorage.setItem('launch_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'ZH')));
   document.querySelectorAll('[data-i]').forEach(el => {
     const key = el.getAttribute('data-i');
     if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
@@ -357,47 +357,17 @@ function setLang(l) {
     const key = el.getAttribute('data-i-placeholder');
     if (I18N[l][key]) el.placeholder = I18N[l][key];
   });
-  updateSummary();
-}
+  }
 
 function selectPlan(p) {
   selectedPlan = p;
   document.querySelectorAll('.plan').forEach(el => el.classList.remove('selected'));
   document.getElementById('plan-'+p).classList.add('selected');
-  updateSummary();
-}
-
-function selectPayment(type) {
-  selectedPayment = type;
-  document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected','usd'));
-  const el = document.getElementById('pay-'+type);
-  el.classList.add('selected');
-  if (type==='usd') el.classList.add('usd');
-  const btn = document.getElementById('submitBtn');
-  const tip = document.getElementById('whcTip');
-  if (type==='whc') { btn.className='btn whc-btn'; btn.innerHTML=I18N[lang].btnSubmit.replace('Pay Now','Pay WHC &'); tip.style.display='block'; }
-  else { btn.className='btn'; btn.innerHTML=I18N[lang].btnSubmit; tip.style.display='none'; }
-  updateSummary();
-}
-
-function updateSummary() {
-  const plan = PLANS[selectedPlan];
-  const amountEl = document.getElementById('summaryAmount');
-  const unitEl = document.getElementById('summaryUnit');
-  const origEl = document.getElementById('summaryOriginal');
-  if (selectedPayment==='whc') {
-    amountEl.textContent = plan.whcDiscount.toLocaleString() + ' WHC';
-    amountEl.className = 'amount whc-price';
-    unitEl.textContent = '≈ $' + (plan.price*0.6).toFixed(1);
-    origEl.style.display = 'inline';
-    origEl.textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
-  } else {
-    amountEl.textContent = '$' + plan.price;
-    amountEl.className = 'amount';
-    unitEl.textContent = 'USD';
-    origEl.style.display = 'none';
   }
-}
+
+
+
+
 
 function submitForm() {
   const product = document.getElementById('product').value.trim();
