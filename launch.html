@@ -226,33 +226,37 @@
   <div class="modal">
     <h2>🌾 Pay with $WHC</h2>
     <div class="savings-tag" data-i="savingsTag">🎉 You're saving 40%!</div>
-    <p data-i="whcModalDesc">Send $WHC on <strong>Solana</strong> to the address below, then click "I've Paid".</p>
+    <p data-i="whcModalDesc">Send $WHC on <strong>Solana</strong> to the address below, then click "Verify".</p>
     <div class="modal-amount whc" id="modalAmountWHC">350</div>
-    <div class="modal-unit">WHC · Solana <span style="color:#4b5563;font-size:11px;text-decoration:line-through;" id="modalOriginalPrice"></span></div>
-    <div class="buy-guide">
+    <div class="modal-unit" style="color:#f4c430;">$WHC · Solana Network</div>
+    
+    <div class="wallet-box" style="margin-bottom: 10px;">
+      <strong>Treasury Address (Solana):</strong>
+      <div class="wallet-addr whc-addr" onclick="copyAddr('whc')" style="font-size: 13px;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</div>
+      <div class="copy-hint" id="copyHintWHC">👆 Click to copy</div>
+    </div>
+    
+    <div style="text-align: left; margin-bottom: 20px;">
+      <label style="display: block; font-size: 12px; color: var(--muted); margin-bottom: 8px;">Paste Transaction Hash (TxHash):</label>
+      <input type="text" id="txHashInput" placeholder="e.g. 5xXy... or Solscan URL" style="width:100%; padding:12px; background:#050505; border:1px solid #3a3000; color:#fff; border-radius:8px; box-sizing:border-box;">
+    </div>
+    
+    <div class="buy-guide" style="margin-bottom: 20px;">
       <div class="buy-guide-title" data-i="guideTitle">📖 Don't have $WHC? 3 steps:</div>
       <div class="buy-guide-steps">
-        <div data-i="step1">① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a></div>
-        <div data-i="step2">② Fund with SOL (Coinbase / Binance → Phantom)</div>
-        <div data-i="step3">③ Swap SOL → $WHC on pump.fun 👇</div>
+        <span data-i="step1">① Install <a href="https://phantom.app/" target="_blank" style="color:#a5b4fc;">Phantom Wallet</a></span><br/>
+        <span data-i="step2">② Fund with SOL (Coinbase / Binance → Phantom)</span><br/>
+        <span data-i="step3">③ Swap SOL → $WHC on pump.fun 👇</span>
       </div>
-      <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" class="buy-guide-link" data-i="buyBtn">🌾 Buy $WHC on pump.fun →</a>
+      <a class="buy-guide-link" href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" data-i="buyBtn">🌾 Buy $WHC on pump.fun →</a>
     </div>
-    <div class="wallet-box">
-      <strong>Network:</strong> Solana<br/>
-      <strong>Address:</strong>
-      <div class="wallet-addr whc-addr" onclick="copyAddr('whc')">6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK</div>
-      <div class="copy-hint" id="copyHintWHC">👆 Click to copy</div>
-      <div style="margin-top:8px;font-size:11px;color:#6b7280;">CA: <span style="color:#f4c430;font-family:monospace;font-size:10px;word-break:break-all;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</span></div>
-    </div>
-    <div class="modal-btns" style="flex-direction:column;gap:10px;">
-      <button class="modal-btn primary whc" onclick="payWithPhantom()" style="background:linear-gradient(135deg,#ab9ff2,#512da8);color:#fff;font-size:15px;">🟣 Pay via Phantom / Solana Pay</button>
-      <div style="display:flex;gap:10px;width:100%;">
-        <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')">Cancel</button>
-        <button class="modal-btn secondary" style="flex:1;color:#f4c430;border-color:#3a3000;" onclick="confirmPayment('whc')">✅ I've Paid Manually</button>
-      </div>
+
+    <div class="modal-btns" style="display:flex;gap:10px;width:100%;">
+      <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')">Cancel</button>
+      <button class="modal-btn primary whc" id="verifyBtn" style="flex:2;" onclick="verifyCrypto()">✅ Verify Payment</button>
     </div>
   </div>
+</div>
 </div>
 
 <!-- Success -->
