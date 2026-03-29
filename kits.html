@@ -220,8 +220,10 @@
     function setLang(next) {
       lang = next;
       localStorage.setItem('kits_lang', next);
-      document.getElementById('btn-en').classList.toggle('active', next === 'en');
-      document.getElementById('btn-zh').classList.toggle('active', next === 'zh');
+      const enBtn = document.getElementById('btn-en');
+      const zhBtn = document.getElementById('btn-zh');
+      if(enBtn) enBtn.classList.toggle('active', next === 'en');
+      if(zhBtn) zhBtn.classList.toggle('active', next === 'zh');
       render();
     }
 
