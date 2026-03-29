@@ -361,13 +361,47 @@ function setLang(l) {
     const key = el.getAttribute('data-i-placeholder');
     if (I18N[l][key]) el.placeholder = I18N[l][key];
   });
+  updateSummary();
   }
 
 function selectPlan(p) {
   selectedPlan = p;
   document.querySelectorAll('.plan').forEach(el => el.classList.remove('selected'));
   document.getElementById('plan-'+p).classList.add('selected');
+  updateSummary();
+}
+
+function selectPayment(m) {
+  selectedPayment = m;
+  document.querySelectorAll('.pay-option').forEach(el => el.classList.remove('selected'));
+  document.getElementById('pay-'+m).classList.add('selected');
+  const tip = document.getElementById('whcTip');
+  if(m === 'whc') {
+      tip.classList.add('show');
+  } else {
+      tip.classList.remove('show');
   }
+  updateSummary();
+}
+
+function updateSummary() {
+  const plan = PLANS[selectedPlan];
+  const amt = document.getElementById('summaryAmount');
+  const unit = document.getElementById('summaryUnit');
+  const orig = document.getElementById('summaryOriginal');
+  
+  if (selectedPayment === 'whc') {
+    amt.textContent = plan.whcDiscount.toLocaleString();
+    unit.textContent = 'WHC';
+    orig.style.display = 'inline-block';
+    orig.textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
+  } else {
+    amt.textContent = '$' + plan.price;
+    unit.textContent = 'USD';
+    orig.style.display = 'none';
+  }
+}
+
 
 
 
@@ -444,6 +478,7 @@ if (window.location.search.includes('success=true')) {
   document.getElementById('successCard').style.display = 'block';
   document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${p.get('order_id')||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
 }
+window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPayment); setLang(lang); };
 </script>
 
 <script>
@@ -451,40 +486,7 @@ if (window.location.search.includes('success=true')) {
   let currentPlan = 'Launch';
   let whcPrice = 350;
 
-  function selectPayment(method) {
-    currentPaymentMethod = method;
-    document.querySelectorAll('.payment-card').forEach(el => el.classList.remove('active'));
-    
-    if (method === 'fiat') {
-      document.getElementById('payFiat').classList.add('active');
-      document.getElementById('btnStripe').style.display = 'block';
-      document.getElementById('btnCrypto').style.display = 'none';
-    } else {
-      document.getElementById('payCrypto').classList.add('active');
-      document.getElementById('btnStripe').style.display = 'none';
-      document.getElementById('btnCrypto').style.display = 'block';
-    }
-  }
-
-  function updatePlan(cardElement) {
-    document.querySelectorAll('.plan-card').forEach(el => el.style.borderColor='var(--border)');
-    cardElement.style.borderColor='var(--accent)';
-    
-    // Parse the WHC amount from the card
-    const text = cardElement.innerText;
-    if (text.includes('50 WHC')) { currentPlan = 'Orbit'; whcPrice = 50; }
-    else if (text.includes('350 WHC')) { currentPlan = 'Launch'; whcPrice = 350; }
-    else if (text.includes('1,200 WHC')) { currentPlan = 'Breakaway'; whcPrice = 1200; }
-  }
-
-  // Hook into the existing plan selection
-  document.querySelectorAll('.plan-card').forEach(el => {
-    if(!el.classList.contains('payment-card')) {
-       el.setAttribute('onclick', 'updatePlan(this)');
-    }
-  });
-
-  function openCryptoModal() {
+    function openCryptoModal() {
     const desc = document.getElementById('product') ? document.getElementById('product').value : '';
     const contact = document.getElementById('contact') ? document.getElementById('contact').value : '';
     
