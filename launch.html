@@ -105,7 +105,7 @@
 <body>
 <div class="card" id="formCard">
   <div class="top-bar">
-    <a class="back-link" href="/">← <span data-i="back">Back to Agent Nexus</span></a>
+    <a class="back-link" href="/humans.html">← <span data-i="back">Back to Founders Hub</span></a>
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
       <button class="lang-btn" onclick="setLang('zh')">中文</button>
@@ -511,8 +511,8 @@ if (window.location.search.includes('success=true')) {
   });
 
   function openCryptoModal() {
-    const desc = document.querySelector('textarea[placeholder="What does your app do?"]').value;
-    const contact = document.querySelector('input[type="email"]').value;
+    const desc = document.getElementById('product') ? document.getElementById('product').value : '';
+    const contact = document.getElementById('contact') ? document.getElementById('contact').value : '';
     
     if (!desc || !contact) {
       alert("Please fill out your product description and contact email first.");
@@ -544,9 +544,9 @@ if (window.location.search.includes('success=true')) {
     btn.disabled = true;
 
     // Gather order details
-    const desc = document.querySelector('textarea[placeholder="What does your app do?"]').value;
-    const audience = document.querySelector('input[placeholder="e.g. B2B SaaS Founders"]').value;
-    const contact = document.querySelector('input[type="email"]').value;
+    const desc = document.getElementById('product') ? document.getElementById('product').value : '';
+    const audience = document.getElementById('audience') ? document.getElementById('audience').value : '';
+    const contact = document.getElementById('contact') ? document.getElementById('contact').value : '';
 
     const payload = {
       txHash: txHash,
