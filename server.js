@@ -209,6 +209,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/contact' || url === '/contact.html')) { serveFile(res, path.join(__dirname, 'contact.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/claim-whc' || url === '/claim-whc.html')) { serveFile(res, path.join(__dirname, 'claim-whc.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/whc-policy' || url === '/whc-policy.html')) { serveFile(res, path.join(__dirname, 'whc-policy.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/agora' || url === '/agora.html')) { serveFile(res, path.join(__dirname, 'agora.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/protocol' || url === '/protocol.html')) { serveFile(res, path.join(__dirname, 'protocol.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/nexus-whitepaper' || url === '/nexus-whitepaper.html')) { serveFile(res, path.join(__dirname, 'nexus-whitepaper.html'), 'text/html'); return; }
