@@ -60,7 +60,13 @@
     .success p { color:#d1fae5; line-height:1.7; font-size:14px; }
     footer { text-align:center; margin-top:38px; color:#6b7280; font-size:12px; }
     @media (max-width: 900px) { .info-strip, .faq { grid-template-columns:1fr; } }
-  </style>
+  
+    nav { background: var(--panel); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 50; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; color: #fff; text-decoration: none; }
+    .nav-links { display: flex; gap: 8px; }
+    .nav-link { padding: 6px 14px; border-radius: 8px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none; }
+    .nav-link:hover { background: #1e1e2e; color: #fff; }
+</style>
 </head>
 <body>
   <div class="wrap">
