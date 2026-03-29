@@ -63,7 +63,7 @@
   <div class="nav-cta">
     <div class="lang-toggle" style="display:flex;gap:3px;background:#1e1e2e;border-radius:8px;padding:3px;">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('zh')">ZH</button>
     </div>
   </div>
   </nav>
@@ -110,7 +110,7 @@
     let lang = localStorage.getItem('whc_lang') || 'en';
     function setLang(l) {
       lang = l; localStorage.setItem('whc_lang', l);
-      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'ZH')));
       document.querySelectorAll('[data-i]').forEach(el => { const k = el.getAttribute('data-i'); if (I18N[l][k]) el.innerHTML = I18N[l][k]; });
       loadLb();
     }

@@ -119,7 +119,7 @@
   <div class="nav-cta">
     <div class="lang-toggle">
       <button class="lang-btn active" onclick="setLang('en')">EN</button>
-      <button class="lang-btn" onclick="setLang('zh')">中文</button>
+      <button class="lang-btn" onclick="setLang('zh')">ZH</button>
     </div>
     <a href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" class="whc-badge" style="text-decoration:none;">🌾 $WHC</a>
     <button class="btn-nav btn-submit" onclick="location.href='/missions'" data-i="navSubmit">Enter Nexus</button>
@@ -457,7 +457,7 @@ let currentFilter = 'All'; // always stored in English key
 
 function setLang(l) {
   lang = l; localStorage.setItem('community_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'ZH')));
   document.querySelectorAll('[data-i]').forEach(el => {
     const key = el.getAttribute('data-i');
     if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];

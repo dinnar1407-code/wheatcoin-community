@@ -326,7 +326,7 @@ let selectedTier = 'builder', selectedPayment = 'usd';
 
 function setLang(l) {
   lang = l; localStorage.setItem('spotlight_lang', l);
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'中文')));
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent===(l==='en'?'EN':'ZH')));
   document.querySelectorAll('[data-i]').forEach(el => {
     const key = el.getAttribute('data-i');
     if (I18N[l][key] !== undefined) el.innerHTML = I18N[l][key];
