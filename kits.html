@@ -318,6 +318,19 @@
     }
 
     setLang(lang);
+
+    function init() {
+      // Check if there was a canceled payment
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('canceled') === 'true') {
+        const t = I18N[currentLang];
+        document.getElementById('successMount').innerHTML = `<div style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; border-radius:12px; padding:16px; margin-bottom:24px; color:#fca5a5;"><strong>${t.canceledTitle}</strong><br/>${t.canceledBody}</div>`;
+      }
+      render();
+    }
+    
+    init();
   </script>
 </body>
 </html>
+
