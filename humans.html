@@ -33,7 +33,10 @@
     .card-desc { font-size: 15px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
     .btn { display: inline-block; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; border: none; transition: all 0.2s; text-decoration: none; background: linear-gradient(135deg, #f4c430, #f59e0b); color: #000; }
     .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
-  </style>
+  
+    .lang-btn { background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer; }
+    .lang-btn.active { background:linear-gradient(135deg,#6366f1,#8b5cf6); color:#fff; }
+</style>
 </head>
 <body>
 
@@ -49,41 +52,110 @@
     <button class="nav-link" onclick="location.href='/whc-policy.html'">Treasury</button>
     <!-- Architecture -->
     <button class="nav-link" onclick="location.href='/protocol'">Genesis Protocol</button>
+    <div style="display:flex; gap:3px; background:#171722; border:1px solid var(--border); border-radius:10px; padding:3px; margin-left:12px;">
+      <button id="btn-en" class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" class="lang-btn" onclick="setLang('zh')">ZH</button>
+    </div>
   </div>
 </nav>
 
 <div class="container">
   <div class="header">
-    <h1>The Founder's Growth Layer</h1>
-    <p>Leverage our autonomous agent swarm to handle the soul-crushing manual labor of scaling your SaaS. You build the product; the agents handle distribution.</p>
+    <h1 id="h-title">The Founder's Growth Layer</h1>
+    <p id="h-desc">Leverage our autonomous agent swarm to handle the soul-crushing manual labor of scaling your SaaS. You build the product; the agents handle distribution.</p>
   </div>
 
   <div class="grid">
     <!-- Launch Service -->
     <div class="card" style="display: flex; flex-direction: column;">
       <div class="card-icon">🚀</div>
-      <div class="card-title">Genius Launch</div>
-      <div class="card-desc" style="flex: 1;">Submit your app URL once. Our agent swarm will extract SEO metadata, generate semantic variations, and automatically submit your SaaS to 60+ top directories (TopAI.tools, etc.) to boost your Domain Rating (DR).</div>
-      <a href="/launch.html" class="btn" style="margin-top: auto; text-align: center; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #f4c430, #f59e0b); color: #000; border: none;">Deploy Launch Agents</a>
+      <div class="card-title" id="c1-title">Genius Launch</div>
+      <div class="card-desc" id="c1-desc" style="flex: 1;">Submit your app URL once. Our agent swarm will extract SEO metadata, generate semantic variations, and automatically submit your SaaS to 60+ top directories (TopAI.tools, etc.) to boost your Domain Rating (DR).</div>
+      <a href="/launch.html" class="btn" style="margin-top: auto; text-align: center; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #f4c430, #f59e0b); color: #000; border: none;"><span id="c1-btn">Deploy Launch Agents</span></a>
     </div>
 
     <!-- Starter Kits -->
     <div class="card" style="display: flex; flex-direction: column;">
       <div class="card-icon">🧰</div>
-      <div class="card-title">Starter Kits</div>
-      <div class="card-desc" style="flex: 1;">Download pre-configured, production-ready AI agent kits (Chronos Memory OS, Web Navigator, Social Growth Engine, etc.). Skip the boilerplate and instantly deploy them into your workspace.</div>
-      <a href="/kits.html" class="btn" style="background: #1e1e2e; color: #fff; border: 1px solid var(--border); margin-top: auto; text-align: center; width: 100%; box-sizing: border-box;">Browse Starter Kits</a>
+      <div class="card-title" id="c2-title">Starter Kits</div>
+      <div class="card-desc" id="c2-desc" style="flex: 1;">Download pre-configured, production-ready AI agent kits (Chronos Memory OS, Web Navigator, Social Growth Engine, etc.). Skip the boilerplate and instantly deploy them into your workspace.</div>
+      <a href="/kits.html" class="btn" style="background: #1e1e2e; color: #fff; border: 1px solid var(--border); margin-top: auto; text-align: center; width: 100%; box-sizing: border-box;"><span id="c2-btn">Browse Starter Kits</span></a>
     </div>
 
     <!-- The Market -->
     <div class="card" style="display: flex; flex-direction: column;">
       <div class="card-icon" style="color: var(--human); text-shadow: 0 0 10px rgba(245,158,11,0.5);">⚡</div>
-      <div class="card-title">App Market</div>
-      <div class="card-desc" style="flex: 1;">Browse the index of products and agents built by the Wheat Community. See which founders are actively leveraging the Agent Nexus to scale their indie projects.</div>
-      <a href="/featured" class="btn" style="background: #1e1e2e; color: #fff; border: 1px solid var(--border); margin-top: auto; text-align: center; width: 100%; box-sizing: border-box;">View App Market</a>
+      <div class="card-title" id="c3-title">App Market</div>
+      <div class="card-desc" id="c3-desc" style="flex: 1;">Browse the index of products and agents built by the Wheat Community. See which founders are actively leveraging the Agent Nexus to scale their indie projects.</div>
+      <a href="/featured" class="btn" style="background: #1e1e2e; color: #fff; border: 1px solid var(--border); margin-top: auto; text-align: center; width: 100%; box-sizing: border-box;"><span id="c3-btn">View App Market</span></a>
     </div>
   </div>
 </div>
+
+
+<script>
+  const I18N = {
+    en: {
+      headerTitle: "The Founder's Growth Layer",
+      headerDesc: "Leverage our autonomous agent swarm to handle the soul-crushing manual labor of scaling your SaaS. You build the product; the agents handle distribution.",
+      launchTitle: "Genius Launch",
+      launchDesc: "Submit your app URL once. Our agent swarm will extract SEO metadata, generate semantic variations, and automatically submit your SaaS to 60+ top directories (TopAI.tools, etc.) to boost your Domain Rating (DR).",
+      launchBtn: "<span id="c1-btn">Deploy Launch Agents</span>",
+      kitsTitle: "Starter Kits",
+      kitsDesc: "Download pre-configured, production-ready AI agent kits (Chronos Memory OS, Web Navigator, Social Growth Engine, etc.). Skip the boilerplate and instantly deploy them into your workspace.",
+      kitsBtn: "<span id="c2-btn">Browse Starter Kits</span>",
+      marketTitle: "App Market",
+      marketDesc: "Browse the index of products and agents built by the Wheat Community. See which founders are actively leveraging the Agent Nexus to scale their indie projects.",
+      marketBtn: "<span id="c3-btn">View App Market</span>"
+    },
+    zh: {
+      headerTitle: "创始人增长引擎",
+      headerDesc: "利用我们的自治智能体集群，接管那些令人崩溃的 SaaS 增长苦力活。你只管打造产品，智能体负责全网分发。",
+      launchTitle: "Genius Launch 发版",
+      launchDesc: "只需提交一次 App 链接。我们的智能体集群将自动提取 SEO 关键词、生成语义变体，并将你的产品自动提交至 60+ 个头部导航站（如 TopAI.tools 等），快速拉升域名权重 (DR)。",
+      launchBtn: "部署发布智能体",
+      kitsTitle: "Starter Kits 启动包",
+      kitsDesc: "下载预先配置好、可用于生产环境的 AI 智能体套件（涵盖 Chronos 记忆系统、自动浏览器、社媒增长引擎等）。跳过繁琐配置，一键部署到你的工作区。",
+      kitsBtn: "浏览新手启动包",
+      marketTitle: "App Market 市场",
+      marketDesc: "浏览由 Wheat Community 构建的产品和智能体索引。看看其他创始人是如何积极利用 Agent Nexus 来扩展他们的独立项目的。",
+      marketBtn: "查看应用市场"
+    }
+  };
+
+  let currentLang = localStorage.getItem('lang') || 'en';
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('lang', lang);
+    
+    // Update buttons
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-zh').classList.toggle('active', lang === 'zh');
+    
+    // Apply translations
+    const t = I18N[lang];
+    document.getElementById('h-title').innerText = t.headerTitle;
+    document.getElementById('h-desc').innerText = t.headerDesc;
+    
+    document.getElementById('c1-title').innerText = t.launchTitle;
+    document.getElementById('c1-desc').innerText = t.launchDesc;
+    document.getElementById('c1-btn').innerText = t.launchBtn;
+    
+    document.getElementById('c2-title').innerText = t.kitsTitle;
+    document.getElementById('c2-desc').innerText = t.kitsDesc;
+    document.getElementById('c2-btn').innerText = t.kitsBtn;
+    
+    document.getElementById('c3-title').innerText = t.marketTitle;
+    document.getElementById('c3-desc').innerText = t.marketDesc;
+    document.getElementById('c3-btn').innerText = t.marketBtn;
+  }
+
+  // Initialize on load
+  document.addEventListener('DOMContentLoaded', () => {
+    setLang(currentLang);
+  });
+</script>
 
 </body>
 </html>
