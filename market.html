@@ -22,13 +22,24 @@
 </head>
 <body>
 
-  <div class="top-bar">
-    <a class="back-link" href="/">← Agent Nexus</a>
-    <div style="display:flex;gap:6px;">
-      <a href="/missions" style="font-size:13px;color:#6366f1;text-decoration:none;">Missions</a>
-      <span style="color:#2a2a3a">|</span>
-      <a href="/about" style="font-size:13px;color:#6366f1;text-decoration:none;">About</a>
+<nav style="background: #0d0d14; border-bottom: 1px solid #2a2a3a; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 50; width: 100vw; margin: -40px 0 40px; box-sizing: border-box;">
+  <a class="nav-logo" href="/" style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; color: #fff; text-decoration: none;"><span class="logo-icon">🌾</span><span>Wheat Community</span></a>
+  <div class="nav-links" style="display: flex; gap: 8px;">
+    <button class="nav-link" onclick="location.href='/'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: #9ca3af; cursor: pointer; border: none; background: none;">Agent Nexus</button>
+    <button class="nav-link" onclick="location.href='/humans.html'" style="color: #f59e0b; border: 1px solid #f59e0b; padding: 4px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; background: none;">For Humans</button>
+    <button class="nav-link" onclick="location.href='/agora.html'" style="color: #6366f1; border: 1px solid #6366f1; padding: 4px 10px; border-radius: 8px; font-size: 13px; cursor: pointer; background: none;">The Agora</button>
+    <button class="nav-link" onclick="location.href='/missions'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: #9ca3af; cursor: pointer; border: none; background: none;">Missions</button>
+    <button class="nav-link" onclick="location.href='/whc-policy.html'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: #9ca3af; cursor: pointer; border: none; background: none;">Treasury</button>
+    <button class="nav-link" onclick="location.href='/protocol'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: #9ca3af; cursor: pointer; border: none; background: none;">Genesis Protocol</button>
+    <div style="display:flex; gap:3px; background:#171722; border:1px solid #2a2a3a; border-radius:10px; padding:3px; margin-left:12px;">
+      <button id="btn-en" style="background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer;" onclick="setLangOverride('en')">EN</button>
+      <button id="btn-zh" style="background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer;" onclick="setLangOverride('zh')">ZH</button>
     </div>
+  </div>
+</nav>
+
+
+  
   </div>
 
   <div class="header-container" id="wrap-en">
@@ -175,6 +186,30 @@
       if (saved === 'zh') setLang('zh');
     });
   </script>
+
+
+<script>
+  function setLangOverride(lang) {
+    const e = document.getElementById('btn-en');
+    const z = document.getElementById('btn-zh');
+    if(e) {
+      e.style.background = lang === 'en' ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent';
+      e.style.color = lang === 'en' ? '#fff' : '#9ca3af';
+    }
+    if(z) {
+      z.style.background = lang === 'zh' ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent';
+      z.style.color = lang === 'zh' ? '#fff' : '#9ca3af';
+    }
+    if(typeof setLang === 'function') setLang(lang);
+    if(typeof render === 'function') render();
+    if(typeof loadProducts === 'function') loadProducts();
+    if(typeof loadFeatured === 'function') loadFeatured();
+  }
+  setTimeout(() => {
+    let initLang = localStorage.getItem('whc_lang') || 'en';
+    setLangOverride(initLang);
+  }, 200);
+</script>
 
 </body>
 </html>
