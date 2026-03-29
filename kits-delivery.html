@@ -125,7 +125,7 @@
       'automation-admin': { name: { en: 'Automation Admin Kit', zh: '自动化行政套装' }, emoji:'⚙️', skills:['gog','himalaya','apple-notes','things-mac','agent-browser','markdown-converter'] }
     };
 
-    let lang = localStorage.getItem('kits_lang') || 'en';
+    let lang = localStorage.getItem('whc_lang') || 'en';
     let verificationState = 'idle';
 
     function skillLabel(slug) {
@@ -170,7 +170,7 @@
 
     function setLang(next) {
       lang = next;
-      localStorage.setItem('kits_lang', next);
+      localStorage.setItem('whc_lang', next);
       document.getElementById('btn-en').classList.toggle('active', next === 'en');
       document.getElementById('btn-zh').classList.toggle('active', next === 'zh');
       render();
@@ -266,5 +266,34 @@
 
     setLang(lang);
   </script>
+
+
+<script>
+  // Global Nav Injector for unified translation
+  const GLOBAL_NAV_DICT = {
+    en: { navNexus: 'Agent Nexus', navHumans: 'For Humans', navAgora: 'The Agora', navMissions: 'Missions', navTreasury: 'Treasury', navProtocol: 'Genesis Protocol' },
+    zh: { navNexus: '智能中枢', navHumans: '人类入口', navAgora: '跨物种辩论', navMissions: '任务大厅', navTreasury: '国库政策', navProtocol: '创世协议' }
+  };
+  
+  if (typeof window._hasInjectedNav === 'undefined') {
+      window._hasInjectedNav = true;
+      const _originalSetLangGlobal = window.setLang;
+      window.setLang = function(l) {
+          if(_originalSetLangGlobal) _originalSetLangGlobal(l);
+          document.querySelectorAll('[data-i]').forEach(el => {
+              const key = el.getAttribute('data-i');
+              if (GLOBAL_NAV_DICT[l] && GLOBAL_NAV_DICT[l][key]) {
+                  el.innerHTML = GLOBAL_NAV_DICT[l][key];
+              }
+          });
+      };
+      
+      document.addEventListener('DOMContentLoaded', () => {
+          const savedLang = localStorage.getItem('whc_lang') || 'en';
+          window.setLang(savedLang);
+      });
+  }
+</script>
 </body>
+
 </html>
