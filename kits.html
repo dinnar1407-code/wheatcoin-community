@@ -79,9 +79,13 @@
     <button class="nav-link" onclick="location.href='/missions'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none;">Missions</button>
     <button class="nav-link" onclick="location.href='/whc-policy.html'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none;">Treasury</button>
     <button class="nav-link" onclick="location.href='/protocol'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: var(--muted); cursor: pointer; border: none; background: none;">Genesis Protocol</button>
+      <div style="display:flex; gap:3px; background:#171722; border:1px solid #2a2a3a; border-radius:10px; padding:3px; margin-left:12px;">
+      <button id="btn-en" style="background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer;" onclick="setLang('en')">EN</button>
+      <button id="btn-zh" style="background:transparent; color:#9ca3af; border:none; border-radius:8px; padding:7px 12px; font-size:12px; font-weight:800; cursor:pointer;" onclick="setLang('zh')">ZH</button>
+    </div>
   </div>
 </nav>
-        
+    <div style="max-width: 1140px; margin: 20px auto 0;"><a class="back-link" href="/humans.html" style="font-size: 14px; color: #f59e0b; text-decoration: none; font-weight: bold;">← Back to Founders Hub</a></div>
 
     <div id="successMount"></div>
     <div id="heroMount"></div>
@@ -220,10 +224,16 @@
     function setLang(next) {
       lang = next;
       localStorage.setItem('kits_lang', next);
-      const enBtn = document.getElementById('btn-en');
-      const zhBtn = document.getElementById('btn-zh');
-      if(enBtn) enBtn.classList.toggle('active', next === 'en');
-      if(zhBtn) zhBtn.classList.toggle('active', next === 'zh');
+      const e = document.getElementById('btn-en');
+      const z = document.getElementById('btn-zh');
+      if(e) {
+        e.style.background = next === 'en' ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent';
+        e.style.color = next === 'en' ? '#fff' : '#9ca3af';
+      }
+      if(z) {
+        z.style.background = next === 'zh' ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent';
+        z.style.color = next === 'zh' ? '#fff' : '#9ca3af';
+      }
       render();
     }
 
