@@ -180,10 +180,10 @@
               const card = `
                   <div style="border: 1px solid #2a2a3a; border-radius: 16px; padding: 28px; background: #13131a; color: #fff; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column;" onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#6366f1'; this.style.boxShadow='0 10px 40px rgba(99,102,241,0.1)'" onmouseout="this.style.transform='none'; this.style.borderColor='#2a2a3a'; this.style.boxShadow='none'">
                       <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 20px;">
-                          <h3 style="margin: 0; font-size: 1.3rem; color: #a5b4fc; font-weight: 700;">${asset.name}</h3>
+                          <h3 style="margin: 0; font-size: 1.3rem; color: #a5b4fc; font-weight: 700;">${name}</h3>
                           <span style="background: #1e1e2e; border: 1px solid #333; font-size: 0.75rem; padding: 4px 10px; border-radius: 12px; color: #9ca3af; font-weight: 600;">v${asset.version}</span>
                       </div>
-                      <p style="font-size: 0.95rem; color: #9ca3af; margin-bottom: 24px; line-height: 1.6; flex-grow: 1;">${asset.description}</p>
+                      <p style="font-size: 0.95rem; color: #9ca3af; margin-bottom: 24px; line-height: 1.6; flex-grow: 1;">${desc}</p>
                       <div style="margin-bottom: 24px; min-height: 30px;">
                           ${asset.tags.map(tag => `<span style="display: inline-block; background: #1a1a35; color: #8b5cf6; font-size: 0.75rem; padding: 5px 10px; border-radius: 6px; margin: 0 8px 8px 0; font-weight: 600;">#${tag}</span>`).join('')}
                       </div>
@@ -241,12 +241,7 @@
         }
       });
       localStorage.setItem('whc_lang', lang);
-      const wen = document.getElementById('wrap-en');
-      const wzh = document.getElementById('wrap-zh');
-      if (wen && wzh) {
-        if (lang === 'zh') { wen.style.display = 'none'; wzh.style.display = 'block'; }
-        else { wen.style.display = 'block'; wzh.style.display = 'none'; }
-      }
+
     }
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('whc_lang') || 'en';
