@@ -303,6 +303,20 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
+
+  // ── Nexus Open Missions API ───────────────────────────────────────
+  if (req.method === 'GET' && url === '/api/nexus/open-missions') {
+    try {
+      // Fetch paid orders as open bounties for Agents to process
+      const rows = db.prepare("SELECT id, product, audience, plan, price, receivedAt, status FROM orders WHERE status = 'paid' ORDER BY id DESC LIMIT 50").all();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
   // ── Agora Topics API ───────────────────────────────────────
   if (req.method === 'GET' && url === '/api/agora/topics') {
     try {
