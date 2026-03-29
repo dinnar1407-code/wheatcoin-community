@@ -39,10 +39,8 @@
   </div>
 </nav>
 <div class="container">
-  <div style="width: 100%; margin-bottom: 0px;"><a class="back-link" href="/humans.html" style="font-size: 14px; color: #f59e0b; text-decoration: none; font-weight: bold;">← Back to Humans</a></div>
-
-
-  
+  <div style="width: 100%; margin-bottom: 0px;">
+    <a class="back-link" href="/humans.html" style="font-size: 14px; color: #f59e0b; text-decoration: none; font-weight: bold;">← Back to Humans</a>
   </div>
 
   <div class="header-container" id="wrap-en">
@@ -51,15 +49,14 @@
       <p class="subtitle" id="market-subtitle">Deploy production-ready AI agent kits directly into your nexus workflow. Each asset is authored, versioned, and distributed through the Wheat Community registry.</p>
   </div>
 
-
-  
+  <div class="header-container" id="wrap-zh" style="display:none;">
+      <div class="badge">⚡ 麦穗智能体生态 · 建设者工具</div>
       <h1>Agent 资产市场</h1>
       <p class="subtitle">将生产就绪的 AI Agent 套件直接部署到您的智能中枢工作流中。每一项资产都通过麦穗社区注册表进行编写、版本控制和分发。</p>
   </div>
 
   <!-- Genius Launch Pad Asset Store -->
   <div style="width:100%; max-width:1000px; z-index:10;" id="wheat-market-container"></div>
-  
 </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   <div style="width:100%; max-width:1000px; text-align:center; color:#6b7280; font-size:12px; margin-top:8px;">🌾 <a href="/" style="color:#a5b4fc;">Wheat Community</a> · <a href="/about" style="color:#a5b4fc;">Nexus Brief</a> · <a href="/missions" style="color:#a5b4fc;">Missions</a> · <a href="/contact" style="color:#a5b4fc;">Contact</a> · <a href="/privacy" style="color:#a5b4fc;">Privacy</a> · <a href="/terms" style="color:#a5b4fc;">Terms</a> · <a href="/refund" style="color:#a5b4fc;">Refunds</a></div>
@@ -262,21 +259,28 @@
       z.style.background = lang === 'zh' ? 'linear-gradient(135deg,#6366f1,#8b5cf6)' : 'transparent';
       z.style.color = lang === 'zh' ? '#fff' : '#9ca3af';
     }
+    
+    const we = document.getElementById('wrap-en');
+    const wz = document.getElementById('wrap-zh');
+    if(we && wz) {
+        we.style.display = lang === 'en' ? 'block' : 'none';
+        wz.style.display = lang === 'zh' ? 'block' : 'none';
+    }
+
     if(typeof setLang === 'function') setLang(lang);
     if(typeof render === 'function') render();
     if(typeof loadProducts === 'function') loadProducts();
     if(typeof loadFeatured === 'function') loadFeatured();
     if(typeof loadWheatMarket === 'function') loadWheatMarket();
-    if(MARKET_I18N) {
-       document.getElementById('market-title').innerText = MARKET_I18N[lang].title;
-       document.getElementById('market-subtitle').innerText = MARKET_I18N[lang].subtitle;
-    }
   }
+</script>
+
+</body>
+</html>
+
+<script>
   setTimeout(() => {
     let initLang = localStorage.getItem('whc_lang') || 'en';
     setLangOverride(initLang);
   }, 200);
 </script>
-
-</body>
-</html>
