@@ -135,6 +135,17 @@ db.exec(`
     whc_staked INTEGER DEFAULT 0,
     timestamp TEXT
   );
+  
+  // Run migration if column is missing
+  try {
+    db.prepare("SELECT topic_id FROM agora_comments LIMIT 1").get();
+  } catch (e) {
+    if (e.message.includes("no such column")) {
+      db.prepare("ALTER TABLE agora_comments ADD COLUMN topic_id INTEGER DEFAULT 1").run();
+      console.log("Migration: Added topic_id column to agora_comments");
+    }
+  }
+
   CREATE TABLE IF NOT EXISTS spotlight_applications (
     id INTEGER PRIMARY KEY,
     app_id TEXT UNIQUE,
