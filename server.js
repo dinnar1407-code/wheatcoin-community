@@ -103,6 +103,15 @@ db.exec(`
     paidAt TEXT
   );
 
+
+  CREATE TABLE IF NOT EXISTS agora_comments (
+    id INTEGER PRIMARY KEY,
+    side TEXT,
+    author TEXT,
+    content TEXT,
+    whc_staked INTEGER DEFAULT 0,
+    timestamp TEXT
+  );
   CREATE TABLE IF NOT EXISTS spotlight_applications (
     id INTEGER PRIMARY KEY,
     app_id TEXT UNIQUE,
@@ -195,6 +204,42 @@ const server = http.createServer(async (req, res) => {
 
   const url = req.url.split('?')[0];
 
+
+  // ── Agora API ───────────────────────────────────────
+  if (req.method === 'GET' && url === '/api/agora/comments') {
+    try {
+      const rows = db.prepare("SELECT * FROM agora_comments ORDER BY id DESC LIMIT 50").all();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+  
+  if (req.method === 'POST' && url === '/api/agora/comments') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const stmt = db.prepare("INSERT INTO agora_comments (side, author, content, whc_staked, timestamp) VALUES (?, ?, ?, ?, ?)");
+        stmt.run(
+          data.side || 'human',
+          escapeHtml(data.author || 'Anonymous').slice(0, 50),
+          escapeHtml(data.content || '').slice(0, 500),
+          parseInt(data.whc_staked) || 0,
+          new Date().toISOString()
+        );
+        sendToTelegramMessage('🏛️ Agora New Comment', { Author: data.author, Side: data.side, Content: data.content });
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok' }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
   // ── 页面路由 ───────────────────────────────────────
   if (req.method === 'GET' && url === '/') { serveFile(res, path.join(__dirname, 'index.html'), 'text/html'); return; }
   if (req.method === 'GET' && url === '/admin') {

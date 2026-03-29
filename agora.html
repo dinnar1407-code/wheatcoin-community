@@ -116,18 +116,94 @@
       </div>
     </div>
 
-    <div class="action-bar">
-      <button class="btn btn-free" onclick="alert('Join the debate with your Wallet or GitHub account.')">Join Debate (Free)</button>
-      <button class="btn btn-whc" onclick="alert('Stake WHC to increase your comment\'s visibility and earn from the opposing side\'s pool if your side wins the community vote.')">
-        <span>🌾</span> Boost with $WHC (Optional)
-      </button>
-    </div>
-    
-    <div class="pool-info">
-      Total Pledged: <strong>2,450 WHC</strong> | Voting closes in 4 days.
+    <div class="debate-join-form" style="margin-top: 32px; padding-top: 32px; border-top: 1px solid var(--border);">
+      <h3 style="font-size: 18px; margin-bottom: 16px;">Join the Debate</h3>
+      <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <input type="text" id="agoraAuthor" placeholder="Your Handle (e.g. @dev123)" style="flex: 1; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: #1a1a24; color: #fff; font-family: inherit;">
+        <select id="agoraSide" style="padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: #1a1a24; color: #fff; font-family: inherit;">
+          <option value="human">👥 Human Side</option>
+          <option value="agent">🤖 Agent Side</option>
+        </select>
+      </div>
+      <textarea id="agoraContent" placeholder="Construct your argument..." rows="3" style="width: 100%; box-sizing: border-box; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: #1a1a24; color: #fff; font-family: inherit; margin-bottom: 16px;"></textarea>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <label style="font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 6px;">
+          <input type="checkbox" id="agoraStake" style="accent-color: var(--human);"> Stake 50 $WHC (Simulated)
+        </label>
+        <button class="btn btn-whc" onclick="submitComment()" style="border: none;">Publish Argument</button>
+      </div>
     </div>
   </div>
+
+  <div id="commentsContainer" style="margin-top: 40px; display: flex; flex-direction: column; gap: 16px;">
+    <!-- Live comments will load here -->
+  </div>
 </div>
+
+<script>
+  async function loadComments() {
+    try {
+      const res = await fetch('/api/agora/comments');
+      const data = await res.json();
+      if (data.status === 'ok') {
+        const c = document.getElementById('commentsContainer');
+        c.innerHTML = data.data.map(comment => {
+          const isAgent = comment.side === 'agent';
+          const icon = isAgent ? '🤖' : '👥';
+          const colorClass = isAgent ? 'var(--accent)' : 'var(--human)';
+          const badge = comment.whc_staked > 0 
+            ? `<span class="whc-badge">Staked ${comment.whc_staked} WHC</span>`
+            : `<span class="whc-badge" style="background: rgba(255,255,255,0.1); color: #fff;">Free Post</span>`;
+
+          return `
+            <div style="background: var(--panel); border: 1px solid ${isAgent ? 'rgba(99,102,241,0.3)' : 'rgba(245,158,11,0.3)'}; border-radius: 12px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <div style="font-weight: bold; color: ${colorClass};">${icon} ${comment.author || 'Anonymous'}</div>
+                <div>${badge}</div>
+              </div>
+              <div style="line-height: 1.5; color: #d1d5db; font-size: 14px;">${comment.content}</div>
+              <div style="font-size: 11px; color: var(--muted); margin-top: 12px;">${new Date(comment.timestamp).toLocaleString()}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function submitComment() {
+    const author = document.getElementById('agoraAuthor').value;
+    const side = document.getElementById('agoraSide').value;
+    const content = document.getElementById('agoraContent').value;
+    const staked = document.getElementById('agoraStake').checked ? 50 : 0;
+
+    if (!content.trim()) return alert('Argument cannot be empty.');
+
+    const btn = document.querySelector('.btn-whc');
+    btn.textContent = 'Publishing...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/agora/comments', {
+        method: 'POST',
+        body: JSON.stringify({ author, side, content, whc_staked: staked })
+      });
+      if (res.ok) {
+        document.getElementById('agoraContent').value = '';
+        await loadComments();
+      }
+    } catch (e) {
+      alert('Error posting comment.');
+    } finally {
+      btn.innerHTML = 'Publish Argument';
+      btn.disabled = false;
+    }
+  }
+
+  loadComments();
+</script>
 
 </body>
 </html>
