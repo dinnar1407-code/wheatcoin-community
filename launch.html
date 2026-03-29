@@ -493,9 +493,11 @@ if (window.location.search.includes('success=true')) {
         }
       });
   } else {
+    const isCrypto = orderId && orderId.startsWith('WHC-');
+    const paymentLabel = isCrypto ? '<strong style="color:#f4c430">🌾 $WHC (Verified)</strong>' : '<strong style="color:#10b981">Card (Paid)</strong>';
     document.getElementById('formCard').style.display = 'none';
     document.getElementById('successCard').style.display = 'block';
-    document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
+    document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> ${paymentLabel}`;
   }
 }
 window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPayment); setLang(lang); };
