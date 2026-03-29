@@ -256,6 +256,11 @@ const server = http.createServer(async (req, res) => {
         const requiredAmount = data.amount;
         
         if (!txHash) throw new Error("Transaction Hash is required.");
+        
+        // Solana tx signatures are exactly 88 base58 characters.
+        if (txHash.length !== 88) {
+           throw new Error("Invalid Solana transaction hash format. It should be an 88-character base58 string.");
+        }
 
         // 1. Double spend check in local SQLite
         const existing = db.prepare("SELECT * FROM verified_crypto_payments WHERE tx_hash = ?").get(txHash);
