@@ -792,6 +792,101 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  if (req.method === 'POST' && url === '/api/create-checkout-session') {
+    if (!stripe) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' }));
+      return;
+    }
+    try {
+      const data = await parseBody(req);
+      const host = req.headers.host;
+      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
+      const domain = protocol + '://' + host;
+      
+      const planName = data.plan ? data.plan.toUpperCase() : 'LAUNCH';
+      const priceUSD = parseFloat(data.price) || 39.9;
+      const unitAmountCents = Math.round(priceUSD * 100);
+      
+      const entry = {
+        product: data.product || '',
+        audience: data.audience || '',
+        contact: data.contact || '',
+        plan: data.plan || 'launch',
+        price: data.price + ' USD',
+        paymentMethod: 'usd',
+        receivedAt: new Date().toISOString(),
+        status: 'pending'
+      };
+      
+      const result = db.prepare(`INSERT INTO orders (product, audience, contact, plan, price, paymentMethod, receivedAt, status, stripe_session_id)
+        VALUES (@product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt, @status, @stripe_session_id)`).run({
+          ...entry,
+          stripe_session_id: 'pending'
+      });
+      const dbOrderId = result.lastInsertRowid;
+
+      const session = await stripe.checkout.sessions.create({
+        payment_method_types: ['card'],
+        line_items: [{
+          price_data: {
+            currency: 'usd',
+            product_data: { name: `Builder Growth Layer - ${planName} Plan` },
+            unit_amount: unitAmountCents,
+          },
+          quantity: 1,
+        }],
+        mode: 'payment',
+        success_url: `${domain}/launch?success=true&order_id=${dbOrderId}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${domain}/launch?canceled=true`,
+        client_reference_id: dbOrderId.toString(),
+      });
+      
+      db.prepare("UPDATE orders SET stripe_session_id = ? WHERE id = ?").run(session.id, dbOrderId);
+      
+      console.log(`💳 [Stripe Launch] Session created for ${planName}`);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ url: session.url }));
+    } catch (err) {
+      console.error(err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'GET' && url === '/api/launch/verify') {
+    const query = new URL(req.url, `http://${req.headers.host}`).searchParams;
+    const session_id = query.get('session_id');
+    const order_id = query.get('order_id');
+    if (!session_id) { res.writeHead(400); res.end('Missing session_id'); return; }
+    try {
+      const session = await stripe.checkout.sessions.retrieve(session_id);
+      if (session.payment_status === 'paid') {
+        const order = db.prepare("UPDATE orders SET status = 'paid' WHERE stripe_session_id = ?").run(session_id);
+        if (order.changes > 0) {
+          const row = db.prepare("SELECT * FROM orders WHERE stripe_session_id = ?").get(session_id);
+          sendToTelegramMessage('⚡ Builder Growth Paid', {
+            'ID': row ? row.id : order_id,
+            'Product': row ? row.product : '—',
+            'Contact': row ? row.contact : '—',
+            'Price': `$${(session.amount_total / 100).toFixed(2)}`,
+            'Status': 'Paid',
+            'Timestamp': new Date().toISOString()
+          });
+        }
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ paid: true }));
+      } else {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ paid: false }));
+      }
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (req.method === 'GET' && url === '/api/orders') {
     if (!checkAdminAuth(req)) {
       res.writeHead(401, { 'Content-Type': 'application/json' });

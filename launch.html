@@ -474,9 +474,24 @@ function showSuccess(product, audience, contact, plan, payType) {
 setLang(lang);
 if (window.location.search.includes('success=true')) {
   const p = new URLSearchParams(window.location.search);
-  document.getElementById('formCard').style.display = 'none';
-  document.getElementById('successCard').style.display = 'block';
-  document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${p.get('order_id')||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
+  const sessionId = p.get('session_id');
+  const orderId = p.get('order_id');
+  
+  if (sessionId) {
+    fetch(`/api/launch/verify?session_id=${sessionId}&order_id=${orderId}`)
+      .then(r => r.json())
+      .then(d => {
+        if(d.paid) {
+          document.getElementById('formCard').style.display = 'none';
+          document.getElementById('successCard').style.display = 'block';
+          document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
+        }
+      });
+  } else {
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('successCard').style.display = 'block';
+    document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
+  }
 }
 window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPayment); setLang(lang); };
 </script>
