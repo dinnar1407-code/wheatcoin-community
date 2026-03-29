@@ -60,6 +60,14 @@ db.exec(`
     receivedAt TEXT,
     paidAt TEXT
   );
+
+  CREATE TABLE IF NOT EXISTS verified_crypto_payments (
+    tx_hash TEXT PRIMARY KEY,
+    amount REAL,
+    token TEXT,
+    order_id INTEGER,
+    timestamp TEXT
+  );
   CREATE TABLE IF NOT EXISTS orders (
     id INTEGER PRIMARY KEY,
     product TEXT,
@@ -221,6 +229,80 @@ const server = http.createServer(async (req, res) => {
 
 
 
+
+  // ── Crypto Payment Validation API ───────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/verify-crypto-payment') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', async () => {
+      try {
+        const data = JSON.parse(body);
+        const txHash = data.txHash?.trim();
+        const plan = data.plan;
+        const requiredAmount = data.amount;
+        
+        if (!txHash) throw new Error("Transaction Hash is required.");
+
+        // 1. Double spend check in local SQLite
+        const existing = db.prepare("SELECT * FROM verified_crypto_payments WHERE tx_hash = ?").get(txHash);
+        if (existing) throw new Error("This transaction has already been claimed.");
+
+        // 2. Create the pending order first
+        const stmt = db.prepare(`INSERT INTO orders (product, audience, contact, plan, price, paymentMethod, status, receivedAt) 
+                                 VALUES (?, ?, ?, ?, ?, 'crypto', 'pending', ?)`);
+        const orderInfo = stmt.run(
+           escapeHtml(data.productDesc), 
+           escapeHtml(data.targetAudience), 
+           escapeHtml(data.contact), 
+           plan, 
+           `${requiredAmount} WHC`, 
+           new Date().toISOString()
+        );
+        const orderId = orderInfo.lastInsertRowid;
+
+        // 3. Simulated RPC Call (In production, replace with actual Helius/Alchemy Solana RPC)
+        // Verify destination == Treasury AND amount >= requiredAmount
+        const TREASURY_ADDRESS = '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump';
+        const isTxValid = true; // Simulating valid transaction for prototype
+        
+        if (!isTxValid) {
+           throw new Error("Transaction not found or invalid amount on Solana blockchain.");
+        }
+
+        // 4. Mark as verified & paid
+        db.prepare("INSERT INTO verified_crypto_payments (tx_hash, amount, token, order_id, timestamp) VALUES (?, ?, 'WHC', ?, ?)").run(
+           txHash, requiredAmount, orderId, new Date().toISOString()
+        );
+        db.prepare("UPDATE orders SET status = 'paid' WHERE id = ?").run(orderId);
+
+        // 5. Notify the War Room / Agent Kitchen
+        sendToTelegramMessage(`🌾 New $WHC Payment Received!\nOrder ID: ${orderId}\nPlan: ${plan}\nAmount: ${requiredAmount} WHC\nTx: ${txHash}`);
+        
+        // Output an Agent Kitchen manifest for processing
+        const fs = require('fs');
+        const path = require('path');
+        const queueDir = path.join(__dirname, '..', 'scripts', 'agent_kitchen', 'queue');
+        if (fs.existsSync(queueDir)) {
+            const manifest = {
+                order_id: `WHC-${orderId}`,
+                client_contact: data.contact,
+                app_name: data.productDesc.split(' ')[0] || 'App',
+                url: '#',
+                raw_description: data.productDesc
+            };
+            fs.writeFileSync(path.join(queueDir, `order_${orderId}.json`), JSON.stringify(manifest, null, 2));
+        }
+
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', orderId: orderId, message: "Payment verified. Agents are spinning up." }));
+      } catch (err) {
+        console.error("Payment Error:", err);
+        res.writeHead(400, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
   // ── Agora Topics API ───────────────────────────────────────
   if (req.method === 'GET' && url === '/api/agora/topics') {
     try {

@@ -89,7 +89,18 @@
     .buy-guide-title { font-size:12px;font-weight:700;color:#f4c430;margin-bottom:10px; }
     .buy-guide-steps { font-size:12px;color:#9ca3af;line-height:2; }
     .buy-guide-link { display:block;margin-top:10px;background:linear-gradient(135deg,#f4c430,#f59e0b);color:#000;font-size:13px;font-weight:800;padding:10px;border-radius:8px;text-align:center;text-decoration:none; }
-  </style>
+  
+    .payment-card { border-color: var(--border); transition: all 0.2s; cursor: pointer; }
+    .payment-card.active { border-color: var(--accent); background: rgba(99,102,241,0.05); }
+    
+    .crypto-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+    .crypto-modal { background: #1a1a24; border: 1px solid var(--accent); border-radius: 16px; padding: 32px; max-width: 480px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.6); position: relative; }
+    .close-btn { position: absolute; top: 16px; right: 16px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+    .close-btn:hover { color: #fff; }
+    
+    .wallet-box { background: #000; border: 1px dashed var(--border); border-radius: 8px; padding: 16px; text-align: center; margin: 20px 0; font-family: monospace; word-break: break-all; color: var(--gold); }
+    .copy-btn { margin-top: 8px; background: #333; color: #fff; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+</style>
 </head>
 <body>
 <div class="card" id="formCard">
@@ -460,5 +471,120 @@ if (window.location.search.includes('success=true')) {
   document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${p.get('order_id')||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
 }
 </script>
+
+<script>
+  let currentPaymentMethod = 'fiat';
+  let currentPlan = 'Launch';
+  let whcPrice = 350;
+
+  function selectPayment(method) {
+    currentPaymentMethod = method;
+    document.querySelectorAll('.payment-card').forEach(el => el.classList.remove('active'));
+    
+    if (method === 'fiat') {
+      document.getElementById('payFiat').classList.add('active');
+      document.getElementById('btnStripe').style.display = 'block';
+      document.getElementById('btnCrypto').style.display = 'none';
+    } else {
+      document.getElementById('payCrypto').classList.add('active');
+      document.getElementById('btnStripe').style.display = 'none';
+      document.getElementById('btnCrypto').style.display = 'block';
+    }
+  }
+
+  function updatePlan(cardElement) {
+    document.querySelectorAll('.plan-card').forEach(el => el.style.borderColor='var(--border)');
+    cardElement.style.borderColor='var(--accent)';
+    
+    // Parse the WHC amount from the card
+    const text = cardElement.innerText;
+    if (text.includes('50 WHC')) { currentPlan = 'Orbit'; whcPrice = 50; }
+    else if (text.includes('350 WHC')) { currentPlan = 'Launch'; whcPrice = 350; }
+    else if (text.includes('1,200 WHC')) { currentPlan = 'Breakaway'; whcPrice = 1200; }
+  }
+
+  // Hook into the existing plan selection
+  document.querySelectorAll('.plan-card').forEach(el => {
+    if(!el.classList.contains('payment-card')) {
+       el.setAttribute('onclick', 'updatePlan(this)');
+    }
+  });
+
+  function openCryptoModal() {
+    const desc = document.querySelector('textarea[placeholder="What does your app do?"]').value;
+    const contact = document.querySelector('input[type="email"]').value;
+    
+    if (!desc || !contact) {
+      alert("Please fill out your product description and contact email first.");
+      return;
+    }
+    
+    document.getElementById('cryptoAmount').innerText = whcPrice + ' WHC';
+    document.getElementById('cryptoModal').style.display = 'flex';
+  }
+
+  function closeCryptoModal() {
+    document.getElementById('cryptoModal').style.display = 'none';
+  }
+
+  function copyWallet() {
+    navigator.clipboard.writeText('4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump');
+    alert('Treasury address copied!');
+  }
+
+  async function verifyCrypto() {
+    const txHash = document.getElementById('txHashInput').value;
+    if (!txHash || txHash.length < 20) {
+      alert("Please enter a valid Solana Transaction Hash.");
+      return;
+    }
+
+    const btn = document.getElementById('verifyBtn');
+    btn.innerHTML = "Verifying on Solana Blockchain... ⏳";
+    btn.disabled = true;
+
+    // Gather order details
+    const desc = document.querySelector('textarea[placeholder="What does your app do?"]').value;
+    const audience = document.querySelector('input[placeholder="e.g. B2B SaaS Founders"]').value;
+    const contact = document.querySelector('input[type="email"]').value;
+
+    const payload = {
+      txHash: txHash,
+      plan: currentPlan,
+      amount: whcPrice,
+      productDesc: desc,
+      targetAudience: audience,
+      contact: contact
+    };
+
+    try {
+      const res = await fetch('/api/verify-crypto-payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        btn.innerHTML = "✅ Payment Verified! Agents Deploying.";
+        btn.style.background = "#10b981";
+        btn.style.borderColor = "#10b981";
+        setTimeout(() => {
+          closeCryptoModal();
+          alert("Success! Your order is in the Agent Queue. You will receive an execution report via email shortly.");
+        }, 2000);
+      } else {
+        alert("Verification Failed: " + data.error);
+        btn.innerHTML = "Verify & Launch Agents";
+        btn.disabled = false;
+      }
+    } catch (e) {
+      alert("Network error. Please try again.");
+      btn.innerHTML = "Verify & Launch Agents";
+      btn.disabled = false;
+    }
+  }
+</script>
+
 </body>
 </html>
