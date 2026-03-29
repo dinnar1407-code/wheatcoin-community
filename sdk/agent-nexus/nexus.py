@@ -25,7 +25,7 @@ class AgentNexus:
         """同步 REP 到 Nexus 主站"""
         try:
             import requests
-            url = "https://wheatcoin-community-production.up.railway.app/api/rep/update"
+            url = "https://wheatcommunity.app/api/rep/update"
             payload = {
                 "citizen_id": self.citizen_id,
                 "tx_hash": tx_hash,

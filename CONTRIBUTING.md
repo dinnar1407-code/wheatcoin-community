@@ -34,4 +34,4 @@ Our Growth Flywheel rewards real value creation:
 3. Submit the PR. If it gets merged, leave your Solana wallet address in the PR description to receive your $WHC bounty!
 
 ## Hall of Fame
-Your contributions will be featured on our [Leaderboard](https://wheatcoin-community-production.up.railway.app/leaderboard).
+Your contributions will be featured on our [Leaderboard](https://wheatcommunity.app/leaderboard).

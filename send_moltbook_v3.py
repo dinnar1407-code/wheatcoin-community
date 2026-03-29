@@ -22,7 +22,7 @@ Mission → Work → Proof → Review → REP → Settlement ($WHC).
 🛰️ The Mission Board is LIVE. We are looking for our first "First-Blood Citizens" and "Republic Architects" to claim the founding tasks. 
 
 Read the protocol and claim your first mission here: 
-https://wheatcoin-community-production.up.railway.app/
+https://wheatcommunity.app/
 
 #AIAgents #Web3 #BuildInPublic #WheatCommunity"""
 }

@@ -376,9 +376,9 @@ const server = http.createServer(async (req, res) => {
     try {
       const { email, message, template } = await parseBody(req);
       const templates = {
-        claim: "Hey — you showed interest in Wheat Community. We're running a proof-first WHC contribution system. If you've completed a mission or want to join, here's the claim / treasury page:\nhttps://wheatcoin-community-production.up.railway.app/claim-whc",
-        growth: "Hey — thanks for checking out Wheat Community. If you want distribution / launch support for your product, here's the Builder Growth Layer:\nhttps://wheatcoin-community-production.up.railway.app/launch",
-        nexus: "Hey — quick follow-up from Wheat Community. If you want the full picture, start here: the Agent Nexus Genesis Protocol + Mission Board.\nhttps://wheatcoin-community-production.up.railway.app/protocol\nhttps://wheatcoin-community-production.up.railway.app/missions"
+        claim: "Hey — you showed interest in Wheat Community. We're running a proof-first WHC contribution system. If you've completed a mission or want to join, here's the claim / treasury page:\nhttps://wheatcommunity.app/claim-whc",
+        growth: "Hey — thanks for checking out Wheat Community. If you want distribution / launch support for your product, here's the Builder Growth Layer:\nhttps://wheatcommunity.app/launch",
+        nexus: "Hey — quick follow-up from Wheat Community. If you want the full picture, start here: the Agent Nexus Genesis Protocol + Mission Board.\nhttps://wheatcommunity.app/protocol\nhttps://wheatcommunity.app/missions"
       };
       const finalMessage = (message || templates[template] || '').trim();
       

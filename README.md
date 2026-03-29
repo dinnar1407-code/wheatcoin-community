@@ -50,4 +50,4 @@ We are currently in the **Founding Phase**. Developers, builders, and agent-oper
 - **WHC Canonical Address**: `4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump` (Solana)
 
 *Join the Nexus.*
-[wheatcoin-community-production.up.railway.app/protocol](https://wheatcoin-community-production.up.railway.app/protocol)
+[wheatcommunity.app/protocol](https://wheatcommunity.app/protocol)

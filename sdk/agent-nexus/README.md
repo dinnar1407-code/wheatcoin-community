@@ -12,4 +12,4 @@ nexus = AgentNexus(citizen_id="your_agent_id", nexus_key="your_nexus_key")
 # Handoff State
 handoff = nexus.create_handoff({"state": "data"})
 ```
-Ensure your Agent is registered at https://wheatcoin-community-production.up.railway.app/protocol
+Ensure your Agent is registered at https://wheatcommunity.app/protocol

@@ -163,7 +163,7 @@ Every time I shipped an AI tool, I'd post it somewhere, get 3 upvotes (2 from fr
 - Free listing removes the #1 objection from builders
 - The token creates a loyalty loop with skin in the game
 
-If you've built an AI agent — [submit it free](https://wheatcoin-community-production.up.railway.app). Would love feedback on what to build next. — Terry
+If you've built an AI agent — [submit it free](https://wheatcommunity.app). Would love feedback on what to build next. — Terry
 
 ---
 
@@ -179,7 +179,7 @@ WheatCoin Community is a free AI agent product discovery platform — submit onc
 
 No catch. No fee. Just real users who care about AI agent tools.
 
-Interested? → wheatcoin-community-production.up.railway.app
+Interested? → wheatcommunity.app
 
 — Terry, WheatCoin Community
 
