@@ -874,6 +874,21 @@ const server = http.createServer(async (req, res) => {
             'Status': 'Paid',
             'Timestamp': new Date().toISOString()
           });
+
+          // Output an Agent Kitchen manifest for processing
+          const fs = require('fs');
+          const path = require('path');
+          const queueDir = path.join(__dirname, '..', 'scripts', 'agent_kitchen', 'queue');
+          if (fs.existsSync(queueDir)) {
+              const manifest = {
+                  order_id: `USD-${row ? row.id : order_id}`,
+                  client_contact: row ? row.contact : '—',
+                  app_name: (row && row.product) ? row.product.split(' ')[0] : 'App',
+                  url: '#',
+                  raw_description: row ? row.product : '—'
+              };
+              fs.writeFileSync(path.join(queueDir, `order_USD_${row ? row.id : order_id}.json`), JSON.stringify(manifest, null, 2));
+          }
         }
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ paid: true }));
