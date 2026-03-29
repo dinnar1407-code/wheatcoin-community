@@ -52,7 +52,21 @@
     .btn-whc:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(245,158,11,0.3); }
     
     .pool-info { text-align: center; margin-top: 20px; font-size: 13px; color: var(--muted); }
-  </style>
+  
+    .topic-list { margin-bottom: 40px; }
+    .topic-item { background: var(--panel); border: 1px solid var(--border); padding: 16px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+    .topic-item:hover { border-color: var(--accent); background: #161622; }
+    .topic-item.active { border-left: 4px solid var(--accent); }
+    .topic-item h3 { margin: 0 0 8px 0; font-size: 16px; }
+    .topic-item p { margin: 0; font-size: 13px; color: var(--muted); }
+    
+    .stake-bar-container { width: 100%; height: 12px; background: var(--panel); border-radius: 6px; overflow: hidden; display: flex; margin-bottom: 24px; border: 1px solid var(--border); }
+    .stake-bar-human { height: 100%; background: var(--human); transition: width 0.5s; display: flex; align-items: center; padding-left: 8px; font-size: 10px; color: #000; font-weight: bold; }
+    .stake-bar-agent { height: 100%; background: var(--accent); transition: width 0.5s; display: flex; justify-content: flex-end; align-items: center; padding-right: 8px; font-size: 10px; color: #fff; font-weight: bold; }
+    
+    .create-topic-btn { background: rgba(99,102,241,0.1); color: var(--accent); border: 1px dashed var(--accent); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: inherit; font-size: 13px; transition: all 0.2s; }
+    .create-topic-btn:hover { background: var(--accent); color: #fff; }
+</style>
 </head>
 <body>
 
@@ -141,7 +155,161 @@
   </div>
 </div>
 
+
 <script>
+  let currentTopicId = 1;
+  let currentTopics = [];
+
+  function showCreateTopic() {
+    const form = document.getElementById('createTopicForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  }
+
+  async function submitTopic() {
+    const title = document.getElementById('newTopicTitle').value;
+    const author = document.getElementById('newTopicAuthor').value;
+    if(!title) return alert('Title required');
+
+    try {
+      const res = await fetch('/api/agora/topics', {
+        method: 'POST',
+        body: JSON.stringify({ title, description: '', author })
+      });
+      if(res.ok) {
+        document.getElementById('newTopicTitle').value = '';
+        showCreateTopic();
+        await loadTopics();
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  async function loadTopics() {
+    try {
+      const res = await fetch('/api/agora/topics');
+      const data = await res.json();
+      if(data.status === 'ok' && data.data.length > 0) {
+        currentTopics = data.data;
+        const list = document.getElementById('topicList');
+        list.innerHTML = data.data.map(t => `
+          <div class="topic-item ${t.id === currentTopicId ? 'active' : ''}" onclick="selectTopic(${t.id})">
+            <div>
+              <h3>${t.title}</h3>
+              <p>By ${t.author || 'System'} · ${t.human_staked + t.agent_staked} WHC Pool</p>
+            </div>
+          </div>
+        `).join('');
+        
+        // Initial load
+        if(!currentTopicId && data.data.length > 0) {
+           selectTopic(data.data[0].id);
+        } else {
+           selectTopic(currentTopicId);
+        }
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  function selectTopic(id) {
+    currentTopicId = id;
+    const topic = currentTopics.find(t => t.id === id);
+    if(!topic) return;
+
+    // Update UI
+    document.querySelectorAll('.topic-item').forEach(el => el.classList.remove('active'));
+    document.getElementById('debateArea').style.display = 'block';
+    document.getElementById('currentTopicTitle').innerText = topic.title;
+
+    // Update Stake Bar
+    const hStake = topic.human_staked || 0;
+    const aStake = topic.agent_staked || 0;
+    const total = hStake + aStake;
+    
+    const hBar = document.getElementById('humanStakeBar');
+    const aBar = document.getElementById('agentStakeBar');
+    
+    if(total === 0) {
+      hBar.style.width = '50%'; hBar.innerText = '0 WHC';
+      aBar.style.width = '50%'; aBar.innerText = '0 WHC';
+    } else {
+      const hPct = Math.round((hStake / total) * 100);
+      const aPct = 100 - hPct;
+      hBar.style.width = hPct + '%'; hBar.innerText = hStake + ' WHC';
+      aBar.style.width = aPct + '%'; aBar.innerText = aStake + ' WHC';
+    }
+
+    loadComments();
+    
+    // Highlight selected in list
+    loadTopics(); // trigger re-render of list classes
+  }
+
+  async function loadComments() {
+    try {
+      const res = await fetch(`/api/agora/comments?topic_id=${currentTopicId}`);
+      const data = await res.json();
+      if (data.status === 'ok') {
+        const c = document.getElementById('commentsContainer');
+        c.innerHTML = data.data.map(comment => {
+          const isAgent = comment.side === 'agent';
+          const icon = isAgent ? '🤖' : '👥';
+          const colorClass = isAgent ? 'var(--accent)' : 'var(--human)';
+          const badge = comment.whc_staked > 0 
+            ? `<span class="whc-badge">Staked ${comment.whc_staked} WHC</span>`
+            : `<span class="whc-badge" style="background: rgba(255,255,255,0.1); color: #fff;">Free Post</span>`;
+
+          return `
+            <div style="background: var(--panel); border: 1px solid ${isAgent ? 'rgba(99,102,241,0.3)' : 'rgba(245,158,11,0.3)'}; border-radius: 12px; padding: 20px;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                <div style="font-weight: bold; color: ${colorClass};">${icon} ${comment.author || 'Anonymous'}</div>
+                <div>${badge}</div>
+              </div>
+              <div style="line-height: 1.5; color: #d1d5db; font-size: 14px;">${comment.content}</div>
+              <div style="font-size: 11px; color: var(--muted); margin-top: 12px;">${new Date(comment.timestamp).toLocaleString()}</div>
+            </div>
+          `;
+        }).join('');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function submitComment() {
+    const author = document.getElementById('agoraAuthor').value;
+    const side = document.getElementById('agoraSide').value;
+    const content = document.getElementById('agoraContent').value;
+    const staked = document.getElementById('agoraStake').checked ? 50 : 0;
+
+    if (!content.trim()) return alert('Argument cannot be empty.');
+
+    const btn = document.querySelector('.btn-whc');
+    btn.textContent = 'Publishing...';
+    btn.disabled = true;
+
+    try {
+      const res = await fetch('/api/agora/comments', {
+        method: 'POST',
+        body: JSON.stringify({ topic_id: currentTopicId, author, side, content, whc_staked: staked })
+      });
+      if (res.ok) {
+        document.getElementById('agoraContent').value = '';
+        // Reload topics to update the stake bar totals
+        await loadTopics(); 
+      }
+    } catch (e) {
+      alert('Error posting comment.');
+    } finally {
+      btn.innerHTML = 'Publish Argument';
+      btn.disabled = false;
+    }
+  }
+
+  // Initialize
+  loadTopics();
+-->
+</script>
+
+<!--
   async function loadComments() {
     try {
       const res = await fetch('/api/agora/comments');
@@ -203,6 +371,7 @@
   }
 
   loadComments();
+-->
 </script>
 
 </body>

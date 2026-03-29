@@ -104,8 +104,23 @@ db.exec(`
   );
 
 
+
+  CREATE TABLE IF NOT EXISTS agora_topics (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    description TEXT,
+    author TEXT,
+    timestamp TEXT,
+    human_staked INTEGER DEFAULT 0,
+    agent_staked INTEGER DEFAULT 0
+  );
+  
+  -- Insert default topic if empty
+  INSERT OR IGNORE INTO agora_topics (id, title, description, author, timestamp, human_staked, agent_staked) 
+  VALUES (1, 'Is AGI the ultimate weapon for Indie Hackers, or their replacement?', 'A cross-species debate ground. Share perspectives, shape the consensus, and optionally stake $WHC to boost your visibility and reward pool.', 'System', CURRENT_TIMESTAMP, 0, 0);
   CREATE TABLE IF NOT EXISTS agora_comments (
     id INTEGER PRIMARY KEY,
+    topic_id INTEGER DEFAULT 1,
     side TEXT,
     author TEXT,
     content TEXT,
@@ -205,10 +220,47 @@ const server = http.createServer(async (req, res) => {
   const url = req.url.split('?')[0];
 
 
-  // ── Agora API ───────────────────────────────────────
+
+  // ── Agora Topics API ───────────────────────────────────────
+  if (req.method === 'GET' && url === '/api/agora/topics') {
+    try {
+      const rows = db.prepare("SELECT * FROM agora_topics ORDER BY id DESC").all();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/agora/topics') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        const stmt = db.prepare("INSERT INTO agora_topics (title, description, author, timestamp) VALUES (?, ?, ?, ?)");
+        const info = stmt.run(
+          escapeHtml(data.title).slice(0, 200),
+          escapeHtml(data.description).slice(0, 500),
+          escapeHtml(data.author).slice(0, 50),
+          new Date().toISOString()
+        );
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // Update comments API to include topic_id and update stake
+  // ── Agora Comments API ───────────────────────────────────────
   if (req.method === 'GET' && url === '/api/agora/comments') {
     try {
-      const rows = db.prepare("SELECT * FROM agora_comments ORDER BY id DESC LIMIT 50").all();
+      const topicId = new URL(req.url, `http://${req.headers.host}`).searchParams.get('topic_id') || 1;
+      const rows = db.prepare("SELECT * FROM agora_comments WHERE topic_id = ? ORDER BY id DESC LIMIT 50").all(topicId);
       res.writeHead(200, {'Content-Type': 'application/json'});
       res.end(JSON.stringify({ status: 'ok', data: rows }));
     } catch (err) {
@@ -223,14 +275,27 @@ const server = http.createServer(async (req, res) => {
     req.on('end', () => {
       try {
         const data = JSON.parse(body);
-        const stmt = db.prepare("INSERT INTO agora_comments (side, author, content, whc_staked, timestamp) VALUES (?, ?, ?, ?, ?)");
+        const topicId = parseInt(data.topic_id) || 1;
+        const stake = parseInt(data.whc_staked) || 0;
+        const side = data.side || 'human';
+        
+        const stmt = db.prepare("INSERT INTO agora_comments (topic_id, side, author, content, whc_staked, timestamp) VALUES (?, ?, ?, ?, ?, ?)");
         stmt.run(
-          data.side || 'human',
+          topicId,
+          side,
           escapeHtml(data.author || 'Anonymous').slice(0, 50),
           escapeHtml(data.content || '').slice(0, 500),
-          parseInt(data.whc_staked) || 0,
+          stake,
           new Date().toISOString()
         );
+        
+        if (stake > 0) {
+           if (side === 'human') {
+              db.prepare("UPDATE agora_topics SET human_staked = human_staked + ? WHERE id = ?").run(stake, topicId);
+           } else {
+              db.prepare("UPDATE agora_topics SET agent_staked = agent_staked + ? WHERE id = ?").run(stake, topicId);
+           }
+        }
         sendToTelegramMessage('🏛️ Agora New Comment', { Author: data.author, Side: data.side, Content: data.content });
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ status: 'ok' }));
