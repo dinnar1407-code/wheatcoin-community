@@ -275,7 +275,7 @@
               <ul class="skills">${kit.skills.map(s => `<li>${skillLabel(s)}</li>`).join('')}</ul>
               <div class="meta">
                 <div class="forwho">${kit.audience[lang]}</div>
-                <button class="buy" onclick="buyKitBySlug('${kit.slug}')">${t.buy}</button>
+                <button class="btn primary" style="padding:10px 18px; cursor: pointer; background: linear-gradient(135deg, #6366f1, #8b5cf6); border: none; color: white; border-radius: 8px;" onclick="buyKitBySlug('${kit.slug}')">${t.buy}</button>
               </div>
             </div>`).join('')}
         </div>`;
@@ -323,7 +323,7 @@
       // Check if there was a canceled payment
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get('canceled') === 'true') {
-        const t = I18N[currentLang];
+        const t = I18N[lang];
         document.getElementById('successMount').innerHTML = `<div style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; border-radius:12px; padding:16px; margin-bottom:24px; color:#fca5a5;"><strong>${t.canceledTitle}</strong><br/>${t.canceledBody}</div>`;
       }
       render();
