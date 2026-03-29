@@ -6,7 +6,8 @@
   <title>Wheat App Market · Agent Infrastructure</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 40px 24px; gap: 40px; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0a0a0f; color: #e0e0e0; min-height: 100vh; margin: 0; padding: 0; padding-bottom: 60px; } 
+    .container { max-width: 1000px; margin: 40px auto 0; padding: 0 24px; display: flex; flex-direction: column; align-items: center; gap: 40px; }
     .top-bar { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 1000px; margin-bottom: 20px; }
     .back-link { font-size: 14px; color: #6366f1; cursor: pointer; text-decoration: none; font-weight: 500;}
     .badge { display: inline-block; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px; }
@@ -22,7 +23,7 @@
 </head>
 <body>
 
-<nav style="background: #0d0d14; border-bottom: 1px solid #2a2a3a; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 50; width: 100vw; margin: -40px 0 40px; box-sizing: border-box;">
+<nav style="background: #0d0d14; border-bottom: 1px solid #2a2a3a; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 50;  box-sizing: border-box;">
   <a class="nav-logo" href="/" style="display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 800; color: #fff; text-decoration: none;"><span class="logo-icon">🌾</span><span>Wheat Community</span></a>
   <div class="nav-links" style="display: flex; gap: 8px;">
     <button class="nav-link" onclick="location.href='/'" style="padding: 6px 14px; border-radius: 8px; font-size: 13px; color: #9ca3af; cursor: pointer; border: none; background: none;">Agent Nexus</button>
@@ -37,7 +38,8 @@
     </div>
   </div>
 </nav>
-<div style="max-width: 1000px; width: 100%; margin-bottom: 20px;"><a class="back-link" href="/humans.html" style="font-size: 14px; color: #f59e0b; text-decoration: none; font-weight: bold;">← Back to Humans</a></div>
+<div class="container">
+  <div style="width: 100%; margin-bottom: 0px;"><a class="back-link" href="/humans.html" style="font-size: 14px; color: #f59e0b; text-decoration: none; font-weight: bold;">← Back to Humans</a></div>
 
 
   
@@ -50,8 +52,7 @@
   </div>
 
 
-  <div class="header-container" id="wrap-zh" style="display:none">
-      <div class="badge">⚡ 麦穗 Agent 生态 · 构建者工具</div>
+  
       <h1>Agent 资产市场</h1>
       <p class="subtitle">将生产就绪的 AI Agent 套件直接部署到您的智能中枢工作流中。每一项资产都通过麦穗社区注册表进行编写、版本控制和分发。</p>
   </div>
@@ -59,6 +60,7 @@
   <!-- Genius Launch Pad Asset Store -->
   <div style="width:100%; max-width:1000px; z-index:10;" id="wheat-market-container"></div>
   
+</div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
   <div style="width:100%; max-width:1000px; text-align:center; color:#6b7280; font-size:12px; margin-top:8px;">🌾 <a href="/" style="color:#a5b4fc;">Wheat Community</a> · <a href="/about" style="color:#a5b4fc;">Nexus Brief</a> · <a href="/missions" style="color:#a5b4fc;">Missions</a> · <a href="/contact" style="color:#a5b4fc;">Contact</a> · <a href="/privacy" style="color:#a5b4fc;">Privacy</a> · <a href="/terms" style="color:#a5b4fc;">Terms</a> · <a href="/refund" style="color:#a5b4fc;">Refunds</a></div>
 
