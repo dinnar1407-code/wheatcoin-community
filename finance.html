@@ -62,40 +62,40 @@
 
   <div class="login-overlay" id="loginModal">
     <div class="login-box">
-      <h2>Enter Nexus Finance</h2>
+      <h2 id="loginTitle">Enter Nexus Finance</h2>
       <form id="loginForm">
         <div class="form-group">
-          <label>Email Address</label>
+          <label id="lblEmail">Email Address</label>
           <input type="email" id="loginEmail" placeholder="your@email.com" required />
         </div>
         <div class="form-group">
-          <label>I am a...</label>
+          <label id="lblRole">I am a...</label>
           <select id="loginRole" required onchange="toggleEngineerFields()">
-            <option value="employer">Supplier / Foreman (Payor)</option>
-            <option value="engineer">Independent Engineer (Payee)</option>
+            <option value="employer" id="optEmployer">Supplier / Foreman (Payor)</option>
+            <option value="engineer" id="optEngineer">Independent Engineer (Payee)</option>
           </select>
         </div>
         
         <!-- Extra fields for Engineer Registration -->
         <div id="engineerFields" style="display:none;">
           <div class="form-group">
-            <label>Full Name / LinkedIn Profile URL</label>
+            <label id="lblEngName">Full Name / LinkedIn Profile URL</label>
             <input type="text" id="engName" placeholder="e.g. John Doe / linkedin.com/in/johndoe" />
           </div>
           <div class="form-group">
-            <label>Mobile Number (WhatsApp / Telegram)</label>
+            <label id="lblEngPhone">Mobile Number (WhatsApp / Telegram)</label>
             <input type="text" id="engPhone" placeholder="e.g. +1 555-123-4567" />
           </div>
           <div class="form-group">
-            <label>Core Skills (e.g. Siemens, Allen Bradley)</label>
+            <label id="lblEngSkills">Core Skills (e.g. Siemens, Allen Bradley)</label>
             <input type="text" id="engSkills" placeholder="e.g. Siemens S7-1500, TIA Portal" />
           </div>
           <div class="form-group">
-            <label>Expected Hourly Rate (USD)</label>
+            <label id="lblEngRate">Expected Hourly Rate (USD)</label>
             <input type="number" id="engRate" placeholder="e.g. 80" />
           </div>
           <div class="form-group">
-            <label>Brief Portfolio / Experience</label>
+            <label id="lblEngBio">Brief Portfolio / Experience</label>
             <textarea id="engBio" rows="3" placeholder="Briefly describe your experience and past projects..."></textarea>
           </div>
         </div>
@@ -117,28 +117,28 @@
     <div class="metrics">
       <div class="metric-card">
         <div class="metric-val" id="mTotal">$0.00</div>
-        <div class="metric-label" id="mLbl1">Total Billed</div>
+        <div class="metric-label" id="lblTotalText">Total Billed</div>
       </div>
       <div class="metric-card">
         <div class="metric-val" id="mHours">0</div>
-        <div class="metric-label">Logged Hours</div>
+        <div class="metric-label" id="lblHoursText">Logged Hours</div>
       </div>
       <div class="metric-card">
         <div class="metric-val" id="mPending" style="color:var(--gold)">$0.00</div>
-        <div class="metric-label">Pending Escrow</div>
+        <div class="metric-label" id="lblPendingText">Pending Escrow</div>
       </div>
     </div>
 
-    <h3 style="margin-bottom: 16px; color:#fff;">Ledger History & Invoices</h3>
+    <h3 style="margin-bottom: 16px; color:#fff;" id="tableTitle">Ledger History & Invoices</h3>
     <table id="ledgerTable">
       <thead>
         <tr>
-          <th>Demand ID</th>
-          <th>Counterparty</th>
-          <th>Rate / Hours</th>
-          <th>Total Amount</th>
-          <th>Status</th>
-          <th>Action</th>
+          <th id="thId">Demand ID</th>
+          <th id="thCounterparty">Counterparty</th>
+          <th id="thRate">Rate / Hours</th>
+          <th id="thTotal">Total Amount</th>
+          <th id="thStatus">Status</th>
+          <th id="thAction">Action</th>
         </tr>
       </thead>
       <tbody id="ledgerBody">
@@ -347,17 +347,162 @@
     }
   </script>
 <script>
+  const DICT = {
+    en: {
+      loginTitle: "Enter Nexus Finance",
+      lblEmail: "Email Address",
+      lblRole: "I am a...",
+      optEmployer: "Supplier / Foreman (Payor)",
+      optEngineer: "Independent Engineer (Payee)",
+      lblEngName: "Full Name / LinkedIn Profile URL",
+      lblEngPhone: "Mobile Number (WhatsApp / Telegram)",
+      lblEngSkills: "Core Skills (e.g. Siemens, Allen Bradley)",
+      lblEngRate: "Expected Hourly Rate (USD)",
+      lblEngBio: "Brief Portfolio / Experience",
+      loginBtn: "Secure Login",
+      authenticating: "Authenticating...",
+      dashTitle: "My Financial Ledger",
+      dashSub: "Logged in as:",
+      signOut: "Sign Out",
+      lblTotal: "Total Paid",
+      lblTotalEarned: "Total Earned",
+      lblHours: "Logged Hours",
+      lblPending: "Pending Escrow",
+      tableTitle: "Ledger History & Invoices",
+      thId: "Demand ID",
+      thCounterparty: "Counterparty",
+      thRate: "Rate / Hours",
+      thTotal: "Total Amount",
+      thStatus: "Status",
+      thAction: "Action"
+    },
+    zh: {
+      loginTitle: "登录财务系统",
+      lblEmail: "电子邮箱",
+      lblRole: "我是...",
+      optEmployer: "设备供应商 / 包工头 (付款方)",
+      optEngineer: "独立工程师 (收款方)",
+      lblEngName: "姓名 / 领英主页",
+      lblEngPhone: "手机号 (WhatsApp / Telegram)",
+      lblEngSkills: "核心技能 (如 Siemens, Allen Bradley)",
+      lblEngRate: "期望时薪 (USD)",
+      lblEngBio: "简要履历 / 项目经验",
+      loginBtn: "安全登录",
+      authenticating: "登录中...",
+      dashTitle: "我的财务账本",
+      dashSub: "当前登录:",
+      signOut: "退出登录",
+      lblTotal: "总计支付",
+      lblTotalEarned: "总计收入",
+      lblHours: "登记工时",
+      lblPending: "待结款 (托管中)",
+      tableTitle: "账本记录与发票",
+      thId: "需求单号",
+      thCounterparty: "交易对象",
+      thRate: "单价 / 工时",
+      thTotal: "总金额",
+      thStatus: "状态",
+      thAction: "操作"
+    },
+    es: {
+      loginTitle: "Ingresar a Nexus Finance",
+      lblEmail: "Correo Electrónico",
+      lblRole: "Soy un...",
+      optEmployer: "Proveedor / Capataz (Pagador)",
+      optEngineer: "Ingeniero Independiente (Beneficiario)",
+      lblEngName: "Nombre completo / Perfil de LinkedIn",
+      lblEngPhone: "Número de teléfono (WhatsApp / Telegram)",
+      lblEngSkills: "Habilidades principales (ej. Siemens, Allen Bradley)",
+      lblEngRate: "Tarifa por hora esperada (USD)",
+      lblEngBio: "Breve portafolio / Experiencia",
+      loginBtn: "Acceso Seguro",
+      authenticating: "Autenticando...",
+      dashTitle: "Mi libro mayor financiero",
+      dashSub: "Conectado como:",
+      signOut: "Cerrar sesión",
+      lblTotal: "Total pagado",
+      lblTotalEarned: "Total ganado",
+      lblHours: "Horas registradas",
+      lblPending: "Fideicomiso pendiente",
+      tableTitle: "Historial del libro mayor y facturas",
+      thId: "ID de demanda",
+      thCounterparty: "Contraparte",
+      thRate: "Tarifa / Horas",
+      thTotal: "Cantidad total",
+      thStatus: "Estado",
+      thAction: "Acción"
+    }
+  };
+
   let lang = localStorage.getItem('whc_lang') || 'en';
+
   function setLang(l) {
     lang = l;
     localStorage.setItem('whc_lang', l);
     document.querySelectorAll('.lang-btn').forEach(b => {
-      b.classList.toggle('active', b.textContent.toLowerCase() === l);
+      b.style.background = b.textContent.toLowerCase() === l ? 'var(--purple)' : 'transparent';
+      b.style.color = b.textContent.toLowerCase() === l ? '#fff' : 'var(--muted)';
+      b.style.borderColor = b.textContent.toLowerCase() === l ? 'var(--purple)' : 'var(--border)';
     });
-    // In a full implementation, we'd trigger UI string replacements here
-    // For this update, we just ensure the toggle state reflects globally
-    if (typeof updateContent === 'function') updateContent();
+    updateContent();
   }
+
+  function updateContent() {
+    const dict = DICT[lang];
+    if(document.getElementById('loginTitle')) document.getElementById('loginTitle').textContent = dict.loginTitle;
+    if(document.getElementById('lblEmail')) document.getElementById('lblEmail').textContent = dict.lblEmail;
+    if(document.getElementById('lblRole')) document.getElementById('lblRole').textContent = dict.lblRole;
+    if(document.getElementById('optEmployer')) document.getElementById('optEmployer').textContent = dict.optEmployer;
+    if(document.getElementById('optEngineer')) document.getElementById('optEngineer').textContent = dict.optEngineer;
+    if(document.getElementById('lblEngName')) document.getElementById('lblEngName').textContent = dict.lblEngName;
+    if(document.getElementById('lblEngPhone')) document.getElementById('lblEngPhone').textContent = dict.lblEngPhone;
+    if(document.getElementById('lblEngSkills')) document.getElementById('lblEngSkills').textContent = dict.lblEngSkills;
+    if(document.getElementById('lblEngRate')) document.getElementById('lblEngRate').textContent = dict.lblEngRate;
+    if(document.getElementById('lblEngBio')) document.getElementById('lblEngBio').textContent = dict.lblEngBio;
+    
+    const btn = document.getElementById('loginBtn');
+    if(btn) {
+      if(btn.disabled) {
+        btn.textContent = dict.authenticating;
+      } else {
+        btn.textContent = dict.loginBtn;
+      }
+    }
+
+    if(document.getElementById('dashTitle')) document.getElementById('dashTitle').textContent = dict.dashTitle;
+    // if(document.getElementById('signOutBtn')) document.getElementById('signOutBtn').textContent = dict.signOut;
+    
+    const lblTotal = document.getElementById('lblTotalText');
+    if (lblTotal) lblTotal.textContent = currentRole === 'employer' ? dict.lblTotal : dict.lblTotalEarned;
+    
+    const lblHours = document.getElementById('lblHoursText');
+    if (lblHours) lblHours.textContent = dict.lblHours;
+
+    const lblPending = document.getElementById('lblPendingText');
+    if (lblPending) lblPending.textContent = dict.lblPending;
+
+    const tableTitle = document.getElementById('tableTitle');
+    if (tableTitle) tableTitle.textContent = dict.tableTitle;
+
+    const thId = document.getElementById('thId');
+    if (thId) thId.textContent = dict.thId;
+
+    const thCounterparty = document.getElementById('thCounterparty');
+    if (thCounterparty) thCounterparty.textContent = dict.thCounterparty;
+
+    const thRate = document.getElementById('thRate');
+    if (thRate) thRate.textContent = dict.thRate;
+
+    const thTotal = document.getElementById('thTotal');
+    if (thTotal) thTotal.textContent = dict.thTotal;
+
+    const thStatus = document.getElementById('thStatus');
+    if (thStatus) thStatus.textContent = dict.thStatus;
+
+    const thAction = document.getElementById('thAction');
+    if (thAction) thAction.textContent = dict.thAction;
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     setLang(lang);
   });
