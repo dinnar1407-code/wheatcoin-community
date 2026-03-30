@@ -196,6 +196,17 @@ db.exec(`
     created_at TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS project_milestones (
+    id INTEGER PRIMARY KEY,
+    demand_id INTEGER,
+    phase_name TEXT, -- e.g. Site Survey, Cabinet Wiring, PLC Logic, Trial Run
+    percentage REAL, -- 10, 30, 40, 20
+    amount REAL,
+    status TEXT DEFAULT 'locked', -- locked, funded, completed, released
+    deliverables_req TEXT,
+    completed_at TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS financial_ledgers (
     id INTEGER PRIMARY KEY,
     demand_id INTEGER,
@@ -434,6 +445,19 @@ const server = http.createServer(async (req, res) => {
   }
 
   // ── Financial Ledger API ───────────────────────────────────────
+  if (req.method === 'GET' && url.startsWith('/api/finance/milestones')) {
+    const qs = new URLSearchParams(req.url.split('?')[1] || '');
+    const demand_id = qs.get('demand_id');
+    try {
+      const rows = db.prepare("SELECT * FROM project_milestones WHERE demand_id = ? ORDER BY id ASC").all(demand_id);
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
   if (req.method === 'GET' && url.startsWith('/api/finance/ledger')) {
     const qs = new URLSearchParams(req.url.split('?')[1] || '');
     const email = (qs.get('email') || '').trim();
@@ -447,6 +471,52 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
     }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/talent/submit') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        if (!data.title || !data.role || !data.contact) throw new Error("Missing required fields");
+        
+        const stmt = db.prepare("INSERT INTO demands (title, role, region, project_type, location, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const info = stmt.run(
+          escapeHtml(data.title),
+          escapeHtml(data.role),
+          escapeHtml(data.region || 'US/CA/MX'),
+          escapeHtml(data.project_type || 'General'),
+          escapeHtml(data.location || ''),
+          escapeHtml(data.budget),
+          escapeHtml(data.description),
+          escapeHtml(data.contact),
+          new Date().toISOString()
+        );
+        
+        const demandId = info.lastInsertRowid;
+        
+        // 自动初始化标准化里程碑 (Milestone Escrow)
+        const budgetAmount = parseFloat((data.budget || '0').replace(/[^0-9.]/g, '')) || 1000;
+        const milestones = [
+            { phase: "Site Survey / Design Review", pct: 0.10 },
+            { phase: "Cabinet Wiring & Basic IO", pct: 0.30 },
+            { phase: "PLC Logic & Dry Run", pct: 0.40 },
+            { phase: "Trial Run & Handoff", pct: 0.20 }
+        ];
+        const mStmt = db.prepare("INSERT INTO project_milestones (demand_id, phase_name, percentage, amount, status) VALUES (?, ?, ?, ?, 'locked')");
+        for (let m of milestones) {
+             mStmt.run(demandId, m.phase, m.pct, budgetAmount * m.pct);
+        }
+
+        sendToTelegramMessage('👔 New Talent Demand', { Title: data.title, Region: data.region, Contact: data.contact, Escrow: "Milestones Initialized" });
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', id: demandId }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
     return;
   }
 
@@ -506,35 +576,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'POST' && url === '/api/talent/submit') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        if (!data.title || !data.role || !data.contact) throw new Error("Missing required fields");
-        
-        const stmt = db.prepare("INSERT INTO demands (title, role, region, project_type, location, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        const info = stmt.run(
-          escapeHtml(data.title),
-          escapeHtml(data.role),
-          escapeHtml(data.region || 'US/CA/MX'),
-          escapeHtml(data.project_type || 'General'),
-          escapeHtml(data.location || ''),
-          escapeHtml(data.budget),
-          escapeHtml(data.description),
-          escapeHtml(data.contact),
-          new Date().toISOString()
-        );
-        sendToTelegramMessage('👔 New Talent Demand', { Title: data.title, Region: data.region, Contact: data.contact });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
+
 
   if (req.method === 'GET' && url === '/api/talent/list') {
     try {

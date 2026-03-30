@@ -123,6 +123,30 @@
     </table>
   </div>
 
+  <div class="modal-overlay" id="milestoneModal" style="display:none;">
+    <div class="login-box" style="max-width:600px;">
+      <h2>Milestone Escrow Tracker</h2>
+      <p style="color:var(--muted); text-align:center; margin-bottom:24px;">Demand ID: <span id="msDemandId" style="color:#fff;"></span></p>
+      
+      <table style="margin-bottom:24px;">
+        <thead>
+          <tr>
+            <th>Phase</th>
+            <th>%</th>
+            <th>Amount</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="msBody">
+        </tbody>
+      </table>
+      
+      <div style="text-align:right;">
+        <button class="btn-small" onclick="document.getElementById('milestoneModal').style.display='none'">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let currentUser = null;
     let currentRole = null;
@@ -191,10 +215,10 @@
             <tr>
               <td>#DMD-1082</td>
               <td>terry.qin@outlook.com</td>
-              <td>$85.00/hr x 40h</td>
-              <td style="font-weight:600; color:#fff;">$3,400.00</td>
+              <td>Milestone Based</td>
+              <td style="font-weight:600; color:#fff;">$8,000.00</td>
               <td><span class="status-badge status-pending">PENDING</span></td>
-              <td><button class="btn-small" style="${currentRole==='employer'?'background:var(--purple)':'opacity:0.8'}">${currentRole==='employer'?'Fund Escrow':'Log Hours'}</button></td>
+              <td><button class="btn-small" style="${currentRole==='employer'?'background:var(--purple)':'opacity:0.8'}" onclick="viewMilestones(1082)">${currentRole==='employer'?'View Escrow':'Milestones'}</button></td>
             </tr>
             <tr>
               <td>#DMD-945</td>
@@ -205,7 +229,7 @@
               <td><button class="btn-small">⬇️ Download Invoice</button></td>
             </tr>
           `;
-          total = 5200; hours = 40; pending = 3400;
+          total = 5200; hours = 0; pending = 8000;
         }
 
         document.getElementById('mTotal').textContent = `$${total.toLocaleString()}`;
@@ -214,6 +238,61 @@
 
       } catch(e) {
         tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Failed to load ledger data.</td></tr>`;
+      }
+    }
+
+    async function viewMilestones(demandId) {
+      document.getElementById('msDemandId').textContent = `#DMD-${demandId}`;
+      const tbody = document.getElementById('msBody');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--muted);">Loading...</td></tr>';
+      document.getElementById('milestoneModal').style.display = 'flex';
+      
+      try {
+        const res = await fetch(`/api/finance/milestones?demand_id=${demandId}`);
+        const data = await res.json();
+        
+        if (data.status === 'ok' && data.data && data.data.length > 0) {
+          tbody.innerHTML = data.data.map(m => {
+            let color = m.status === 'locked' ? 'var(--muted)' : (m.status === 'funded' ? 'var(--purple)' : 'var(--green)');
+            let btn = '';
+            if (currentRole === 'employer' && m.status === 'locked') {
+               btn = `<button class="btn-small" style="background:var(--purple);font-size:10px;" onclick="alert('Proceeding to Stripe Checkout for $${m.amount}')">Fund Now</button>`;
+            } else if (currentRole === 'employer' && m.status === 'completed') {
+               btn = `<button class="btn-small" style="background:var(--green);font-size:10px;" onclick="alert('Releasing funds to engineer...')">Approve & Release</button>`;
+            } else if (currentRole === 'engineer' && m.status === 'funded') {
+               btn = `<button class="btn-small" style="background:var(--blue);font-size:10px;" onclick="alert('Submitting deliverables for review...')">Submit Work</button>`;
+            }
+            
+            return `<tr>
+              <td style="color:#fff;">${m.phase_name}</td>
+              <td style="color:var(--muted);">${m.percentage * 100}%</td>
+              <td style="color:#fff;font-weight:bold;">$${m.amount.toFixed(2)}</td>
+              <td><span style="color:${color};font-size:12px;text-transform:uppercase;font-weight:bold;margin-right:8px;">${m.status}</span> ${btn}</td>
+            </tr>`;
+          }).join('');
+        } else {
+          // Dummy UI for demo
+          tbody.innerHTML = `
+            <tr>
+              <td style="color:#fff;">Site Survey / Design Review</td><td style="color:var(--muted);">10%</td><td style="color:#fff;font-weight:bold;">$800.00</td>
+              <td><span style="color:var(--purple);font-size:12px;text-transform:uppercase;font-weight:bold;margin-right:8px;">FUNDED</span> ${currentRole==='engineer'?`<button class="btn-small" style="background:var(--blue);font-size:10px;">Submit Work</button>`:''}</td>
+            </tr>
+            <tr>
+              <td style="color:#fff;">Cabinet Wiring & Basic IO</td><td style="color:var(--muted);">30%</td><td style="color:#fff;font-weight:bold;">$2,400.00</td>
+              <td><span style="color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:bold;margin-right:8px;">LOCKED</span> ${currentRole==='employer'?`<button class="btn-small" style="background:var(--purple);font-size:10px;">Fund Now</button>`:''}</td>
+            </tr>
+            <tr>
+              <td style="color:#fff;">PLC Logic & Dry Run</td><td style="color:var(--muted);">40%</td><td style="color:#fff;font-weight:bold;">$3,200.00</td>
+              <td><span style="color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:bold;margin-right:8px;">LOCKED</span></td>
+            </tr>
+            <tr>
+              <td style="color:#fff;">Trial Run & Handoff</td><td style="color:var(--muted);">20%</td><td style="color:#fff;font-weight:bold;">$1,600.00</td>
+              <td><span style="color:var(--muted);font-size:12px;text-transform:uppercase;font-weight:bold;margin-right:8px;">LOCKED</span></td>
+            </tr>
+          `;
+        }
+      } catch(e) {
+         tbody.innerHTML = '<tr><td colspan="4" style="color:red;text-align:center;">Error loading milestones.</td></tr>';
       }
     }
 
