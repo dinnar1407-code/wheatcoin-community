@@ -544,7 +544,28 @@ const server = http.createServer(async (req, res) => {
         if (!data.email || !data.role) throw new Error("Missing email or role");
         
         const stmt = db.prepare("INSERT OR IGNORE INTO user_accounts (email, role, name, created_at) VALUES (?, ?, ?, ?)");
-        stmt.run(data.email, data.role, data.name || '', new Date().toISOString());
+        stmt.run(data.email, data.role, data.engName || data.name || '', new Date().toISOString());
+
+        // If it's an engineer, store their profile data in the talents table if it doesn't exist
+        if (data.role === 'engineer' && data.engName) {
+            const checkTalent = db.prepare("SELECT id FROM talents WHERE contact = ?").get(data.email);
+            if (!checkTalent) {
+                const insertTalent = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, verified_score, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                insertTalent.run(
+                    data.engName,
+                    data.engSkills || 'Automation Engineer',
+                    'US/CA/MX',
+                    data.engRate || 'Open',
+                    'hourly',
+                    'Mid',
+                    0,
+                    data.engBio || '',
+                    data.email,
+                    new Date().toISOString()
+                );
+                sendToTelegramMessage('🧑‍🔧 New Engineer Profile (via Finance)', { Name: data.engName, Email: data.email, Skills: data.engSkills });
+            }
+        }
         
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ status: 'ok', email: data.email, role: data.role }));

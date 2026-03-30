@@ -60,7 +60,6 @@
     </div>
   </nav>
 
-  <!-- Login Modal -->
   <div class="login-overlay" id="loginModal">
     <div class="login-box">
       <h2>Enter Nexus Finance</h2>
@@ -71,11 +70,36 @@
         </div>
         <div class="form-group">
           <label>I am a...</label>
-          <select id="loginRole" required>
+          <select id="loginRole" required onchange="toggleEngineerFields()">
             <option value="employer">Supplier / Foreman (Payor)</option>
             <option value="engineer">Independent Engineer (Payee)</option>
           </select>
         </div>
+        
+        <!-- Extra fields for Engineer Registration -->
+        <div id="engineerFields" style="display:none;">
+          <div class="form-group">
+            <label>Full Name / LinkedIn Profile URL</label>
+            <input type="text" id="engName" placeholder="e.g. John Doe / linkedin.com/in/johndoe" />
+          </div>
+          <div class="form-group">
+            <label>Mobile Number (WhatsApp / Telegram)</label>
+            <input type="text" id="engPhone" placeholder="e.g. +1 555-123-4567" />
+          </div>
+          <div class="form-group">
+            <label>Core Skills (e.g. Siemens, Allen Bradley)</label>
+            <input type="text" id="engSkills" placeholder="e.g. Siemens S7-1500, TIA Portal" />
+          </div>
+          <div class="form-group">
+            <label>Expected Hourly Rate (USD)</label>
+            <input type="number" id="engRate" placeholder="e.g. 80" />
+          </div>
+          <div class="form-group">
+            <label>Brief Portfolio / Experience</label>
+            <textarea id="engBio" rows="3" placeholder="Briefly describe your experience and past projects..."></textarea>
+          </div>
+        </div>
+
         <button type="submit" class="btn-primary" id="loginBtn">Secure Login</button>
       </form>
     </div>
@@ -151,6 +175,16 @@
     let currentUser = null;
     let currentRole = null;
 
+    function toggleEngineerFields() {
+      const role = document.getElementById('loginRole').value;
+      const engFields = document.getElementById('engineerFields');
+      if (role === 'engineer') {
+        engFields.style.display = 'block';
+      } else {
+        engFields.style.display = 'none';
+      }
+    }
+
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -158,10 +192,20 @@
       const btn = document.getElementById('loginBtn');
       btn.textContent = 'Authenticating...'; btn.disabled = true;
 
+      const payload = { email, role, name: email.split('@')[0] };
+      
+      if (role === 'engineer') {
+        payload.engName = document.getElementById('engName').value.trim();
+        payload.engPhone = document.getElementById('engPhone').value.trim();
+        payload.engSkills = document.getElementById('engSkills').value.trim();
+        payload.engRate = document.getElementById('engRate').value.trim();
+        payload.engBio = document.getElementById('engBio').value.trim();
+      }
+
       try {
         const res = await fetch('/api/auth/register', {
           method: 'POST', headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({ email, role, name: email.split('@')[0] })
+          body: JSON.stringify(payload)
         });
         if(res.ok) {
           currentUser = email;
