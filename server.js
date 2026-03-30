@@ -169,11 +169,18 @@ db.exec(`
     skills TEXT,
     region TEXT DEFAULT 'US/CA/MX',
     rate TEXT,
+    pricing_model TEXT DEFAULT 'hourly', -- 'hourly' or 'fixed'
+    level TEXT DEFAULT 'Junior', -- 'Junior', 'Mid', 'Senior', 'Expert'
+    verified_score INTEGER DEFAULT 0,
     bio TEXT,
     contact TEXT,
     status TEXT DEFAULT 'available',
     receivedAt TEXT
   );
+
+  try { db.exec("ALTER TABLE talents ADD COLUMN pricing_model TEXT DEFAULT 'hourly'"); } catch(e){}
+  try { db.exec("ALTER TABLE talents ADD COLUMN level TEXT DEFAULT 'Junior'"); } catch(e){}
+  try { db.exec("ALTER TABLE talents ADD COLUMN verified_score INTEGER DEFAULT 0"); } catch(e){}
 
   CREATE TABLE IF NOT EXISTS bot_conversations (
     id INTEGER PRIMARY KEY,
@@ -597,12 +604,14 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         if (!data.name || !data.skills || !data.contact) throw new Error("Missing required fields");
         
-        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         const info = stmt.run(
           escapeHtml(data.name),
           escapeHtml(data.skills),
           escapeHtml(data.region || 'US/CA/MX'),
           escapeHtml(data.rate),
+          escapeHtml(data.pricing_model || 'hourly'),
+          escapeHtml(data.level || 'Mid'),
           escapeHtml(data.bio),
           escapeHtml(data.contact),
           new Date().toISOString()

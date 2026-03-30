@@ -136,7 +136,17 @@
             <option value="Mexico (MX)">Local: Mexico (MX)</option>
             <option value="Expats (CN -> NA/MX)">Chinese Expat Team (出海工程师团队)</option>
           </select></div>
-          <div class="form-group"><label>Hourly / Project Rate</label><input type="text" id="tRate" placeholder="e.g. $100/hr minimum" required /></div>
+          <div class="form-group"><label>Skill Level</label><select id="tLevel" required>
+            <option value="Junior">Junior (1-3 yrs)</option>
+            <option value="Mid" selected>Mid-Level (3-5 yrs)</option>
+            <option value="Senior">Senior (5-10 yrs)</option>
+            <option value="Expert">Expert (10+ yrs, System Architect)</option>
+          </select></div>
+          <div class="form-group"><label>Pricing Model</label><select id="tPricingModel" required onchange="updateRatePlaceholder()">
+            <option value="hourly" selected>Hourly Rate</option>
+            <option value="fixed">Fixed Price per Project</option>
+          </select></div>
+          <div class="form-group"><label>Expected Rate (USD)</label><input type="text" id="tRate" placeholder="e.g. $80/hr" required /></div>
           <div class="form-group"><label>Contact Email</label><input type="email" id="tContact" placeholder="Your work email" required /></div>
           <div class="form-group"><label>Bio / Experience</label><textarea id="tBio" rows="4" placeholder="Summarize your years of experience, key projects, and availability..." required></textarea></div>
           <button type="submit" class="btn-submit" id="submitTalentBtn">Publish Profile</button>
@@ -198,9 +208,10 @@
               <div class="ai-match-badge" style="display:block;">✨ Verified Profile</div>
               <div class="card-title">Engineer: ${t.name}</div>
               <div class="card-meta">
+                <span class="meta-badge" style="background:rgba(59,130,246,0.1); border-color:var(--blue); color:#a5b4fc;">🏅 ${t.level || 'Mid'} Level</span>
                 <span class="meta-badge">🧠 ${t.skills}</span>
                 <span class="meta-badge badge-na" style="${t.region.includes('Expat') ? 'color:#ef4444; border-color:#ef4444; background:rgba(239,68,68,0.1);' : ''}">🌎 ${t.region}</span>
-                <span class="meta-badge" style="color:var(--gold); border-color:var(--gold);">💵 ${t.rate}</span>
+                <span class="meta-badge" style="color:var(--gold); border-color:var(--gold);">💵 ${t.rate} ${t.pricing_model === 'hourly' ? '/ hr' : '/ fix'}</span>
               </div>
               <div class="card-desc">${t.bio}</div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -246,6 +257,8 @@
         name: document.getElementById('tName').value,
         skills: document.getElementById('tSkills').value,
         region: document.getElementById('tRegion').value,
+        level: document.getElementById('tLevel').value,
+        pricing_model: document.getElementById('tPricingModel').value,
         rate: document.getElementById('tRate').value,
         contact: document.getElementById('tContact').value,
         bio: document.getElementById('tBio').value
@@ -256,6 +269,13 @@
       } catch(e) { alert('Network error.'); }
       btn.textContent = 'Publish Profile'; btn.disabled = false;
     });
+
+    function updateRatePlaceholder() {
+      const pm = document.getElementById('tPricingModel').value;
+      const rateInput = document.getElementById('tRate');
+      if (pm === 'hourly') rateInput.placeholder = 'e.g. $80/hr';
+      else rateInput.placeholder = 'e.g. $5,000 / project';
+    }
 
     switchView('projects');
   </script>
