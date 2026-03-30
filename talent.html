@@ -99,11 +99,16 @@
           </select></div>
 
           <div class="form-group"><label>Required Skills & Languages</label><input type="text" id="jRole" placeholder="e.g. Siemens TIA, Spanish/English, Basic Mandarin" required /></div>
-          <div class="form-group"><label>Country</label><select id="jRegion" required>
+          <div class="form-group"><label>Country / Execution Site</label><select id="jRegion" required>
             <option value="United States (US)" selected>United States (US)</option>
             <option value="Canada (CA)">Canada (CA)</option>
             <option value="Mexico (MX)">Mexico (MX)</option>
             <option value="Remote / Anywhere">Remote / Anywhere</option>
+          </select></div>
+          <div class="form-group"><label>Talent Preference</label><select id="jPref" required>
+            <option value="No Preference" selected>No Preference (Local or Expat)</option>
+            <option value="Local Engineers Only">Local Engineers Only</option>
+            <option value="Chinese Expats Preferred">Chinese Expat Teams Preferred (华人出海团队优先)</option>
           </select></div>
           <div class="form-group"><label>Specific Location (City, State/Prov)</label><input type="text" id="jLocation" placeholder="e.g. Monterrey, Nuevo León" required /></div>
           <div class="form-group"><label>Budget Range</label><input type="text" id="jBudget" placeholder="e.g. $5,000 Total or $80/hr" required /></div>
@@ -125,10 +130,11 @@
           <h3>Create Profile (Engineer)</h3>
           <div class="form-group"><label>Your Name / Handle</label><input type="text" id="tName" placeholder="e.g. Alex M." required /></div>
           <div class="form-group"><label>Core Skills</label><input type="text" id="tSkills" placeholder="e.g. Allen Bradley, Fanuc, AutoCad" required /></div>
-          <div class="form-group"><label>Region</label><select id="tRegion" required>
-            <option value="United States (US)" selected>United States (US)</option>
-            <option value="Canada (CA)">Canada (CA)</option>
-            <option value="Mexico (MX)">Mexico (MX)</option>
+          <div class="form-group"><label>Region / Dispatch Status</label><select id="tRegion" required>
+            <option value="United States (US)" selected>Local: United States (US)</option>
+            <option value="Canada (CA)">Local: Canada (CA)</option>
+            <option value="Mexico (MX)">Local: Mexico (MX)</option>
+            <option value="Expats (CN -> NA/MX)">Chinese Expat Team (出海工程师团队)</option>
           </select></div>
           <div class="form-group"><label>Hourly / Project Rate</label><input type="text" id="tRate" placeholder="e.g. $100/hr minimum" required /></div>
           <div class="form-group"><label>Contact Email</label><input type="email" id="tContact" placeholder="Your work email" required /></div>
@@ -163,6 +169,7 @@
               <div class="card-meta">
                 <span class="meta-badge" style="background:rgba(99,102,241,0.1); border-color:var(--purple); color:#a5b4fc;">🏷️ ${d.project_type || 'General'}</span>
                 <span class="meta-badge badge-na">🌎 ${d.location ? d.location + ', ' : ''}${d.region}</span>
+                ${d.contact.includes('expat') ? '<span class="meta-badge" style="color:#ef4444; border-color:#ef4444;">🇨🇳 Expat Preferred</span>' : ''}
                 <span class="meta-badge" style="color:var(--green); border-color:var(--green);">💰 ${d.budget}</span>
                 <span class="meta-badge">🛠️ ${d.role}</span>
               </div>
@@ -192,7 +199,7 @@
               <div class="card-title">Engineer: ${t.name}</div>
               <div class="card-meta">
                 <span class="meta-badge">🧠 ${t.skills}</span>
-                <span class="meta-badge badge-na">🌎 ${t.region}</span>
+                <span class="meta-badge badge-na" style="${t.region.includes('Expat') ? 'color:#ef4444; border-color:#ef4444; background:rgba(239,68,68,0.1);' : ''}">🌎 ${t.region}</span>
                 <span class="meta-badge" style="color:var(--gold); border-color:var(--gold);">💵 ${t.rate}</span>
               </div>
               <div class="card-desc">${t.bio}</div>
