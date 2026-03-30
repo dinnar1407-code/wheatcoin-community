@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Order Tracking · Agent Nexus</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;--green:#10b981;--blue:#3b82f6;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    
+    /* Navigation */
+    nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:4px;}
+    .nav-link{padding:6px 14px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;}
+    .nav-link:hover{background:#1e1e2e;color:#fff;}
+    
+    /* Main Layout */
+    .container { flex:1; max-width: 800px; margin: 40px auto; width: 100%; padding: 0 20px; }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 40px; box-shadow: 0 0 60px rgba(99,102,241,0.05); }
+    h1 { font-size: 24px; margin-bottom: 8px; display:flex; align-items:center; gap:8px;}
+    p.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 30px; }
+
+    /* Search Box */
+    .search-box { display: flex; gap: 10px; margin-bottom: 40px; }
+    .search-box input { flex:1; padding: 14px 20px; background: #050505; border: 1px solid var(--border); color: #fff; border-radius: 8px; font-size: 15px; outline:none; transition: border 0.2s;}
+    .search-box input:focus { border-color: var(--purple); }
+    .search-box button { padding: 0 24px; background: var(--purple); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+    .search-box button:hover { opacity: 0.9; }
+
+    /* Terminal/Progress Tracker */
+    .tracker-container { display: none; background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 24px; position:relative; overflow:hidden;}
+    .tracker-container::before { content:''; position:absolute; top:0; left:0; width:100%; height:3px; background:linear-gradient(90deg, var(--purple), var(--blue)); }
+    
+    .order-meta { display:flex; justify-content: space-between; border-bottom: 1px dashed var(--border); padding-bottom: 16px; margin-bottom: 24px; }
+    .meta-item { display:flex; flex-direction:column; gap:4px; }
+    .meta-label { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 700; letter-spacing: 0.5px;}
+    .meta-val { font-size: 14px; color: #fff; font-family: monospace; }
+    
+    .timeline { display:flex; flex-direction:column; gap:20px; position: relative; }
+    .timeline::before { content:''; position:absolute; left:11px; top:10px; bottom:10px; width:2px; background: var(--border); }
+    
+    .step { display:flex; gap: 16px; position:relative; z-index:1; opacity: 0.4; transition: opacity 0.3s; }
+    .step.active { opacity: 1; }
+    .step.completed { opacity: 1; }
+    
+    .step-icon { width:24px; height:24px; border-radius:50%; background:#13131a; border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; transition:all 0.3s; }
+    .step.active .step-icon { border-color: var(--blue); background: var(--blue); color:#fff; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+    .step.completed .step-icon { border-color: var(--green); background: var(--green); color:#fff; }
+    
+    .step-content { display:flex; flex-direction:column; gap:4px; padding-top:2px; }
+    .step-title { font-weight: 600; font-size: 15px; color: #fff; }
+    .step-desc { font-size: 13px; color: var(--muted); }
+    
+    .terminal { margin-top: 30px; background: #000; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 12px; color: var(--green); overflow-y: auto; max-height: 150px; }
+    .terminal-line { margin-bottom: 4px; }
+    .blink { animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+    
+    .error-msg { color: #ef4444; font-size: 14px; margin-top: 10px; display:none; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo"><span class="logo-icon">🌾</span> Wheat Community</a>
+    <div class="nav-links">
+      <a href="/launch" class="nav-link">Launch</a>
+      <a href="/track" class="nav-link" style="color:var(--gold)">Track Order</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h1>📡 Agent Nexus Tracker</h1>
+      <p class="subtitle">Track your Go-To-Market execution in real-time. Enter your Order ID or Email.</p>
+      
+      <form class="search-box" id="searchForm">
+        <input type="text" id="queryInput" placeholder="e.g. terry@example.com or 1773276807299" required />
+        <button type="submit" id="searchBtn">Locate Order</button>
+      </form>
+      <div class="error-msg" id="errorMsg">Order not found. Please check your ID or email.</div>
+
+      <div class="tracker-container" id="tracker">
+        <div class="order-meta">
+          <div class="meta-item"><span class="meta-label">Order ID</span><span class="meta-val" id="valOrderId">--</span></div>
+          <div class="meta-item"><span class="meta-label">Plan</span><span class="meta-val" id="valPlan" style="text-transform:uppercase;">--</span></div>
+          <div class="meta-item"><span class="meta-label">Status</span><span class="meta-val" id="valStatus" style="color:var(--green)">--</span></div>
+        </div>
+
+        <div class="timeline">
+          <div class="step" id="step1">
+            <div class="step-icon">1</div>
+            <div class="step-content">
+              <div class="step-title">Payment Confirmed</div>
+              <div class="step-desc">Order registered in the Nexus Treasury.</div>
+            </div>
+          </div>
+          <div class="step" id="step2">
+            <div class="step-icon">2</div>
+            <div class="step-content">
+              <div class="step-title">Agent Assigned & Analyzing</div>
+              <div class="step-desc">Growth Agent (Gemini) is parsing product metadata.</div>
+            </div>
+          </div>
+          <div class="step" id="step3">
+            <div class="step-icon">3</div>
+            <div class="step-content">
+              <div class="step-title">Strategy & SEO Generation</div>
+              <div class="step-desc">Formulating Go-To-Market plan and directory targets.</div>
+            </div>
+          </div>
+          <div class="step" id="step4">
+            <div class="step-icon">4</div>
+            <div class="step-content">
+              <div class="step-title">Delivered</div>
+              <div class="step-desc">Execution report dispatched to your inbox.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal" id="terminal">
+          <div class="terminal-line">> SYSTEM: Establishing secure connection to Nexus...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('searchForm');
+    const input = document.getElementById('queryInput');
+    const errorMsg = document.getElementById('errorMsg');
+    const tracker = document.getElementById('tracker');
+    const term = document.getElementById('terminal');
+
+    function logTerm(msg) {
+      const d = new Date().toISOString().split('T')[1].substring(0,8);
+      term.innerHTML += `<div class="terminal-line">[${d}] ${msg}</div>`;
+      term.scrollTop = term.scrollHeight;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const q = input.value.trim();
+      if(!q) return;
+
+      errorMsg.style.display = 'none';
+      tracker.style.display = 'none';
+      term.innerHTML = `<div class="terminal-line">> SYSTEM: Querying Nexus databanks for '${q}'... <span class="blink">_</span></div>`;
+      
+      const isEmail = q.includes('@');
+      const url = isEmail ? `/api/orders/lookup?contact=${encodeURIComponent(q)}` : `/api/orders/lookup?id=${encodeURIComponent(q)}`;
+
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if(data.rows && data.rows.length > 0) {
+          const order = data.rows[0]; // grab latest
+          showTracker(order);
+        } else {
+          errorMsg.style.display = 'block';
+        }
+      } catch(err) {
+        errorMsg.textContent = "Network error connecting to Nexus.";
+        errorMsg.style.display = 'block';
+      }
+    });
+
+    function showTracker(order) {
+      tracker.style.display = 'block';
+      document.getElementById('valOrderId').textContent = order.id;
+      document.getElementById('valPlan').textContent = order.plan;
+      
+      // Reset steps
+      [1,2,3,4].forEach(i => {
+        document.getElementById(`step${i}`).className = 'step';
+      });
+
+      const s = order.status.toLowerCase();
+      document.getElementById('valStatus').textContent = s.toUpperCase();
+      
+      if(s === 'pending') {
+        document.getElementById('valStatus').style.color = 'var(--gold)';
+        document.getElementById('step1').classList.add('active');
+        logTerm(`> Order ${order.id} found. Waiting for payment confirmation...`);
+      } 
+      else if(s === 'paid') {
+        document.getElementById('valStatus').style.color = 'var(--blue)';
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step3').classList.add('active');
+        
+        logTerm(`> Payment verified via ${order.paymentMethod.toUpperCase()}.`);
+        setTimeout(() => logTerm(`> Agent [Gemini 2.5] acquired task lock.`), 600);
+        setTimeout(() => logTerm(`> Crawling asset data and extracting core value prop...`), 1500);
+        setTimeout(() => logTerm(`> Building GTM metadata. ETA: Next Cron cycle.`), 2400);
+      }
+      else if(s === 'delivered') {
+        document.getElementById('valStatus').style.color = 'var(--green)';
+        document.getElementById('step1').classList.add('completed');
+        document.getElementById('step2').classList.add('completed');
+        document.getElementById('step3').classList.add('completed');
+        document.getElementById('step4').classList.add('completed');
+        document.getElementById('step4').querySelector('.step-icon').innerHTML = '✓';
+        
+        logTerm(`> Payment verified.`);
+        logTerm(`> Agent [Gemini 2.5] processing complete.`);
+        logTerm(`> SEO Payload and Directory Submission list generated.`);
+        logTerm(`> REPORT DISPATCHED to ${order.contact}`);
+        logTerm(`> MISSION ACCOMPLISHED. Connection closed.`);
+      }
+    }
+  </script>
+</body>
+</html>
