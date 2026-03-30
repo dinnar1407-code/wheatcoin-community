@@ -161,6 +161,18 @@ db.exec(`
     receivedAt TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS talents (
+    id INTEGER PRIMARY KEY,
+    name TEXT,
+    skills TEXT,
+    region TEXT DEFAULT 'North America',
+    rate TEXT,
+    bio TEXT,
+    contact TEXT,
+    status TEXT DEFAULT 'available',
+    receivedAt TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS spotlight_applications (
     id INTEGER PRIMARY KEY,
     app_id TEXT UNIQUE,
@@ -403,6 +415,45 @@ const server = http.createServer(async (req, res) => {
           new Date().toISOString()
         );
         sendToTelegramMessage('👔 New Talent Demand (North America)', { Title: data.title, Role: data.role, Contact: data.contact });
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  if (req.method === 'GET' && url === '/api/talent/list') {
+    try {
+      const rows = db.prepare("SELECT * FROM talents ORDER BY receivedAt DESC LIMIT 50").all();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/talent/submit_profile') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        if (!data.name || !data.skills || !data.contact) throw new Error("Missing required fields");
+        
+        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        const info = stmt.run(
+          escapeHtml(data.name),
+          escapeHtml(data.skills),
+          escapeHtml(data.region || 'North America'),
+          escapeHtml(data.rate),
+          escapeHtml(data.bio),
+          escapeHtml(data.contact),
+          new Date().toISOString()
+        );
+        sendToTelegramMessage('🛠️ New Engineer Profile (North America)', { Name: data.name, Skills: data.skills, Contact: data.contact });
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
       } catch (err) {

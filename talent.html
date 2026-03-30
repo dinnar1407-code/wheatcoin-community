@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Talent Board · North America</title>
+  <title>Talent & Projects · North America</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;--green:#10b981;--blue:#3b82f6;}
@@ -15,22 +15,29 @@
     .nav-link{padding:6px 14px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;}
     .nav-link:hover{background:#1e1e2e;color:#fff;}
     
-    .container { flex:1; max-width: 900px; margin: 40px auto; width: 100%; padding: 0 20px; display:flex; gap:32px;}
+    .container { flex:1; max-width: 1100px; margin: 40px auto; width: 100%; padding: 0 20px;}
     
+    .header-block { margin-bottom: 32px; text-align:center;}
+    .header-block h1 { font-size: 28px; margin-bottom: 8px; color:#fff;}
+    .header-block p { color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 600px; margin: 0 auto;}
+
+    .tabs { display:flex; justify-content:center; gap:16px; margin-bottom: 32px;}
+    .tab { padding: 10px 24px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition:all 0.2s;}
+    .tab.active { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+    .split-layout { display:flex; gap:32px; align-items:flex-start;}
     .main-col { flex: 2; }
     .side-col { flex: 1; }
 
-    .header-block { margin-bottom: 32px; }
-    .header-block h1 { font-size: 28px; margin-bottom: 8px; color:#fff;}
-    .header-block p { color: var(--muted); font-size: 15px; line-height: 1.5; }
-
-    .job-card { background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: border 0.2s;}
-    .job-card:hover { border-color: var(--purple); }
-    .job-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px;}
-    .job-meta { display:flex; gap:12px; font-size: 12px; color: var(--muted); margin-bottom: 12px;}
+    .card { background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: border 0.2s; position:relative; overflow:hidden;}
+    .card:hover { border-color: var(--purple); }
+    .card-title { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 8px; display:flex; justify-content:space-between;}
+    .card-meta { display:flex; gap:12px; font-size: 12px; color: var(--muted); margin-bottom: 12px; flex-wrap:wrap;}
     .meta-badge { background: #13131a; border: 1px solid var(--border); padding: 4px 8px; border-radius: 4px; display:flex; align-items:center; gap:4px; }
-    .job-desc { font-size: 14px; color: #a1a1aa; line-height: 1.5; margin-bottom: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;}
-    .btn-apply { background: var(--purple); color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; text-decoration:none;}
+    .card-desc { font-size: 14px; color: #a1a1aa; line-height: 1.5; margin-bottom: 16px; }
+    .btn-action { background: var(--purple); color: #fff; padding: 6px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; text-decoration:none; display:inline-block;}
+    
+    .ai-match-badge { position:absolute; top:20px; right:20px; font-size:11px; background:rgba(244,196,48,0.1); color:var(--gold); padding:4px 8px; border-radius:4px; border:1px solid rgba(244,196,48,0.3); display:none;}
 
     .post-form { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; position:sticky; top: 80px;}
     .post-form h3 { font-size: 16px; margin-bottom: 16px; color:#fff;}
@@ -49,57 +56,73 @@
     <a href="/" class="nav-logo"><span class="logo-icon">🌾</span> Wheat Community</a>
     <div class="nav-links">
       <a href="/launch" class="nav-link">Launch</a>
-      <a href="/talent" class="nav-link" style="color:var(--gold)">Talent Board</a>
+      <a href="/talent" class="nav-link" style="color:var(--gold)">Nexus Talent</a>
     </div>
   </nav>
 
   <div class="container">
-    <div class="main-col">
-      <div class="header-block">
-        <h1>North America Talent Board</h1>
-        <p>Connecting elite Industrial Automation Engineers and Technical Contractors across the US & Canada. Post your project needs or find high-paying contracts.</p>
-      </div>
+    <div class="header-block">
+      <h1>Industrial Automation Hub · NA</h1>
+      <p>The AI-powered marketplace connecting Foremen (Project Owners) with Elite Independent Engineers across the US & Canada.</p>
+    </div>
 
-      <div id="jobsList">
-        <div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">Loading open positions...</div>
+    <div class="tabs">
+      <button class="tab active" onclick="switchView('projects')" id="tabProjects">Browse Projects (For Engineers)</button>
+      <button class="tab" onclick="switchView('talent')" id="tabTalent">Browse Engineers (For Foremen)</button>
+    </div>
+
+    <div class="split-layout" id="viewProjects">
+      <div class="main-col">
+        <div id="jobsList">
+          <div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">Loading open projects...</div>
+        </div>
+      </div>
+      <div class="side-col">
+        <form class="post-form" id="postJobForm">
+          <h3>Post a Project (Foreman)</h3>
+          <div class="form-group"><label>Project Title</label><input type="text" id="jTitle" placeholder="e.g. PLC Programmer for Assembly Line" required /></div>
+          <div class="form-group"><label>Required Skills</label><input type="text" id="jRole" placeholder="e.g. Siemens PLC, SCADA, Python" required /></div>
+          <div class="form-group"><label>Region Focus</label><select id="jRegion" disabled style="opacity:0.8; cursor:not-allowed;"><option value="North America (US/CA)" selected>North America (US/CA)</option></select></div>
+          <div class="form-group"><label>Budget Range</label><input type="text" id="jBudget" placeholder="e.g. $5,000 - $10,000 or $80/hr" required /></div>
+          <div class="form-group"><label>Contact Email</label><input type="email" id="jContact" placeholder="Your work email" required /></div>
+          <div class="form-group"><label>Scope Description</label><textarea id="jDesc" rows="4" placeholder="Briefly describe the project scope and timeline..." required></textarea></div>
+          <button type="submit" class="btn-submit" id="submitJobBtn">Post Project</button>
+        </form>
       </div>
     </div>
 
-    <div class="side-col">
-      <form class="post-form" id="postForm">
-        <h3>Post a Project / Need</h3>
-        <div class="form-group">
-          <label>Project Title</label>
-          <input type="text" id="jTitle" placeholder="e.g. PLC Programmer for Assembly Line" required />
+    <div class="split-layout" id="viewTalent" style="display:none;">
+      <div class="main-col">
+        <div id="talentList">
+          <div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">Loading engineer profiles...</div>
         </div>
-        <div class="form-group">
-          <label>Role / Skill Required</label>
-          <input type="text" id="jRole" placeholder="e.g. Siemens PLC, SCADA" required />
-        </div>
-        <div class="form-group">
-          <label>Region Focus</label>
-          <select id="jRegion" disabled style="opacity:0.8; cursor:not-allowed;">
-            <option value="North America (US/CA)" selected>North America (US/CA)</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Budget Range</label>
-          <input type="text" id="jBudget" placeholder="e.g. $5,000 - $10,000 or $80/hr" required />
-        </div>
-        <div class="form-group">
-          <label>Contact Email</label>
-          <input type="email" id="jContact" placeholder="Your work email" required />
-        </div>
-        <div class="form-group">
-          <label>Description</label>
-          <textarea id="jDesc" rows="4" placeholder="Briefly describe the project scope and timeline..." required></textarea>
-        </div>
-        <button type="submit" class="btn-submit" id="submitBtn">Post Demand</button>
-      </form>
+      </div>
+      <div class="side-col">
+        <form class="post-form" id="postTalentForm">
+          <h3>Create Profile (Engineer)</h3>
+          <div class="form-group"><label>Your Name / Handle</label><input type="text" id="tName" placeholder="e.g. Alex M." required /></div>
+          <div class="form-group"><label>Core Skills</label><input type="text" id="tSkills" placeholder="e.g. Allen Bradley, Fanuc, AutoCad" required /></div>
+          <div class="form-group"><label>Region</label><select id="tRegion" disabled style="opacity:0.8; cursor:not-allowed;"><option value="North America (US/CA)" selected>North America (US/CA)</option></select></div>
+          <div class="form-group"><label>Hourly / Project Rate</label><input type="text" id="tRate" placeholder="e.g. $100/hr minimum" required /></div>
+          <div class="form-group"><label>Contact Email</label><input type="email" id="tContact" placeholder="Your work email" required /></div>
+          <div class="form-group"><label>Bio / Experience</label><textarea id="tBio" rows="4" placeholder="Summarize your years of experience, key projects, and availability..." required></textarea></div>
+          <button type="submit" class="btn-submit" id="submitTalentBtn">Publish Profile</button>
+        </form>
+      </div>
     </div>
   </div>
 
   <script>
+    function switchView(view) {
+      document.getElementById('viewProjects').style.display = view === 'projects' ? 'flex' : 'none';
+      document.getElementById('viewTalent').style.display = view === 'talent' ? 'flex' : 'none';
+      document.getElementById('tabProjects').className = view === 'projects' ? 'tab active' : 'tab';
+      document.getElementById('tabTalent').className = view === 'talent' ? 'tab active' : 'tab';
+      if(view === 'projects') loadDemands();
+      if(view === 'talent') loadTalent();
+    }
+
+    // Load Projects
     async function loadDemands() {
       const list = document.getElementById('jobsList');
       try {
@@ -107,33 +130,61 @@
         const data = await res.json();
         if(data.status==='ok' && data.data.length>0) {
           list.innerHTML = data.data.map(d => `
-            <div class="job-card">
-              <div class="job-title">${d.title}</div>
-              <div class="job-meta">
+            <div class="card">
+              <div class="ai-match-badge" style="display:block;">✨ AI Analyzed</div>
+              <div class="card-title">${d.title}</div>
+              <div class="card-meta">
                 <span class="meta-badge">🛠️ ${d.role}</span>
                 <span class="meta-badge badge-na">🌎 ${d.region}</span>
                 <span class="meta-badge" style="color:var(--green); border-color:var(--green);">💰 ${d.budget}</span>
               </div>
-              <div class="job-desc">${d.description}</div>
+              <div class="card-desc">${d.description}</div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-size:11px; color:var(--muted)">Posted: ${new Date(d.receivedAt).toLocaleDateString()}</span>
-                <a href="mailto:${d.contact}?subject=Application for: ${encodeURIComponent(d.title)}" class="btn-apply">Contact Employer</a>
+                <a href="mailto:${d.contact}?subject=Nexus Match: Application for ${encodeURIComponent(d.title)}" class="btn-action">Apply via Nexus</a>
               </div>
             </div>
           `).join('');
         } else {
-          list.innerHTML = `<div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">No open positions at the moment.</div>`;
+          list.innerHTML = `<div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">No open projects at the moment.</div>`;
         }
-      } catch(e) {
-        list.innerHTML = `<div style="color:var(--muted); font-size:14px;">Error loading demands.</div>`;
-      }
+      } catch(e) { list.innerHTML = `<div style="color:var(--muted); font-size:14px;">Error loading projects.</div>`; }
     }
 
-    document.getElementById('postForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.textContent = 'Posting...'; btn.disabled = true;
+    // Load Engineers
+    async function loadTalent() {
+      const list = document.getElementById('talentList');
+      try {
+        const res = await fetch('/api/talent/list');
+        const data = await res.json();
+        if(data.status==='ok' && data.data.length>0) {
+          list.innerHTML = data.data.map(t => `
+            <div class="card">
+              <div class="ai-match-badge" style="display:block;">✨ Verified Profile</div>
+              <div class="card-title">Engineer: ${t.name}</div>
+              <div class="card-meta">
+                <span class="meta-badge">🧠 ${t.skills}</span>
+                <span class="meta-badge badge-na">🌎 ${t.region}</span>
+                <span class="meta-badge" style="color:var(--gold); border-color:var(--gold);">💵 ${t.rate}</span>
+              </div>
+              <div class="card-desc">${t.bio}</div>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:11px; color:var(--muted)">Joined: ${new Date(t.receivedAt).toLocaleDateString()}</span>
+                <a href="mailto:${t.contact}?subject=Nexus Match: Project Inquiry for ${encodeURIComponent(t.name)}" class="btn-action">Invite to Project</a>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          list.innerHTML = `<div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">No engineers available at the moment.</div>`;
+        }
+      } catch(e) { list.innerHTML = `<div style="color:var(--muted); font-size:14px;">Error loading profiles.</div>`; }
+    }
 
+    // Submit Project (Foreman)
+    document.getElementById('postJobForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitJobBtn');
+      btn.textContent = 'Analyzing & Posting...'; btn.disabled = true;
       const payload = {
         title: document.getElementById('jTitle').value,
         role: document.getElementById('jRole').value,
@@ -142,26 +193,34 @@
         contact: document.getElementById('jContact').value,
         description: document.getElementById('jDesc').value
       };
-
       try {
-        const res = await fetch('/api/talent/submit', {
-          method: 'POST', headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(payload)
-        });
-        if(res.ok) {
-          alert('Demand posted successfully!');
-          document.getElementById('postForm').reset();
-          loadDemands();
-        } else {
-          alert('Error posting demand.');
-        }
+        const res = await fetch('/api/talent/submit', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+        if(res.ok) { alert('Project posted! The Agent Nexus is scanning for matches.'); document.getElementById('postJobForm').reset(); loadDemands(); }
       } catch(e) { alert('Network error.'); }
-      
-      btn.textContent = 'Post Demand'; btn.disabled = false;
+      btn.textContent = 'Post Project'; btn.disabled = false;
     });
 
-    // Initial load
-    loadDemands();
+    // Submit Profile (Engineer)
+    document.getElementById('postTalentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitTalentBtn');
+      btn.textContent = 'Creating Profile...'; btn.disabled = true;
+      const payload = {
+        name: document.getElementById('tName').value,
+        skills: document.getElementById('tSkills').value,
+        region: document.getElementById('tRegion').value,
+        rate: document.getElementById('tRate').value,
+        contact: document.getElementById('tContact').value,
+        bio: document.getElementById('tBio').value
+      };
+      try {
+        const res = await fetch('/api/talent/submit_profile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+        if(res.ok) { alert('Profile published! You are now visible to NA project owners.'); document.getElementById('postTalentForm').reset(); loadTalent(); }
+      } catch(e) { alert('Network error.'); }
+      btn.textContent = 'Publish Profile'; btn.disabled = false;
+    });
+
+    switchView('projects');
   </script>
 </body>
 </html>
