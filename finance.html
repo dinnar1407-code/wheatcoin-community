@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nexus Finance & Invoicing</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{--bg:#0a0a0f;--card:#13131a;--border:#2a2a3a;--purple:#6366f1;--gold:#f4c430;--text:#e0e0e0;--muted:#6b7280;--green:#10b981;--blue:#3b82f6;}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+    
+    nav{background:#0d0d14;border-bottom:1px solid var(--border);padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:50;}
+    .nav-logo{display:flex;align-items:center;gap:10px;font-size:18px;font-weight:800;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:4px;}
+    .nav-link{padding:6px 14px;border-radius:8px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .2s;text-decoration:none;}
+    .nav-link:hover{background:#1e1e2e;color:#fff;}
+    
+    .container { flex:1; max-width: 1000px; margin: 40px auto; width: 100%; padding: 0 20px;}
+    .header-block { margin-bottom: 32px; text-align:center;}
+    .header-block h1 { font-size: 28px; margin-bottom: 8px; color:#fff;}
+    .header-block p { color: var(--muted); font-size: 15px; line-height: 1.5; max-width: 600px; margin: 0 auto;}
+
+    .login-overlay { position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:100; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(10px); }
+    .login-box { background: var(--card); border: 1px solid var(--border); padding: 40px; border-radius: 16px; width:100%; max-width: 400px; }
+    .login-box h2 { margin-bottom: 24px; color:#fff; text-align:center; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 6px; font-weight: 600;}
+    .form-group input, .form-group select { width: 100%; padding: 12px; background: #050505; border: 1px solid var(--border); color: #fff; border-radius: 6px; outline:none; }
+    .btn-primary { width: 100%; padding: 12px; background: var(--purple); color: #fff; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .dashboard { display:none; }
+    .metrics { display:grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 32px; }
+    .metric-card { background: #050505; border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align:center; }
+    .metric-val { font-size: 32px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    .metric-label { font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+
+    table { width: 100%; border-collapse: collapse; background: #050505; border-radius: 12px; overflow:hidden; border: 1px solid var(--border); }
+    th, td { padding: 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: #13131a; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { font-size: 14px; color: #e0e0e0; }
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
+    .status-pending { background: rgba(244,196,48,0.1); color: var(--gold); border: 1px solid rgba(244,196,48,0.3); }
+    .status-paid { background: rgba(16,185,129,0.1); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+    
+    .btn-small { background: var(--border); color: #fff; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; border: none; }
+    .btn-small:hover { background: #3a3a4a; }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="nav-logo"><span class="logo-icon">🌾</span> Wheat Community</a>
+    <div class="nav-links">
+      <a href="/talent" class="nav-link">Nexus Talent</a>
+      <a href="/finance" class="nav-link" style="color:var(--gold)">Finance & Invoices</a>
+    </div>
+  </nav>
+
+  <!-- Login Modal -->
+  <div class="login-overlay" id="loginModal">
+    <div class="login-box">
+      <h2>Enter Nexus Finance</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="your@email.com" required />
+        </div>
+        <div class="form-group">
+          <label>I am a...</label>
+          <select id="loginRole" required>
+            <option value="employer">Supplier / Foreman (Payor)</option>
+            <option value="engineer">Independent Engineer (Payee)</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-primary" id="loginBtn">Secure Login</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="container dashboard" id="dashboardView">
+    <div class="header-block" style="text-align:left; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <h1 id="dashTitle">My Financial Ledger</h1>
+        <p id="dashSub">Logged in as: <strong id="loggedUser" style="color:#fff;">--</strong> (<span id="loggedRole">--</span>)</p>
+      </div>
+      <button class="btn-small" onclick="logout()">Sign Out</button>
+    </div>
+
+    <div class="metrics">
+      <div class="metric-card">
+        <div class="metric-val" id="mTotal">$0.00</div>
+        <div class="metric-label" id="mLbl1">Total Billed</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="mHours">0</div>
+        <div class="metric-label">Logged Hours</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="mPending" style="color:var(--gold)">$0.00</div>
+        <div class="metric-label">Pending Escrow</div>
+      </div>
+    </div>
+
+    <h3 style="margin-bottom: 16px; color:#fff;">Ledger History & Invoices</h3>
+    <table id="ledgerTable">
+      <thead>
+        <tr>
+          <th>Demand ID</th>
+          <th>Counterparty</th>
+          <th>Rate / Hours</th>
+          <th>Total Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="ledgerBody">
+        <tr><td colspan="6" style="text-align:center; padding:30px; color:var(--muted);">Loading financial data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let currentUser = null;
+    let currentRole = null;
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const role = document.getElementById('loginRole').value;
+      const btn = document.getElementById('loginBtn');
+      btn.textContent = 'Authenticating...'; btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST', headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ email, role, name: email.split('@')[0] })
+        });
+        if(res.ok) {
+          currentUser = email;
+          currentRole = role;
+          document.getElementById('loginModal').style.display = 'none';
+          document.getElementById('dashboardView').style.display = 'block';
+          document.getElementById('loggedUser').textContent = email;
+          document.getElementById('loggedRole').textContent = role === 'employer' ? 'Supplier/Foreman' : 'Engineer';
+          document.getElementById('mLbl1').textContent = role === 'employer' ? 'Total Paid' : 'Total Earned';
+          loadLedger();
+        }
+      } catch(e) { alert('Auth Error'); }
+      btn.textContent = 'Secure Login'; btn.disabled = false;
+    });
+
+    async function loadLedger() {
+      const tbody = document.getElementById('ledgerBody');
+      try {
+        const res = await fetch(`/api/finance/ledger?email=${encodeURIComponent(currentUser)}`);
+        const data = await res.json();
+        
+        let total = 0, hours = 0, pending = 0;
+
+        if (data.status === 'ok' && data.data && data.data.length > 0) {
+          tbody.innerHTML = data.data.map(row => {
+            const isEmp = currentRole === 'employer';
+            const counterparty = isEmp ? row.engineer_email : row.employer_email;
+            const statusClass = row.status === 'paid' ? 'status-paid' : 'status-pending';
+            const actionBtn = isEmp && row.status === 'pending' 
+              ? `<button class="btn-small" style="background:var(--purple)" onclick="alert('Stripe/Crypto Escrow Checkout...')">Fund Escrow</button>`
+              : (row.status === 'paid' ? `<button class="btn-small">⬇️ Download Invoice</button>` : `<button class="btn-small" onclick="alert('Log more hours for this demand.')">Log Hours</button>`);
+
+            total += row.total_amount;
+            hours += row.hours_worked;
+            if (row.status !== 'paid') pending += row.total_amount;
+
+            return `
+              <tr>
+                <td>#DMD-${row.demand_id}</td>
+                <td>${counterparty || '<i>Unassigned</i>'}</td>
+                <td>$${row.hourly_rate}/hr x ${row.hours_worked}h</td>
+                <td style="font-weight:600; color:#fff;">$${row.total_amount.toFixed(2)}</td>
+                <td><span class="status-badge ${statusClass}">${row.status}</span></td>
+                <td>${actionBtn}</td>
+              </tr>
+            `;
+          }).join('');
+        } else {
+          // Dummy data for MVP demonstration
+          tbody.innerHTML = `
+            <tr>
+              <td>#DMD-1082</td>
+              <td>terry.qin@outlook.com</td>
+              <td>$85.00/hr x 40h</td>
+              <td style="font-weight:600; color:#fff;">$3,400.00</td>
+              <td><span class="status-badge status-pending">PENDING</span></td>
+              <td><button class="btn-small" style="${currentRole==='employer'?'background:var(--purple)':'opacity:0.8'}">${currentRole==='employer'?'Fund Escrow':'Log Hours'}</button></td>
+            </tr>
+            <tr>
+              <td>#DMD-945</td>
+              <td>huawei.auto@example.com</td>
+              <td>Fixed Project</td>
+              <td style="font-weight:600; color:#fff;">$5,200.00</td>
+              <td><span class="status-badge status-paid">PAID & INVOICED</span></td>
+              <td><button class="btn-small">⬇️ Download Invoice</button></td>
+            </tr>
+          `;
+          total = 5200; hours = 40; pending = 3400;
+        }
+
+        document.getElementById('mTotal').textContent = `$${total.toLocaleString()}`;
+        document.getElementById('mHours').textContent = hours;
+        document.getElementById('mPending').textContent = `$${pending.toLocaleString()}`;
+
+      } catch(e) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:red; text-align:center;">Failed to load ledger data.</td></tr>`;
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      document.getElementById('dashboardView').style.display = 'none';
+      document.getElementById('loginModal').style.display = 'flex';
+    }
+  </script>
+</body>
+</html>

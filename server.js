@@ -162,12 +162,7 @@ db.exec(`
     status TEXT DEFAULT 'open',
     receivedAt TEXT
   );
-`);
 
-try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
-try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
-
-db.exec(`
   CREATE TABLE IF NOT EXISTS talents (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -178,6 +173,31 @@ db.exec(`
     contact TEXT,
     status TEXT DEFAULT 'available',
     receivedAt TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS user_accounts (
+    id INTEGER PRIMARY KEY,
+    email TEXT UNIQUE,
+    password_hash TEXT,
+    role TEXT, -- 'employer' or 'engineer'
+    name TEXT,
+    company TEXT,
+    wallet_address TEXT,
+    created_at TEXT
+  );
+
+  CREATE TABLE IF NOT EXISTS financial_ledgers (
+    id INTEGER PRIMARY KEY,
+    demand_id INTEGER,
+    employer_email TEXT,
+    engineer_email TEXT,
+    hours_worked REAL DEFAULT 0.0,
+    hourly_rate REAL DEFAULT 0.0,
+    total_amount REAL DEFAULT 0.0,
+    currency TEXT DEFAULT 'USD',
+    status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'paid', 'invoiced'
+    invoice_url TEXT,
+    updated_at TEXT
   );
 
   CREATE TABLE IF NOT EXISTS spotlight_applications (
@@ -403,6 +423,44 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── Financial Ledger API ───────────────────────────────────────
+  if (req.method === 'GET' && url.startsWith('/api/finance/ledger')) {
+    const qs = new URLSearchParams(req.url.split('?')[1] || '');
+    const email = (qs.get('email') || '').trim();
+    if (!email) {
+      res.writeHead(400); res.end(JSON.stringify({ error: 'email required' })); return;
+    }
+    try {
+      const rows = db.prepare("SELECT * FROM financial_ledgers WHERE employer_email = ? OR engineer_email = ? ORDER BY updated_at DESC").all(email, email);
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  // ── Auth MVP (Stub) ───────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/auth/register') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        if (!data.email || !data.role) throw new Error("Missing email or role");
+        
+        const stmt = db.prepare("INSERT OR IGNORE INTO user_accounts (email, role, name, created_at) VALUES (?, ?, ?, ?)");
+        stmt.run(data.email, data.role, data.name || '', new Date().toISOString());
+        
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', email: data.email, role: data.role }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   if (req.method === 'POST' && url === '/api/talent/submit') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -588,6 +646,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/humans' || url === '/humans.html')) { serveFile(res, path.join(__dirname, 'humans.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/talent' || url === '/talent.html')) { serveFile(res, path.join(__dirname, 'talent.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/finance' || url === '/finance.html')) { serveFile(res, path.join(__dirname, 'finance.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/protocol' || url === '/protocol.html')) { serveFile(res, path.join(__dirname, 'protocol.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/nexus-whitepaper' || url === '/nexus-whitepaper.html')) { serveFile(res, path.join(__dirname, 'nexus-whitepaper.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/featured' || url === '/featured.html')) { serveFile(res, path.join(__dirname, 'featured.html'), 'text/html'); return; }
