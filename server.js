@@ -154,12 +154,17 @@ db.exec(`
     title TEXT,
     role TEXT,
     region TEXT DEFAULT 'US/CA/MX',
+    project_type TEXT,
+    location TEXT,
     budget TEXT,
     description TEXT,
     contact TEXT,
     status TEXT DEFAULT 'open',
     receivedAt TEXT
   );
+
+  try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
+  try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
 
   CREATE TABLE IF NOT EXISTS talents (
     id INTEGER PRIMARY KEY,
@@ -404,11 +409,13 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         if (!data.title || !data.role || !data.contact) throw new Error("Missing required fields");
         
-        const stmt = db.prepare("INSERT INTO demands (title, role, region, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        const stmt = db.prepare("INSERT INTO demands (title, role, region, project_type, location, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
         const info = stmt.run(
           escapeHtml(data.title),
           escapeHtml(data.role),
           escapeHtml(data.region || 'US/CA/MX'),
+          escapeHtml(data.project_type || 'General'),
+          escapeHtml(data.location || ''),
           escapeHtml(data.budget),
           escapeHtml(data.description),
           escapeHtml(data.contact),

@@ -79,18 +79,27 @@
       </div>
       <div class="side-col">
         <form class="post-form" id="postJobForm">
-          <h3>Post a Project (Foreman)</h3>
-          <div class="form-group"><label>Project Title</label><input type="text" id="jTitle" placeholder="e.g. PLC Programmer for Assembly Line" required /></div>
-          <div class="form-group"><label>Required Skills</label><input type="text" id="jRole" placeholder="e.g. Siemens PLC, SCADA, Python" required /></div>
-          <div class="form-group"><label>Region Focus</label><select id="jRegion" required>
+          <h3>Post a Project (Supplier/Foreman)</h3>
+          <div class="form-group"><label>Project Title</label><input type="text" id="jTitle" placeholder="e.g. Siemens PLC Commissioning in Monterrey" required /></div>
+          
+          <div class="form-group"><label>Project Type</label><select id="jType" required>
+            <option value="Cross-Border Equipment Deployment" selected>Cross-Border Equipment Deployment (e.g., China -> MX)</option>
+            <option value="Local System Integration">Local System Integration</option>
+            <option value="Emergency Troubleshooting">Emergency Troubleshooting / Repair</option>
+            <option value="Routine Maintenance">Routine Maintenance & Support</option>
+          </select></div>
+
+          <div class="form-group"><label>Required Skills & Languages</label><input type="text" id="jRole" placeholder="e.g. Siemens TIA, Spanish/English, Basic Mandarin" required /></div>
+          <div class="form-group"><label>Country</label><select id="jRegion" required>
             <option value="United States (US)" selected>United States (US)</option>
             <option value="Canada (CA)">Canada (CA)</option>
             <option value="Mexico (MX)">Mexico (MX)</option>
-            <option value="Remote / Anywhere (NA/MX)">Remote / Anywhere (NA/MX)</option>
+            <option value="Remote / Anywhere">Remote / Anywhere</option>
           </select></div>
-          <div class="form-group"><label>Budget Range</label><input type="text" id="jBudget" placeholder="e.g. $5,000 - $10,000 or $80/hr" required /></div>
+          <div class="form-group"><label>Specific Location (City, State/Prov)</label><input type="text" id="jLocation" placeholder="e.g. Monterrey, Nuevo León" required /></div>
+          <div class="form-group"><label>Budget Range</label><input type="text" id="jBudget" placeholder="e.g. $5,000 Total or $80/hr" required /></div>
           <div class="form-group"><label>Contact Email</label><input type="email" id="jContact" placeholder="Your work email" required /></div>
-          <div class="form-group"><label>Scope Description</label><textarea id="jDesc" rows="4" placeholder="Briefly describe the project scope and timeline..." required></textarea></div>
+          <div class="form-group"><label>Scope Description</label><textarea id="jDesc" rows="4" placeholder="Briefly describe the equipment, timeline, and what needs to be done on-site..." required></textarea></div>
           <button type="submit" class="btn-submit" id="submitJobBtn">Post Project</button>
         </form>
       </div>
@@ -140,12 +149,13 @@
         if(data.status==='ok' && data.data.length>0) {
           list.innerHTML = data.data.map(d => `
             <div class="card">
-              <div class="ai-match-badge" style="display:block;">✨ AI Analyzed</div>
+              <div class="ai-match-badge" style="display:block;">✨ AI Translation Ready</div>
               <div class="card-title">${d.title}</div>
               <div class="card-meta">
-                <span class="meta-badge">🛠️ ${d.role}</span>
-                <span class="meta-badge badge-na">🌎 ${d.region}</span>
+                <span class="meta-badge" style="background:rgba(99,102,241,0.1); border-color:var(--purple); color:#a5b4fc;">🏷️ ${d.project_type || 'General'}</span>
+                <span class="meta-badge badge-na">🌎 ${d.location ? d.location + ', ' : ''}${d.region}</span>
                 <span class="meta-badge" style="color:var(--green); border-color:var(--green);">💰 ${d.budget}</span>
+                <span class="meta-badge">🛠️ ${d.role}</span>
               </div>
               <div class="card-desc">${d.description}</div>
               <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -198,6 +208,8 @@
         title: document.getElementById('jTitle').value,
         role: document.getElementById('jRole').value,
         region: document.getElementById('jRegion').value,
+        project_type: document.getElementById('jType').value,
+        location: document.getElementById('jLocation').value,
         budget: document.getElementById('jBudget').value,
         contact: document.getElementById('jContact').value,
         description: document.getElementById('jDesc').value
