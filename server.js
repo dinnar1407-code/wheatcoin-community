@@ -162,10 +162,12 @@ db.exec(`
     status TEXT DEFAULT 'open',
     receivedAt TEXT
   );
+`);
 
-  try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
-  try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
+try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
+try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
 
+db.exec(`
   CREATE TABLE IF NOT EXISTS talents (
     id INTEGER PRIMARY KEY,
     name TEXT,
