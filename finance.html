@@ -53,6 +53,9 @@
     <div class="nav-links">
       <a href="/talent" class="nav-link">Nexus Talent</a>
       <a href="/finance" class="nav-link" style="color:var(--gold)">Finance & Invoices</a>
+      <button class="nav-link lang-btn" onclick="setLang('en')" style="margin-left:8px; padding:4px 8px;">EN</button>
+      <button class="nav-link lang-btn" onclick="setLang('zh')" style="padding:4px 8px;">ZH</button>
+      <button class="nav-link lang-btn" onclick="setLang('es')" style="padding:4px 8px;">ES</button>
     </div>
   </nav>
 
@@ -219,5 +222,21 @@
       document.getElementById('loginModal').style.display = 'flex';
     }
   </script>
+<script>
+  let lang = localStorage.getItem('whc_lang') || 'en';
+  function setLang(l) {
+    lang = l;
+    localStorage.setItem('whc_lang', l);
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.textContent.toLowerCase() === l);
+    });
+    // In a full implementation, we'd trigger UI string replacements here
+    // For this update, we just ensure the toggle state reflects globally
+    if (typeof updateContent === 'function') updateContent();
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    setLang(lang);
+  });
+</script>
 </body>
 </html>
