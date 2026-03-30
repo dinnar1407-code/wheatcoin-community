@@ -190,7 +190,7 @@
       btn.textContent = 'AI Grading Answer...'; btn.disabled = true;
 
       try {
-        const res = await fetch('/api/talent/screen_verify', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ question: currentQuestion, answer }) });
+        const res = await fetch('/api/talent/screen_verify', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ question: currentQuestion, answer: answer, lang: lang }) });
         const data = await res.json();
 
         if (res.ok && data.passed) {
@@ -338,7 +338,7 @@
       };
 
       try {
-        const res = await fetch('/api/talent/screen_question', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ skills: pendingTalentPayload.skills, level: pendingTalentPayload.level }) });
+        const res = await fetch('/api/talent/screen_question', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ skills: pendingTalentPayload.skills, level: pendingTalentPayload.level, lang: lang }) });
         const data = await res.json();
         
         if (res.ok && data.question) {

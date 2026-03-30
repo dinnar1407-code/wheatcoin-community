@@ -614,13 +614,19 @@ const server = http.createServer(async (req, res) => {
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
         
+        const lang = data.lang || 'en';
+        let langInstruction = '';
+        if (lang === 'zh') langInstruction = 'You must output the question entirely in Chinese.';
+        else if (lang === 'es') langInstruction = 'You must output the question entirely in Spanish.';
+        else langInstruction = 'You must output the question entirely in English.';
+
         const prompt = `You are a strict technical interviewer for Industrial Automation.
 The candidate claims the following skills: ${data.skills}
 Their claimed level is: ${data.level}
 
 Generate exactly ONE practical, highly-technical scenario question to test their knowledge.
 Do NOT output any greeting or introductory text. Just the question.
-Example: "If a Siemens S7-1500 shows a BF red light when connected to a G120C via Profinet, what are your first 3 troubleshooting steps?"`;
+${langInstruction}`;
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
             method: 'POST',
@@ -651,11 +657,18 @@ Example: "If a Siemens S7-1500 shows a BF red light when connected to a G120C vi
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
         
+        const lang = data.lang || 'en';
+        let langInstruction = '';
+        if (lang === 'zh') langInstruction = 'Provide your feedback in Chinese.';
+        else if (lang === 'es') langInstruction = 'Provide your feedback in Spanish.';
+        else langInstruction = 'Provide your feedback in English.';
+
         const prompt = `You are grading a technical interview for an Industrial Automation Engineer.
 Question asked: ${data.question}
 Candidate's Answer: ${data.answer}
 
 Evaluate the answer. Does it show genuine field experience and technical competence?
+${langInstruction}
 Output a JSON response exactly in this format (no markdown blocks, just raw JSON):
 {"passed": true/false, "score": <0-100>, "feedback": "<one short sentence of feedback>"}
 `;
