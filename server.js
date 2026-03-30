@@ -149,6 +149,18 @@ try {
 }
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS demands (
+    id INTEGER PRIMARY KEY,
+    title TEXT,
+    role TEXT,
+    region TEXT DEFAULT 'North America',
+    budget TEXT,
+    description TEXT,
+    contact TEXT,
+    status TEXT DEFAULT 'open',
+    receivedAt TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS spotlight_applications (
     id INTEGER PRIMARY KEY,
     app_id TEXT UNIQUE,
@@ -360,6 +372,46 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── Talent Demand API ───────────────────────────────────────
+  if (req.method === 'GET' && url === '/api/talent/demands') {
+    try {
+      const rows = db.prepare("SELECT * FROM demands ORDER BY receivedAt DESC LIMIT 50").all();
+      res.writeHead(200, {'Content-Type': 'application/json'});
+      res.end(JSON.stringify({ status: 'ok', data: rows }));
+    } catch (err) {
+      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/talent/submit') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', () => {
+      try {
+        const data = JSON.parse(body);
+        if (!data.title || !data.role || !data.contact) throw new Error("Missing required fields");
+        
+        const stmt = db.prepare("INSERT INTO demands (title, role, region, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        const info = stmt.run(
+          escapeHtml(data.title),
+          escapeHtml(data.role),
+          escapeHtml(data.region || 'North America'),
+          escapeHtml(data.budget),
+          escapeHtml(data.description),
+          escapeHtml(data.contact),
+          new Date().toISOString()
+        );
+        sendToTelegramMessage('👔 New Talent Demand (North America)', { Title: data.title, Role: data.role, Contact: data.contact });
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   // ── Nexus Open Missions API ───────────────────────────────────────
   if (req.method === 'GET' && url === '/api/nexus/open-missions') {
     try {
@@ -475,6 +527,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/agora' || url === '/agora.html')) { serveFile(res, path.join(__dirname, 'agora.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/humans' || url === '/humans.html')) { serveFile(res, path.join(__dirname, 'humans.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/talent' || url === '/talent.html')) { serveFile(res, path.join(__dirname, 'talent.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/protocol' || url === '/protocol.html')) { serveFile(res, path.join(__dirname, 'protocol.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/nexus-whitepaper' || url === '/nexus-whitepaper.html')) { serveFile(res, path.join(__dirname, 'nexus-whitepaper.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/featured' || url === '/featured.html')) { serveFile(res, path.join(__dirname, 'featured.html'), 'text/html'); return; }
