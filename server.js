@@ -162,7 +162,12 @@ db.exec(`
     status TEXT DEFAULT 'open',
     receivedAt TEXT
   );
+`);
 
+try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
+try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
+
+db.exec(`
   CREATE TABLE IF NOT EXISTS talents (
     id INTEGER PRIMARY KEY,
     name TEXT,
@@ -177,11 +182,13 @@ db.exec(`
     status TEXT DEFAULT 'available',
     receivedAt TEXT
   );
+`);
 
-  try { db.exec("ALTER TABLE talents ADD COLUMN pricing_model TEXT DEFAULT 'hourly'"); } catch(e){}
-  try { db.exec("ALTER TABLE talents ADD COLUMN level TEXT DEFAULT 'Junior'"); } catch(e){}
-  try { db.exec("ALTER TABLE talents ADD COLUMN verified_score INTEGER DEFAULT 0"); } catch(e){}
+try { db.exec("ALTER TABLE talents ADD COLUMN pricing_model TEXT DEFAULT 'hourly'"); } catch(e){}
+try { db.exec("ALTER TABLE talents ADD COLUMN level TEXT DEFAULT 'Junior'"); } catch(e){}
+try { db.exec("ALTER TABLE talents ADD COLUMN verified_score INTEGER DEFAULT 0"); } catch(e){}
 
+db.exec(`
   CREATE TABLE IF NOT EXISTS bot_conversations (
     id INTEGER PRIMARY KEY,
     session_id TEXT,
