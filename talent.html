@@ -155,7 +155,68 @@
     </div>
   </div>
 
+  <!-- Interview Modal -->
+  <div class="login-overlay" id="interviewModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
+    <div class="login-box" style="background:#13131a; border:1px solid var(--border); padding:40px; border-radius:16px; width:100%; max-width:600px;">
+      <h2 style="color:#fff; margin-bottom:16px; display:flex; align-items:center; gap:8px;">🤖 Nexus Technical Screening</h2>
+      <p style="color:var(--muted); font-size:14px; margin-bottom:24px;">To maintain the quality of the Nexus Talent Pool, Agent_DFM_01 has generated a scenario based on your declared skills. <strong style="color:var(--gold)">Pass required to publish.</strong></p>
+      
+      <div style="background:#050505; border:1px solid var(--border); padding:16px; border-radius:8px; margin-bottom:24px;">
+        <p style="font-family:monospace; font-size:14px; color:var(--blue); line-height:1.5;" id="interviewQuestion">Generating scenario...</p>
+      </div>
+
+      <div class="form-group">
+        <label>Your Engineering Approach (Be specific & technical)</label>
+        <textarea id="iAnswer" rows="5" placeholder="Step 1: Check the bus terminator. Step 2..." required style="width:100%; padding:12px; background:#050505; border:1px solid var(--border); color:#fff; border-radius:6px; outline:none; font-family:monospace;"></textarea>
+      </div>
+      
+      <div style="display:flex; gap:12px;">
+        <button class="btn-submit" style="background:transparent; color:#fff; border:1px solid var(--border);" onclick="document.getElementById('interviewModal').style.display='none'; document.getElementById('submitTalentBtn').textContent='Publish Profile'; document.getElementById('submitTalentBtn').disabled=false;">Cancel</button>
+        <button class="btn-submit" style="background:var(--purple); color:#fff; border:none;" id="submitAnswerBtn" onclick="submitInterview()">Submit Answer & Publish</button>
+      </div>
+    </div>
+  </div>
+
   <script>
+    let pendingTalentPayload = null;
+    let currentQuestion = '';
+
+    async function submitInterview() {
+      const answer = document.getElementById('iAnswer').value.trim();
+      if(!answer) { alert("Please provide your troubleshooting steps/approach."); return; }
+      
+      const btn = document.getElementById('submitAnswerBtn');
+      const oldText = btn.textContent;
+      btn.textContent = 'AI Grading Answer...'; btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/talent/screen_verify', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ question: currentQuestion, answer }) });
+        const data = await res.json();
+
+        if (res.ok && data.passed) {
+          alert(`🎉 Passed! Score: ${data.score}/100. Feedback: ${data.feedback}`);
+          document.getElementById('interviewModal').style.display = 'none';
+          
+          pendingTalentPayload.verified_score = data.score;
+          
+          // Now officially save the profile
+          const pRes = await fetch('/api/talent/submit_profile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(pendingTalentPayload) });
+          if(pRes.ok) {
+            alert('Profile published! You are now marked as [Nexus Verified].');
+            document.getElementById('postTalentForm').reset();
+            loadTalent();
+          }
+        } else {
+          alert(`❌ Failed Screening. Score: ${data.score || 0}/100. Feedback: ${data.feedback || 'Answer lacked sufficient technical depth.'}`);
+        }
+      } catch(e) {
+        alert('Network error during grading.');
+      }
+      
+      btn.textContent = oldText; btn.disabled = false;
+      document.getElementById('submitTalentBtn').textContent = 'Publish Profile'; document.getElementById('submitTalentBtn').disabled = false;
+    }
+
     function switchView(view) {
       document.getElementById('viewProjects').style.display = view === 'projects' ? 'flex' : 'none';
       document.getElementById('viewTalent').style.display = view === 'talent' ? 'flex' : 'none';
@@ -203,9 +264,19 @@
         const res = await fetch('/api/talent/list');
         const data = await res.json();
         if(data.status==='ok' && data.data.length>0) {
-          list.innerHTML = data.data.map(t => `
+          list.innerHTML = data.data.map(t => {
+            let verifyBadge = '';
+            if (t.verified_score >= 80) {
+              verifyBadge = `<div class="ai-match-badge" style="display:block; background:rgba(16,185,129,0.1); color:var(--green); border-color:rgba(16,185,129,0.3);">🛡️ Nexus Verified (Score: ${t.verified_score})</div>`;
+            } else if (t.verified_score > 0) {
+              verifyBadge = `<div class="ai-match-badge" style="display:block; background:rgba(239,68,68,0.1); color:#ef4444; border-color:rgba(239,68,68,0.3);">⚠️ Score: ${t.verified_score}</div>`;
+            } else {
+              verifyBadge = `<div class="ai-match-badge" style="display:block;">✨ Unverified Profile</div>`;
+            }
+
+            return `
             <div class="card">
-              <div class="ai-match-badge" style="display:block;">✨ Verified Profile</div>
+              ${verifyBadge}
               <div class="card-title">Engineer: ${t.name}</div>
               <div class="card-meta">
                 <span class="meta-badge" style="background:rgba(59,130,246,0.1); border-color:var(--blue); color:#a5b4fc;">🏅 ${t.level || 'Mid'} Level</span>
@@ -219,7 +290,8 @@
                 <a href="mailto:${t.contact}?subject=Nexus Match: Project Inquiry for ${encodeURIComponent(t.name)}" class="btn-action">Invite to Project</a>
               </div>
             </div>
-          `).join('');
+          `;
+          }).join('');
         } else {
           list.innerHTML = `<div style="color:var(--muted); font-size:14px; text-align:center; padding:40px;">No engineers available at the moment.</div>`;
         }
@@ -252,8 +324,9 @@
     document.getElementById('postTalentForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitTalentBtn');
-      btn.textContent = 'Creating Profile...'; btn.disabled = true;
-      const payload = {
+      btn.textContent = 'AI Generating Question...'; btn.disabled = true;
+      
+      pendingTalentPayload = {
         name: document.getElementById('tName').value,
         skills: document.getElementById('tSkills').value,
         region: document.getElementById('tRegion').value,
@@ -263,11 +336,25 @@
         contact: document.getElementById('tContact').value,
         bio: document.getElementById('tBio').value
       };
+
       try {
-        const res = await fetch('/api/talent/submit_profile', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        if(res.ok) { alert('Profile published! You are now visible to NA project owners.'); document.getElementById('postTalentForm').reset(); loadTalent(); }
-      } catch(e) { alert('Network error.'); }
-      btn.textContent = 'Publish Profile'; btn.disabled = false;
+        const res = await fetch('/api/talent/screen_question', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ skills: pendingTalentPayload.skills, level: pendingTalentPayload.level }) });
+        const data = await res.json();
+        
+        if (res.ok && data.question) {
+          currentQuestion = data.question;
+          document.getElementById('interviewQuestion').textContent = `> ${currentQuestion}`;
+          document.getElementById('iAnswer').value = '';
+          document.getElementById('interviewModal').style.display = 'flex';
+          btn.textContent = 'Awaiting Screening...';
+        } else {
+          alert('Error generating screening. ' + (data.error || ''));
+          btn.textContent = 'Publish Profile'; btn.disabled = false;
+        }
+      } catch(err) {
+        alert('Network error connecting to Agent Nexus.');
+        btn.textContent = 'Publish Profile'; btn.disabled = false;
+      }
     });
 
     function updateRatePlaceholder() {

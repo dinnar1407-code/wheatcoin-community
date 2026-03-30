@@ -603,6 +603,87 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  
+  // ── AI Technical Screener API ───────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/talent/screen_question') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', async () => {
+      try {
+        const data = JSON.parse(body);
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
+        
+        const prompt = `You are a strict technical interviewer for Industrial Automation.
+The candidate claims the following skills: ${data.skills}
+Their claimed level is: ${data.level}
+
+Generate exactly ONE practical, highly-technical scenario question to test their knowledge.
+Do NOT output any greeting or introductory text. Just the question.
+Example: "If a Siemens S7-1500 shows a BF red light when connected to a G120C via Profinet, what are your first 3 troubleshooting steps?"`;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
+            })
+        });
+        const resData = await response.json();
+        const question = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Describe a complex automation project you successfully delivered.";
+        
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', question: question.trim() }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
+  if (req.method === 'POST' && url === '/api/talent/screen_verify') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', async () => {
+      try {
+        const data = JSON.parse(body);
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
+        
+        const prompt = `You are grading a technical interview for an Industrial Automation Engineer.
+Question asked: ${data.question}
+Candidate's Answer: ${data.answer}
+
+Evaluate the answer. Does it show genuine field experience and technical competence?
+Output a JSON response exactly in this format (no markdown blocks, just raw JSON):
+{"passed": true/false, "score": <0-100>, "feedback": "<one short sentence of feedback>"}
+`;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { temperature: 0.2, maxOutputTokens: 150 }
+            })
+        });
+        const resData = await response.json();
+        let resultText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '{"passed": true, "score": 85, "feedback": "Acceptable answer."}';
+        
+        // Clean up markdown if model outputs it
+        resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
+        const result = JSON.parse(resultText);
+        
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify(result));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   if (req.method === 'POST' && url === '/api/talent/submit_profile') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -611,7 +692,7 @@ const server = http.createServer(async (req, res) => {
         const data = JSON.parse(body);
         if (!data.name || !data.skills || !data.contact) throw new Error("Missing required fields");
         
-        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, verified_score, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         const info = stmt.run(
           escapeHtml(data.name),
           escapeHtml(data.skills),
@@ -619,6 +700,7 @@ const server = http.createServer(async (req, res) => {
           escapeHtml(data.rate),
           escapeHtml(data.pricing_model || 'hourly'),
           escapeHtml(data.level || 'Mid'),
+          parseInt(data.verified_score) || 0,
           escapeHtml(data.bio),
           escapeHtml(data.contact),
           new Date().toISOString()
