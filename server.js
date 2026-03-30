@@ -175,6 +175,16 @@ db.exec(`
     receivedAt TEXT
   );
 
+  CREATE TABLE IF NOT EXISTS bot_conversations (
+    id INTEGER PRIMARY KEY,
+    session_id TEXT,
+    user_role TEXT, -- 'employer' or 'engineer'
+    contact TEXT,
+    message TEXT,
+    reply TEXT,
+    timestamp TEXT
+  );
+
   CREATE TABLE IF NOT EXISTS user_accounts (
     id INTEGER PRIMARY KEY,
     email TEXT UNIQUE,
@@ -461,6 +471,41 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // ── AI Sales & Support Agent API ───────────────────────────────────────
+  if (req.method === 'POST' && url === '/api/agent/chat') {
+    let body = '';
+    req.on('data', chunk => { body += chunk.toString(); });
+    req.on('end', async () => {
+      try {
+        const data = JSON.parse(body);
+        const { session_id, role, message, contact } = data;
+        
+        // 1. Log incoming
+        db.prepare("INSERT INTO bot_conversations (session_id, user_role, contact, message, timestamp) VALUES (?, ?, ?, ?, ?)").run(
+            session_id || 'anonymous', role || 'unknown', contact || '', escapeHtml(message), new Date().toISOString()
+        );
+
+        // 2. We use a simulated AI response for the frontend logic. 
+        // In reality, this would hit Gemini API directly.
+        let reply = '';
+        if (role === 'employer') {
+            reply = "您好！我是 Wheat Agent Nexus。针对设备出海北美的售后安装与调试，我们平台拥有近 1000+ 经过认证的当地资深独立工程师 (覆盖美国和墨西哥蒙特雷等地)。我们可以为您提供全周期的项目拆解、人才匹配、时薪结算以及资金托管。为了给您精准匹配，请问您的设备主要是哪一类（如包装线、焊接机器人等）？以及预计需要在北美哪个城市作业？";
+        } else {
+            reply = "Hello! I am the Agent Nexus Onboarding Assistant. We have dozens of high-paying commissioning, PLC programming, and repair projects coming directly from top Chinese automation equipment suppliers every week across the US, Canada, and Mexico. Our platform ensures you get paid on time via strict milestone escrows. What are your primary technical skills (e.g. Allen Bradley, SCADA, Fanuc)?";
+        }
+        
+        // 3. Log reply
+        db.prepare("UPDATE bot_conversations SET reply = ? WHERE id = (SELECT id FROM bot_conversations WHERE session_id = ? ORDER BY id DESC LIMIT 1)").run(reply, session_id);
+
+        res.writeHead(200, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({ status: 'ok', reply }));
+      } catch (err) {
+        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
+      }
+    });
+    return;
+  }
+
   if (req.method === 'POST' && url === '/api/talent/submit') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -647,6 +692,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/talent' || url === '/talent.html')) { serveFile(res, path.join(__dirname, 'talent.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/finance' || url === '/finance.html')) { serveFile(res, path.join(__dirname, 'finance.html'), 'text/html'); return; }
+  if (req.method === 'GET' && (url === '/agent' || url === '/agent.html')) { serveFile(res, path.join(__dirname, 'agent_chat.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/protocol' || url === '/protocol.html')) { serveFile(res, path.join(__dirname, 'protocol.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/nexus-whitepaper' || url === '/nexus-whitepaper.html')) { serveFile(res, path.join(__dirname, 'nexus-whitepaper.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/featured' || url === '/featured.html')) { serveFile(res, path.join(__dirname, 'featured.html'), 'text/html'); return; }
