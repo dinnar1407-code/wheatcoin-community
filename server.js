@@ -153,7 +153,7 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     title TEXT,
     role TEXT,
-    region TEXT DEFAULT 'North America',
+    region TEXT DEFAULT 'US/CA/MX',
     budget TEXT,
     description TEXT,
     contact TEXT,
@@ -165,7 +165,7 @@ db.exec(`
     id INTEGER PRIMARY KEY,
     name TEXT,
     skills TEXT,
-    region TEXT DEFAULT 'North America',
+    region TEXT DEFAULT 'US/CA/MX',
     rate TEXT,
     bio TEXT,
     contact TEXT,
@@ -408,13 +408,13 @@ const server = http.createServer(async (req, res) => {
         const info = stmt.run(
           escapeHtml(data.title),
           escapeHtml(data.role),
-          escapeHtml(data.region || 'North America'),
+          escapeHtml(data.region || 'US/CA/MX'),
           escapeHtml(data.budget),
           escapeHtml(data.description),
           escapeHtml(data.contact),
           new Date().toISOString()
         );
-        sendToTelegramMessage('👔 New Talent Demand (North America)', { Title: data.title, Role: data.role, Contact: data.contact });
+        sendToTelegramMessage('👔 New Talent Demand', { Title: data.title, Region: data.region, Contact: data.contact });
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
       } catch (err) {
@@ -447,13 +447,13 @@ const server = http.createServer(async (req, res) => {
         const info = stmt.run(
           escapeHtml(data.name),
           escapeHtml(data.skills),
-          escapeHtml(data.region || 'North America'),
+          escapeHtml(data.region || 'US/CA/MX'),
           escapeHtml(data.rate),
           escapeHtml(data.bio),
           escapeHtml(data.contact),
           new Date().toISOString()
         );
-        sendToTelegramMessage('🛠️ New Engineer Profile (North America)', { Name: data.name, Skills: data.skills, Contact: data.contact });
+        sendToTelegramMessage('🛠️ New Engineer Profile', { Name: data.name, Region: data.region, Contact: data.contact });
         res.writeHead(200, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
       } catch (err) {
