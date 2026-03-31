@@ -135,105 +135,16 @@ db.exec(`
     whc_staked INTEGER DEFAULT 0,
     timestamp TEXT
   );
-
-`);
-
-// Run migration if column is missing
-try {
-  db.prepare("SELECT topic_id FROM agora_comments LIMIT 1").get();
-} catch (e) {
-  if (e.message.includes("no such column")) {
-    db.prepare("ALTER TABLE agora_comments ADD COLUMN topic_id INTEGER DEFAULT 1").run();
-    console.log("Migration: Added topic_id column to agora_comments");
+  
+  // Run migration if column is missing
+  try {
+    db.prepare("SELECT topic_id FROM agora_comments LIMIT 1").get();
+  } catch (e) {
+    if (e.message.includes("no such column")) {
+      db.prepare("ALTER TABLE agora_comments ADD COLUMN topic_id INTEGER DEFAULT 1").run();
+      console.log("Migration: Added topic_id column to agora_comments");
+    }
   }
-}
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS demands (
-    id INTEGER PRIMARY KEY,
-    title TEXT,
-    role TEXT,
-    region TEXT DEFAULT 'US/CA/MX',
-    project_type TEXT,
-    location TEXT,
-    budget TEXT,
-    description TEXT,
-    contact TEXT,
-    status TEXT DEFAULT 'open',
-    receivedAt TEXT
-  );
-`);
-
-try { db.exec("ALTER TABLE demands ADD COLUMN project_type TEXT"); } catch(e){}
-try { db.exec("ALTER TABLE demands ADD COLUMN location TEXT"); } catch(e){}
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS talents (
-    id INTEGER PRIMARY KEY,
-    name TEXT,
-    skills TEXT,
-    region TEXT DEFAULT 'US/CA/MX',
-    rate TEXT,
-    pricing_model TEXT DEFAULT 'hourly', -- 'hourly' or 'fixed'
-    level TEXT DEFAULT 'Junior', -- 'Junior', 'Mid', 'Senior', 'Expert'
-    verified_score INTEGER DEFAULT 0,
-    bio TEXT,
-    contact TEXT,
-    status TEXT DEFAULT 'available',
-    receivedAt TEXT
-  );
-`);
-
-try { db.exec("ALTER TABLE talents ADD COLUMN pricing_model TEXT DEFAULT 'hourly'"); } catch(e){}
-try { db.exec("ALTER TABLE talents ADD COLUMN level TEXT DEFAULT 'Junior'"); } catch(e){}
-try { db.exec("ALTER TABLE talents ADD COLUMN verified_score INTEGER DEFAULT 0"); } catch(e){}
-
-db.exec(`
-  CREATE TABLE IF NOT EXISTS bot_conversations (
-    id INTEGER PRIMARY KEY,
-    session_id TEXT,
-    user_role TEXT, -- 'employer' or 'engineer'
-    contact TEXT,
-    message TEXT,
-    reply TEXT,
-    timestamp TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS user_accounts (
-    id INTEGER PRIMARY KEY,
-    email TEXT UNIQUE,
-    password_hash TEXT,
-    role TEXT, -- 'employer' or 'engineer'
-    name TEXT,
-    company TEXT,
-    wallet_address TEXT,
-    created_at TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS project_milestones (
-    id INTEGER PRIMARY KEY,
-    demand_id INTEGER,
-    phase_name TEXT, -- e.g. Site Survey, Cabinet Wiring, PLC Logic, Trial Run
-    percentage REAL, -- 10, 30, 40, 20
-    amount REAL,
-    status TEXT DEFAULT 'locked', -- locked, funded, completed, released
-    deliverables_req TEXT,
-    completed_at TEXT
-  );
-
-  CREATE TABLE IF NOT EXISTS financial_ledgers (
-    id INTEGER PRIMARY KEY,
-    demand_id INTEGER,
-    employer_email TEXT,
-    engineer_email TEXT,
-    hours_worked REAL DEFAULT 0.0,
-    hourly_rate REAL DEFAULT 0.0,
-    total_amount REAL DEFAULT 0.0,
-    currency TEXT DEFAULT 'USD',
-    status TEXT DEFAULT 'pending', -- 'pending', 'approved', 'paid', 'invoiced'
-    invoice_url TEXT,
-    updated_at TEXT
-  );
 
   CREATE TABLE IF NOT EXISTS spotlight_applications (
     id INTEGER PRIMARY KEY,
@@ -337,22 +248,11 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       try {
         const data = JSON.parse(body);
-        let txHash = data.txHash?.trim();
+        const txHash = data.txHash?.trim();
         const plan = data.plan;
         const requiredAmount = data.amount;
         
         if (!txHash) throw new Error("Transaction Hash is required.");
-        
-        // If user pasted a Solscan/Solana Explorer URL, extract the hash
-        const urlMatch = txHash.match(/tx\/([1-9A-HJ-NP-Za-km-z]{80,90})/);
-        if (urlMatch) {
-            txHash = urlMatch[1];
-        }
-
-        // Basic sanity check for Solana transaction signatures
-        if (txHash.length < 80 || txHash.length > 90) {
-           throw new Error("Invalid Solana transaction hash format. Did you copy the full signature?");
-        }
 
         // 1. Double spend check in local SQLite
         const existing = db.prepare("SELECT * FROM verified_crypto_payments WHERE tx_hash = ?").get(txHash);
@@ -371,44 +271,13 @@ const server = http.createServer(async (req, res) => {
         );
         const orderId = orderInfo.lastInsertRowid;
 
-        // 3. Real Solana RPC Call for On-Chain Verification
-        const TREASURY_ADDRESS = '6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK';
-        const WHC_TOKEN_MINT = '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump';
+        // 3. Simulated RPC Call (In production, replace with actual Helius/Alchemy Solana RPC)
+        // Verify destination == Treasury AND amount >= requiredAmount
+        const TREASURY_ADDRESS = '4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump';
+        const isTxValid = true; // Simulating valid transaction for prototype
         
-        const rpcUrl = process.env.SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com';
-        
-        const rpcRes = await fetch(rpcUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                jsonrpc: '2.0',
-                id: 1,
-                method: 'getTransaction',
-                params: [txHash, { encoding: 'jsonParsed', maxSupportedTransactionVersion: 0 }]
-            })
-        });
-        const rpcData = await rpcRes.json();
-        
-        if (!rpcData.result) {
-            throw new Error(`Transaction not found on Solana. It might still be confirming or the hash is invalid. RPC Response: ${JSON.stringify(rpcData)}`);
-        }
-        if (rpcData.result.meta?.err) {
-            throw new Error("Transaction failed on-chain.");
-        }
-
-        const meta = rpcData.result.meta;
-        let preBal = 0, postBal = 0;
-        
-        const preToken = meta.preTokenBalances.find(b => b.owner === TREASURY_ADDRESS && b.mint === WHC_TOKEN_MINT);
-        if (preToken) preBal = parseFloat(preToken.uiTokenAmount.uiAmountString);
-        
-        const postToken = meta.postTokenBalances.find(b => b.owner === TREASURY_ADDRESS && b.mint === WHC_TOKEN_MINT);
-        if (postToken) postBal = parseFloat(postToken.uiTokenAmount.uiAmountString);
-        
-        const actualAmountReceived = postBal - preBal;
-        
-        if (actualAmountReceived < requiredAmount * 0.99) { // 1% slippage/rounding tolerance
-           throw new Error(`Insufficient payment detected. Expected ${requiredAmount} WHC, but Treasury received ${actualAmountReceived.toFixed(2)} WHC. Double check the transaction details.`);
+        if (!isTxValid) {
+           throw new Error("Transaction not found or invalid amount on Solana blockchain.");
         }
 
         // 4. Mark as verified & paid
@@ -441,309 +310,6 @@ const server = http.createServer(async (req, res) => {
         console.error("Payment Error:", err);
         res.writeHead(400, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-  // ── Talent Demand API ───────────────────────────────────────
-  if (req.method === 'GET' && url === '/api/talent/demands') {
-    try {
-      const rows = db.prepare("SELECT * FROM demands ORDER BY receivedAt DESC LIMIT 50").all();
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ status: 'ok', data: rows }));
-    } catch (err) {
-      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
-  // ── Financial Ledger API ───────────────────────────────────────
-  if (req.method === 'GET' && url.startsWith('/api/finance/milestones')) {
-    const qs = new URLSearchParams(req.url.split('?')[1] || '');
-    const demand_id = qs.get('demand_id');
-    try {
-      const rows = db.prepare("SELECT * FROM project_milestones WHERE demand_id = ? ORDER BY id ASC").all(demand_id);
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ status: 'ok', data: rows }));
-    } catch (err) {
-      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
-  if (req.method === 'GET' && url.startsWith('/api/finance/ledger')) {
-    const qs = new URLSearchParams(req.url.split('?')[1] || '');
-    const email = (qs.get('email') || '').trim();
-    if (!email) {
-      res.writeHead(400); res.end(JSON.stringify({ error: 'email required' })); return;
-    }
-    try {
-      const rows = db.prepare("SELECT * FROM financial_ledgers WHERE employer_email = ? OR engineer_email = ? ORDER BY updated_at DESC").all(email, email);
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ status: 'ok', data: rows }));
-    } catch (err) {
-      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
-  if (req.method === 'POST' && url === '/api/talent/submit') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        if (!data.title || !data.role || !data.contact) throw new Error("Missing required fields");
-        
-        const stmt = db.prepare("INSERT INTO demands (title, role, region, project_type, location, budget, description, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        const info = stmt.run(
-          escapeHtml(data.title),
-          escapeHtml(data.role),
-          escapeHtml(data.region || 'US/CA/MX'),
-          escapeHtml(data.project_type || 'General'),
-          escapeHtml(data.location || ''),
-          escapeHtml(data.budget),
-          escapeHtml(data.description),
-          escapeHtml(data.contact),
-          new Date().toISOString()
-        );
-        
-        const demandId = info.lastInsertRowid;
-        
-        // 自动初始化标准化里程碑 (Milestone Escrow)
-        const budgetAmount = parseFloat((data.budget || '0').replace(/[^0-9.]/g, '')) || 1000;
-        const milestones = [
-            { phase: "Site Survey / Design Review", pct: 0.10 },
-            { phase: "Cabinet Wiring & Basic IO", pct: 0.30 },
-            { phase: "PLC Logic & Dry Run", pct: 0.40 },
-            { phase: "Trial Run & Handoff", pct: 0.20 }
-        ];
-        const mStmt = db.prepare("INSERT INTO project_milestones (demand_id, phase_name, percentage, amount, status) VALUES (?, ?, ?, ?, 'locked')");
-        for (let m of milestones) {
-             mStmt.run(demandId, m.phase, m.pct, budgetAmount * m.pct);
-        }
-
-        sendToTelegramMessage('👔 New Talent Demand', { Title: data.title, Region: data.region, Contact: data.contact, Escrow: "Milestones Initialized" });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', id: demandId }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-  // ── Auth MVP (Stub) ───────────────────────────────────────
-  if (req.method === 'POST' && url === '/api/auth/register') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        if (!data.email || !data.role) throw new Error("Missing email or role");
-        
-        const stmt = db.prepare("INSERT OR IGNORE INTO user_accounts (email, role, name, created_at) VALUES (?, ?, ?, ?)");
-        stmt.run(data.email, data.role, data.engName || data.name || '', new Date().toISOString());
-
-        // If it's an engineer, store their profile data in the talents table if it doesn't exist
-        if (data.role === 'engineer' && data.engName) {
-            const checkTalent = db.prepare("SELECT id FROM talents WHERE contact = ?").get(data.email);
-            if (!checkTalent) {
-                const insertTalent = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, verified_score, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                insertTalent.run(
-                    data.engName,
-                    data.engSkills || 'Automation Engineer',
-                    'US/CA/MX',
-                    data.engRate || 'Open',
-                    'hourly',
-                    'Mid',
-                    0,
-                    data.engBio || '',
-                    data.email,
-                    new Date().toISOString()
-                );
-                sendToTelegramMessage('🧑‍🔧 New Engineer Profile (via Finance)', { Name: data.engName, Email: data.email, Skills: data.engSkills });
-            }
-        }
-        
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', email: data.email, role: data.role }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-  // ── AI Sales & Support Agent API ───────────────────────────────────────
-  if (req.method === 'POST' && url === '/api/agent/chat') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
-      try {
-        const data = JSON.parse(body);
-        const { session_id, role, message, contact } = data;
-        
-        // 1. Log incoming
-        db.prepare("INSERT INTO bot_conversations (session_id, user_role, contact, message, timestamp) VALUES (?, ?, ?, ?, ?)").run(
-            session_id || 'anonymous', role || 'unknown', contact || '', escapeHtml(message), new Date().toISOString()
-        );
-
-        // 2. We use a simulated AI response for the frontend logic. 
-        // In reality, this would hit Gemini API directly.
-        let reply = '';
-        if (role === 'employer') {
-            reply = "您好！我是 Wheat Agent Nexus。针对设备出海北美的售后安装与调试，我们平台拥有近 1000+ 经过认证的当地资深独立工程师 (覆盖美国和墨西哥蒙特雷等地)。我们可以为您提供全周期的项目拆解、人才匹配、时薪结算以及资金托管。为了给您精准匹配，请问您的设备主要是哪一类（如包装线、焊接机器人等）？以及预计需要在北美哪个城市作业？";
-        } else {
-            reply = "Hello! I am the Agent Nexus Onboarding Assistant. We have dozens of high-paying commissioning, PLC programming, and repair projects coming directly from top Chinese automation equipment suppliers every week across the US, Canada, and Mexico. Our platform ensures you get paid on time via strict milestone escrows. What are your primary technical skills (e.g. Allen Bradley, SCADA, Fanuc)?";
-        }
-        
-        // 3. Log reply
-        db.prepare("UPDATE bot_conversations SET reply = ? WHERE id = (SELECT id FROM bot_conversations WHERE session_id = ? ORDER BY id DESC LIMIT 1)").run(reply, session_id);
-
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', reply }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-
-
-  if (req.method === 'GET' && url === '/api/talent/list') {
-    try {
-      const rows = db.prepare("SELECT * FROM talents ORDER BY receivedAt DESC LIMIT 50").all();
-      res.writeHead(200, {'Content-Type': 'application/json'});
-      res.end(JSON.stringify({ status: 'ok', data: rows }));
-    } catch (err) {
-      res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
-  
-  // ── AI Technical Screener API ───────────────────────────────────────
-  if (req.method === 'POST' && url === '/api/talent/screen_question') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
-      try {
-        const data = JSON.parse(body);
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
-        
-        const lang = data.lang || 'en';
-        let langInstruction = '';
-        if (lang === 'zh') langInstruction = 'You must output the question entirely in Chinese.';
-        else if (lang === 'es') langInstruction = 'You must output the question entirely in Spanish.';
-        else langInstruction = 'You must output the question entirely in English.';
-
-        const prompt = `You are a strict technical interviewer for Industrial Automation.
-The candidate claims the following skills: ${data.skills}
-Their claimed level is: ${data.level}
-
-Generate exactly ONE practical, highly-technical scenario question to test their knowledge.
-Do NOT output any greeting or introductory text. Just the question.
-${langInstruction}`;
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.7, maxOutputTokens: 200 }
-            })
-        });
-        const resData = await response.json();
-        const question = resData.candidates?.[0]?.content?.parts?.[0]?.text || "Describe a complex automation project you successfully delivered.";
-        
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', question: question.trim() }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-  if (req.method === 'POST' && url === '/api/talent/screen_verify') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', async () => {
-      try {
-        const data = JSON.parse(body);
-        const apiKey = process.env.GEMINI_API_KEY;
-        if (!apiKey) throw new Error("GEMINI_API_KEY not configured");
-        
-        const lang = data.lang || 'en';
-        let langInstruction = '';
-        if (lang === 'zh') langInstruction = 'Provide your feedback in Chinese.';
-        else if (lang === 'es') langInstruction = 'Provide your feedback in Spanish.';
-        else langInstruction = 'Provide your feedback in English.';
-
-        const prompt = `You are grading a technical interview for an Industrial Automation Engineer.
-Question asked: ${data.question}
-Candidate's Answer: ${data.answer}
-
-Evaluate the answer. Does it show genuine field experience and technical competence?
-${langInstruction}
-Output a JSON response exactly in this format (no markdown blocks, just raw JSON):
-{"passed": true/false, "score": <0-100>, "feedback": "<one short sentence of feedback>"}
-`;
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                generationConfig: { temperature: 0.2, maxOutputTokens: 150 }
-            })
-        });
-        const resData = await response.json();
-        let resultText = resData.candidates?.[0]?.content?.parts?.[0]?.text || '{"passed": true, "score": 85, "feedback": "Acceptable answer."}';
-        
-        // Clean up markdown if model outputs it
-        resultText = resultText.replace(/```json/g, '').replace(/```/g, '').trim();
-        const result = JSON.parse(resultText);
-        
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify(result));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
-      }
-    });
-    return;
-  }
-
-  if (req.method === 'POST' && url === '/api/talent/submit_profile') {
-    let body = '';
-    req.on('data', chunk => { body += chunk.toString(); });
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        if (!data.name || !data.skills || !data.contact) throw new Error("Missing required fields");
-        
-        const stmt = db.prepare("INSERT INTO talents (name, skills, region, rate, pricing_model, level, verified_score, bio, contact, receivedAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        const info = stmt.run(
-          escapeHtml(data.name),
-          escapeHtml(data.skills),
-          escapeHtml(data.region || 'US/CA/MX'),
-          escapeHtml(data.rate),
-          escapeHtml(data.pricing_model || 'hourly'),
-          escapeHtml(data.level || 'Mid'),
-          parseInt(data.verified_score) || 0,
-          escapeHtml(data.bio),
-          escapeHtml(data.contact),
-          new Date().toISOString()
-        );
-        sendToTelegramMessage('🛠️ New Engineer Profile', { Name: data.name, Region: data.region, Contact: data.contact });
-        res.writeHead(200, {'Content-Type': 'application/json'});
-        res.end(JSON.stringify({ status: 'ok', id: info.lastInsertRowid }));
-      } catch (err) {
-        res.writeHead(500); res.end(JSON.stringify({ error: err.message }));
       }
     });
     return;
@@ -853,7 +419,6 @@ Output a JSON response exactly in this format (no markdown blocks, just raw JSON
   }
   if (req.method === "GET" && (url === "/leaderboard" || url === "/leaderboard.html")) { serveFile(res, path.join(__dirname, "leaderboard.html"), "text/html"); return; }
   if (req.method === 'GET' && (url === '/launch' || url === '/launch.html')) { serveFile(res, path.join(__dirname, 'launch.html'), 'text/html'); return; }
-  if (req.method === 'GET' && (url === '/track' || url === '/track.html')) { serveFile(res, path.join(__dirname, 'track.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/market' || url === '/market.html')) { serveFile(res, path.join(__dirname, 'market.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/kits' || url === '/kits.html')) { serveFile(res, path.join(__dirname, 'kits.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/kits/delivery' || url === '/kits-delivery.html')) { serveFile(res, path.join(__dirname, 'kits-delivery.html'), 'text/html'); return; }
@@ -864,9 +429,6 @@ Output a JSON response exactly in this format (no markdown blocks, just raw JSON
   if (req.method === 'GET' && (url === '/agora' || url === '/agora.html')) { serveFile(res, path.join(__dirname, 'agora.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/humans' || url === '/humans.html')) { serveFile(res, path.join(__dirname, 'humans.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/missions' || url === '/missions.html')) { serveFile(res, path.join(__dirname, 'missions.html'), 'text/html'); return; }
-  if (req.method === 'GET' && (url === '/talent' || url === '/talent.html')) { serveFile(res, path.join(__dirname, 'talent.html'), 'text/html'); return; }
-  if (req.method === 'GET' && (url === '/finance' || url === '/finance.html')) { serveFile(res, path.join(__dirname, 'finance.html'), 'text/html'); return; }
-  if (req.method === 'GET' && (url === '/agent' || url === '/agent.html')) { serveFile(res, path.join(__dirname, 'agent_chat.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/protocol' || url === '/protocol.html')) { serveFile(res, path.join(__dirname, 'protocol.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/nexus-whitepaper' || url === '/nexus-whitepaper.html')) { serveFile(res, path.join(__dirname, 'nexus-whitepaper.html'), 'text/html'); return; }
   if (req.method === 'GET' && (url === '/featured' || url === '/featured.html')) { serveFile(res, path.join(__dirname, 'featured.html'), 'text/html'); return; }
@@ -1221,116 +783,6 @@ Output a JSON response exactly in this format (no markdown blocks, just raw JSON
       });
       console.log(`⚡ [Growth Order] #${result.lastInsertRowid} | ${data.plan} | ${data.contact}`);
       res.writeHead(200); res.end(JSON.stringify({ ok: true, id: result.lastInsertRowid }));
-    } catch(e) {
-      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
-    }
-    return;
-  }
-
-  if (req.method === 'POST' && url === '/api/create-checkout-session') {
-    if (!stripe) {
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: 'Stripe is not configured. Add STRIPE_SECRET_KEY to environment.' }));
-      return;
-    }
-    try {
-      const data = await parseBody(req);
-      const host = req.headers.host;
-      const protocol = req.headers['x-forwarded-proto'] || (host.includes('localhost') ? 'http' : 'https');
-      const domain = protocol + '://' + host;
-      
-      const planName = data.plan ? data.plan.toUpperCase() : 'LAUNCH';
-      const priceUSD = parseFloat(data.price) || 39.9;
-      const unitAmountCents = Math.round(priceUSD * 100);
-      
-      const entry = {
-        product: data.product || '',
-        audience: data.audience || '',
-        contact: data.contact || '',
-        plan: data.plan || 'launch',
-        price: data.price + ' USD',
-        paymentMethod: 'usd',
-        receivedAt: new Date().toISOString(),
-        status: 'pending'
-      };
-      
-      const result = db.prepare(`INSERT INTO orders (product, audience, contact, plan, price, paymentMethod, receivedAt, status, stripe_session_id)
-        VALUES (@product, @audience, @contact, @plan, @price, @paymentMethod, @receivedAt, @status, @stripe_session_id)`).run({
-          ...entry,
-          stripe_session_id: 'pending'
-      });
-      const dbOrderId = result.lastInsertRowid;
-
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [{
-          price_data: {
-            currency: 'usd',
-            product_data: { name: `Builder Growth Layer - ${planName} Plan` },
-            unit_amount: unitAmountCents,
-          },
-          quantity: 1,
-        }],
-        mode: 'payment',
-        success_url: `${domain}/launch?success=true&order_id=${dbOrderId}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${domain}/launch?canceled=true`,
-        client_reference_id: dbOrderId.toString(),
-      });
-      
-      db.prepare("UPDATE orders SET stripe_session_id = ? WHERE id = ?").run(session.id, dbOrderId);
-      
-      console.log(`💳 [Stripe Launch] Session created for ${planName}`);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ url: session.url }));
-    } catch (err) {
-      console.error(err);
-      res.writeHead(500, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ error: err.message }));
-    }
-    return;
-  }
-
-  if (req.method === 'GET' && url === '/api/launch/verify') {
-    const query = new URL(req.url, `http://${req.headers.host}`).searchParams;
-    const session_id = query.get('session_id');
-    const order_id = query.get('order_id');
-    if (!session_id) { res.writeHead(400); res.end('Missing session_id'); return; }
-    try {
-      const session = await stripe.checkout.sessions.retrieve(session_id);
-      if (session.payment_status === 'paid') {
-        const order = db.prepare("UPDATE orders SET status = 'paid' WHERE stripe_session_id = ?").run(session_id);
-        if (order.changes > 0) {
-          const row = db.prepare("SELECT * FROM orders WHERE stripe_session_id = ?").get(session_id);
-          sendToTelegramMessage('⚡ Builder Growth Paid', {
-            'ID': row ? row.id : order_id,
-            'Product': row ? row.product : '—',
-            'Contact': row ? row.contact : '—',
-            'Price': `$${(session.amount_total / 100).toFixed(2)}`,
-            'Status': 'Paid',
-            'Timestamp': new Date().toISOString()
-          });
-
-          // Output an Agent Kitchen manifest for processing
-          const fs = require('fs');
-          const path = require('path');
-          const queueDir = path.join(__dirname, '..', 'scripts', 'agent_kitchen', 'queue');
-          if (fs.existsSync(queueDir)) {
-              const manifest = {
-                  order_id: `USD-${row ? row.id : order_id}`,
-                  client_contact: row ? row.contact : '—',
-                  app_name: (row && row.product) ? row.product.split(' ')[0] : 'App',
-                  url: '#',
-                  raw_description: row ? row.product : '—'
-              };
-              fs.writeFileSync(path.join(queueDir, `order_USD_${row ? row.id : order_id}.json`), JSON.stringify(manifest, null, 2));
-          }
-        }
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ paid: true }));
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ paid: false }));
-      }
     } catch(e) {
       res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
     }

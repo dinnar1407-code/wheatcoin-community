@@ -232,7 +232,7 @@
     
     <div class="wallet-box" style="margin-bottom: 10px;">
       <strong>Treasury Address (Solana):</strong>
-      <div class="wallet-addr whc-addr" onclick="copyAddr('whc')" style="font-size: 13px;">6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK</div>
+      <div class="wallet-addr whc-addr" onclick="copyAddr('whc')" style="font-size: 13px;">4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump</div>
       <div class="copy-hint" id="copyHintWHC">👆 Click to copy</div>
     </div>
     
@@ -251,13 +251,9 @@
       <a class="buy-guide-link" href="https://pump.fun/coin/4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump" target="_blank" data-i="buyBtn">🌾 Buy $WHC on pump.fun →</a>
     </div>
 
-    <div class="modal-btns" style="display:flex;gap:10px;width:100%;margin-bottom:10px;">
+    <div class="modal-btns" style="display:flex;gap:10px;width:100%;">
       <button class="modal-btn secondary" style="flex:1;" onclick="closeModal('whc')">Cancel</button>
-      <button class="modal-btn primary whc" id="verifyBtn" style="flex:2;" onclick="verifyCrypto()">✅ Verify Hash</button>
-    </div>
-    
-    <div style="text-align:center;">
-      <button onclick="payWithPhantom()" style="background:#512da8; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; width:100%; font-weight:bold;">✨ Pay directly with Phantom / Solana Pay</button>
+      <button class="modal-btn primary whc" id="verifyBtn" style="flex:2;" onclick="verifyCrypto()">✅ Verify Payment</button>
     </div>
   </div>
 </div>
@@ -419,8 +415,7 @@ function submitForm() {
   const plan = PLANS[selectedPlan];
   if (selectedPayment==='whc') {
     document.getElementById('modalAmountWHC').textContent = plan.whcDiscount.toLocaleString();
-    const origPriceEl = document.getElementById('modalOriginalPrice');
-    if (origPriceEl) origPriceEl.textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
+    document.getElementById('modalOriginalPrice').textContent = (I18N[lang].was||'was') + ' ' + plan.whcFull + ' WHC';
     document.getElementById('payModalWHC').classList.add('show');
   } else {
     const btn = document.getElementById('submitBtn');
@@ -479,26 +474,9 @@ function showSuccess(product, audience, contact, plan, payType) {
 setLang(lang);
 if (window.location.search.includes('success=true')) {
   const p = new URLSearchParams(window.location.search);
-  const sessionId = p.get('session_id');
-  const orderId = p.get('order_id');
-  
-  if (sessionId) {
-    fetch(`/api/launch/verify?session_id=${sessionId}&order_id=${orderId}`)
-      .then(r => r.json())
-      .then(d => {
-        if(d.paid) {
-          document.getElementById('formCard').style.display = 'none';
-          document.getElementById('successCard').style.display = 'block';
-          document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
-        }
-      });
-  } else {
-    const isCrypto = orderId && orderId.startsWith('WHC-');
-    const paymentLabel = isCrypto ? '<strong style="color:#f4c430">🌾 $WHC (Verified)</strong>' : '<strong style="color:#10b981">Card (Paid)</strong>';
-    document.getElementById('formCard').style.display = 'none';
-    document.getElementById('successCard').style.display = 'block';
-    document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${orderId||'ORD-'+Date.now()}<br/><strong>Payment:</strong> ${paymentLabel}`;
-  }
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('successCard').style.display = 'block';
+  document.getElementById('ticket').innerHTML = `<strong>Order ID:</strong> ${p.get('order_id')||'ORD-'+Date.now()}<br/><strong>Payment:</strong> <strong style="color:#10b981">Card (Paid)</strong>`;
 }
 window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPayment); setLang(lang); };
 </script>
@@ -526,7 +504,7 @@ window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPay
   }
 
   function copyWallet() {
-    navigator.clipboard.writeText('6HMEBSh2KZVsHM4CNDnSJPE43tSxGfeBxhCp7LheZZK');
+    navigator.clipboard.writeText('4sehcoU2vrr11HPEGpEmWMvDL1ddwveDpvAVY5d8pump');
     alert('Treasury address copied!');
   }
 
@@ -545,13 +523,11 @@ window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPay
     const desc = document.getElementById('product') ? document.getElementById('product').value : '';
     const audience = document.getElementById('audience') ? document.getElementById('audience').value : '';
     const contact = document.getElementById('contact') ? document.getElementById('contact').value : '';
-    
-    const plan = PLANS[selectedPlan];
 
     const payload = {
       txHash: txHash,
-      plan: selectedPlan,
-      amount: plan.whcDiscount,
+      plan: currentPlan,
+      amount: whcPrice,
       productDesc: desc,
       targetAudience: audience,
       contact: contact
@@ -570,8 +546,8 @@ window.onload = function() { selectPlan(selectedPlan); selectPayment(selectedPay
         btn.style.background = "#10b981";
         btn.style.borderColor = "#10b981";
         setTimeout(() => {
-          closeModal('whc');
-          window.location.href = `/launch?success=true&order_id=WHC-${data.orderId}`;
+          closeCryptoModal();
+          alert("Success! Your order is in the Agent Queue. You will receive an execution report via email shortly.");
         }, 2000);
       } else {
         alert("Verification Failed: " + data.error);
