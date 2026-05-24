@@ -1158,6 +1158,30 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+
+  // ── Jarvis Mission Control stats (public, read-only) ────────────────────
+  if (req.method === 'GET' && url === '/api/jarvis/stats') {
+    try {
+      const stats = {
+        contributors:      db.prepare("SELECT COUNT(*) AS c FROM contributors").get().c,
+        products_approved: db.prepare("SELECT COUNT(*) AS c FROM products WHERE status='approved'").get().c,
+        claims_approved:   db.prepare("SELECT COUNT(*) AS c FROM whc_claims WHERE status='approved'").get().c,
+        claims_pending:    db.prepare("SELECT COUNT(*) AS c FROM whc_claims WHERE status='submitted'").get().c,
+        total_votes:       db.prepare("SELECT COALESCE(SUM(votes),0) AS c FROM products").get().c,
+        leads:             db.prepare("SELECT COUNT(*) AS c FROM leads").get().c,
+      };
+      res.writeHead(200, {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      });
+      res.end(JSON.stringify(stats));
+    } catch(e) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   if (req.method === 'GET' && url === '/health') {
     const count = db.prepare("SELECT COUNT(*) as count FROM products").get().count;
     res.writeHead(200, { 'Content-Type': 'application/json' });
